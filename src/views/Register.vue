@@ -47,10 +47,10 @@
 
         <div>
           <div class="flex items-center justify-between">
-            <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Repeat Password</label>
+            <label for="passwordConfirmation" class="block text-sm font-medium leading-6 text-gray-900">Repeat Password</label>
           </div>
           <div class="mt-2">
-            <input id="password" name="password" type="password" autocomplete="current-password" required 
+            <input id="passwordConfirmation" name="passwordConfirmation" type="password" autocomplete="current-password" required 
             v-model="passwordConfirmation"
             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
           </div>
@@ -80,9 +80,14 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { db } from '../main.js';
+import { collection, addDoc} from 'firebase/firestore';
+import { useStore } from '../store/store.js';
 import { useRouter } from 'vue-router';
+
+
 
 const firstName = ref('');
 const lastName = ref('');
@@ -91,18 +96,40 @@ const password = ref('');
 const passwordConfirmation = ref('');
 const wrongPwd = ref(false);
 const router = useRouter();
+const store = useStore();
 
 
+const createUser = async () => {
+  //'Users' collection reference
+  const colRef = collection(db, 'users');
+
+//data to send 
+const dataObj = {
+  firstName: firstName.value,
+  lastName: lastName.value,
+  email: email.value,
+  password: password.value,
+}
+
+//Create a document and return refenrence to it 
+const docRef = await addDoc(colRef, dataObj);
+
+//access auto-generated ID with '.id'
+console.log("Document was created with ID: ", docRef.id);
+store.setDocId(docRef.id); // Store the docRef.id in Pinia
+}
 
 const register = () => {
   if (passwordConfirmation.value!== password.value) {
     wrongPwd.value = true;
+    return;
   }
   const auth = getAuth();
   createUserWithEmailAndPassword(auth, email.value, password.value)
   .then((data) => {
     console.log("Successfully registered!");
     console.log(auth.currentUser);
+    createUser();
     router.push('/feed')
   })
   .catch((error) => {
