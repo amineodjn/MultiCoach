@@ -28,6 +28,11 @@ const router = createRouter({
         requiresAuth: true,
       }
     },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: () => import('../views/ResetPwd.vue'),
+    },
   ],
 });
 

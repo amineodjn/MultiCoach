@@ -1,6 +1,7 @@
 <template>
-
-  <h1>Welcome to our app  {{ firstName }}</h1>
+  <div v-if="firstName">
+    <h1>Welcome to our app  {{ firstName }}</h1>
+  </div>
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue';
