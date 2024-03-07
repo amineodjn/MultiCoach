@@ -130,7 +130,7 @@ const register = () => {
     console.log("Successfully registered!");
     console.log(auth.currentUser);
     createUser();
-    router.push('/feed')
+    router.push('/coach-profile')
   })
   .catch((error) => {
     console.log(error.code);
@@ -143,7 +143,7 @@ const SignInWithGoogle = () => {
   signInWithPopup(getAuth(), provider)
     .then((result) => {
        console.log(result.user);
-       router.push('/feed');
+       router.push('/coach-profile');
     })
     .catch((error) => {
       console.log(error.message);

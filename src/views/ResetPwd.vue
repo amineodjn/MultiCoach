@@ -1,4 +1,10 @@
 <template>
+  <div v-if="resetEmailSent" id="toast-simple" class="fixed top-5 right-5 flex items-center w-full max-w-xs p-4 space-x-4 rtl:space-x-reverse text-gray-500 bg-white divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800" role="alert">
+      <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-500 rotate-45" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
+      </svg>
+      <div class="ps-4 text-sm font-normal">Email sent successfully.</div>
+  </div>
   <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
       <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
@@ -26,16 +32,21 @@
 <script setup>
 import { ref } from 'vue'
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { initFlowbite  } from 'flowbite';
 
 
 const email = ref('')
-
+const resetEmailSent = ref(false)
 const resetPassword = () => {
   const auth = getAuth();
   sendPasswordResetEmail(auth, email.value)
     .then(() => {
       // Password reset email sent!
-      console.log("Password reset email sent!");
+      initFlowbite();
+      resetEmailSent.value = true
+      setTimeout(() => {
+        resetEmailSent.value = false;
+      }, 3000);
     })
     .catch((error) => {
       const errorCode = error.code;

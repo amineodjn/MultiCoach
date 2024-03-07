@@ -30,8 +30,13 @@ const router = createRouter({
     },
     {
       path: '/reset-password',
-      name: 'reset-password',
+      name: 'resetPassword',
       component: () => import('../views/ResetPwd.vue'),
+    },
+    {
+      path: '/coach-profile',
+      name: 'coachProfile',
+      component: () => import('../views/coachProfile.vue'),
     },
   ],
 });
