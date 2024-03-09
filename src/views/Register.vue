@@ -134,7 +134,6 @@ const register = () => {
   })
   .catch((error) => {
     console.log(error.code);
-    alert(error.message);
   });
 };
 
