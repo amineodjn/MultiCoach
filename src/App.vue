@@ -8,6 +8,7 @@
     <router-link to="/feed">Feed</router-link> |
     <router-link to="/register">Register</router-link> |
     <router-link to="/sign-in">Login</router-link> |
+    <router-link to="/coach-profile">Profile</router-link> |
     <button @click="HandleLogout" v-if="isLoggedIn">Logout</button>
   </nav>
   <router-view />
@@ -35,7 +36,6 @@ onMounted(() => {
     isLoggedIn.value = false;
   }
  });
-
 });
 
 

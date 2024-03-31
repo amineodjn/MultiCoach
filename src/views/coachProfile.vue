@@ -18,13 +18,20 @@
         </div>
         <div>
             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-    <input type="email" id="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your email" required />
+    <input 
+    v-model="email" type="email" id="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your email" required />
         </div>
         <div>
-          <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
+          <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+          <input 
+          v-model="password"
+          type="text" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Password" required />
+        </div>
+        <div>
+          <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
           <input 
           v-model="city"
-          type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Poznań" required />
+          type="text" id="city" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Poznań" required />
         </div>   
 
         <div>
@@ -47,13 +54,14 @@
         </div>
         <div>
           <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-          <input type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-primary-500" placeholder="399 PLN" required="">
+          <input 
+          v-model="price" type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-primary-500" placeholder="399 PLN" required="">
         </div>
     </div>
     <div class="sm:col-span-2  mb-6">
                   <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
                   <textarea 
-                  
+                  v-model="description"
                   id="description" rows="8" 
                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"></textarea>
     </div>
@@ -84,14 +92,14 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { db } from '../main.js';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useStore } from '../store/store.js';
-import { doc, setDoc } from 'firebase/firestore';
-
 
 const store = useStore();
-const docId = computed(() => store.docId);
+const userId = computed(() => store.docId);
+const docRef = doc(db, "users", userId.value);
 
 // Define reactive properties
 const firstName = ref('');
@@ -103,31 +111,58 @@ const phoneNumber = ref('');
 const gym = ref('');
 const price = ref('');
 const description = ref('');
+const password = ref('');
 
 // Function to update user data in Firestore
 async function updateUser() {
-
+  const dataObj = {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    email: email.value,
+    password: password.value,
+    city: city.value,
+    websiteUrl: websiteUrl.value,
+    phoneNumber: phoneNumber.value,
+    gym: gym.value,
+    price: price.value,
+    description: description.value,  
+  }
     // Update the fields based on your reactive properties
 
-    await setDoc (doc(db, 'users', docId.value), {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      email: email.value,
-      city: city.value,
-      websiteUrl: websiteUrl.value,
-      phoneNumber: phoneNumber.value,
-      gym: gym.value,
-      price: price.value,
-      description: description.value,
-    });
+    await updateDoc(docRef, dataObj);
 
     console.log('User data updated successfully!');
-
 }
 
-// Call the updateUser function when needed (e.g., on form submission)
-// You can trigger this function based on your application logic
+const fetchUser = async () => {
+  if (!userId.value) {
+    console.log('docId is not set', userId.value);
+    return;
+  }
 
-// Example usage:
-// updateUser();
+  const docRef = doc(db, 'users', userId.value);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    firstName.value = docSnap.data().firstName;
+    lastName.value = docSnap.data().lastName;
+    email.value = docSnap.data().email;
+    city.value = docSnap.data().city;
+    websiteUrl.value = docSnap.data().websiteUrl;
+    phoneNumber.value = docSnap.data().phoneNumber;
+    gym.value = docSnap.data().gym;
+    price.value = docSnap.data().price;
+    description.value = docSnap.data().description;
+    password.value = docSnap.data().password;
+  } else {
+    console.log('No such document!');
+  }
+};
+
+onMounted(() => {
+  fetchUser();
+});
+
+
+
+
 </script>

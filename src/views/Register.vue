@@ -83,7 +83,7 @@
 import { ref } from 'vue';
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { db } from '../main.js';
-import { collection, addDoc} from 'firebase/firestore';
+import { setDoc, doc} from 'firebase/firestore';
 import { useStore } from '../store/store.js';
 import { useRouter } from 'vue-router';
 
@@ -99,24 +99,23 @@ const router = useRouter();
 const store = useStore();
 
 
-const createUser = async () => {
-  //'Users' collection reference
-  const colRef = collection(db, 'users');
+const createUser = async (uid) => {
+  // Get a document reference with the user's uid
+  const docRef = doc(db, "users", uid);
 
-//data to send 
-const dataObj = {
-  firstName: firstName.value,
-  lastName: lastName.value,
-  email: email.value,
-  password: password.value,
-}
+  // Data to set
+  const dataObj = {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    email: email.value,
+    password: password.value,
+  }
 
-//Create a document and return refenrence to it 
-const docRef = await addDoc(colRef, dataObj);
+  // Set the data on the document
+  await setDoc(docRef, dataObj);
 
-//access auto-generated ID with '.id'
-console.log("Document was created with ID: ", docRef.id);
-store.setDocId(docRef.id); // Store the docRef.id in Pinia
+  console.log("Document was added successfully with ID: ", docRef.id);
+  store.setDocId(docRef.id); // Store the docRef.id in Pinia
 }
 
 const register = () => {
@@ -128,9 +127,8 @@ const register = () => {
   createUserWithEmailAndPassword(auth, email.value, password.value)
   .then((data) => {
     console.log("Successfully registered!");
-    console.log(auth.currentUser);
-    createUser();
-    router.push('/coach-profile')
+    createUser(auth.currentUser.uid);
+    router.push('/feed')
   })
   .catch((error) => {
     console.log(error.code);
@@ -141,8 +139,7 @@ const SignInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(getAuth(), provider)
     .then((result) => {
-       console.log(result.user);
-       router.push('/coach-profile');
+       router.push('/feed');
     })
     .catch((error) => {
       console.log(error.message);

@@ -21,7 +21,6 @@ const fetchUser = async () => {
 
   const docRef = doc(db, 'users', docId.value);
   const docSnap = await getDoc(docRef);
-  console.log(docSnap.data());
   if (docSnap.exists()) {
     firstName.value = docSnap.data().firstName;
   } else {

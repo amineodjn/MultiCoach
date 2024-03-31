@@ -8,7 +8,6 @@ export const useStore = defineStore({
   actions: {
     setDocId(id) {
       this.docId = id;
-      console.log(this.docId);
     }
   }
 });

@@ -56,6 +56,9 @@
 import { ref } from 'vue';
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useRouter } from 'vue-router';
+import { useStore } from '../store/store.js';
+
+const store = useStore();
 
 const email = ref('');
 const password = ref('');
@@ -67,7 +70,7 @@ const register = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
   .then((data) => {
     console.log("Successfully signed in!");
-    console.log(auth.currentUser);
+    store.setDocId(auth.currentUser.uid);
     router.push('/feed')
   })
   .catch((error) => {
@@ -94,7 +97,6 @@ const SignInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(getAuth(), provider)
     .then((result) => {
-       console.log(result.user);
        router.push('/feed');
     })
     .catch((error) => {
