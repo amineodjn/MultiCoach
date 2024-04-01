@@ -194,7 +194,6 @@ const uploadImage = async (event) => {
       (snapshot) => {
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
       }, 
       (error) => {
         console.log(error);
@@ -203,7 +202,6 @@ const uploadImage = async (event) => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           imageUrl.value = downloadURL;
-          console.log('File available at', downloadURL);
           // Update user document with the download URL
           const docRef = doc(db, 'users', user.uid);
           updateDoc(docRef, { profilePicture: downloadURL });
