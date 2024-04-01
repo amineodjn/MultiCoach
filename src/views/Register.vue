@@ -116,6 +116,7 @@ const createUser = async (uid) => {
 
   console.log("Document was added successfully with ID: ", docRef.id);
   store.setDocId(docRef.id); // Store the docRef.id in Pinia
+  localStorage.setItem('uid', docRef.id);
 }
 
 const register = () => {

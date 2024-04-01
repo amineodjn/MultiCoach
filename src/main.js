@@ -6,6 +6,7 @@ import { createPinia } from 'pinia';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -21,16 +22,19 @@ const firebaseConfig = {
   measurementId: "G-VS30S4EM4Z"
 };
 
-initializeApp(firebaseConfig);
+// Initialize Firebase
+const firebaseApp = initializeApp(firebaseConfig);
 
-//init firestore service
-const db = getFirestore();
+// Initialize Firestore service
+const db = getFirestore(firebaseApp);
+
+// Initialize Firebase Storage
+const storage = getStorage(firebaseApp);
 
 const app = createApp(App)
-
 app.use(router)
 app.use(createPinia());
 
 app.mount('#app')
 
-export { db };
+export { db, storage };

@@ -59,31 +59,30 @@
         </div>
     </div>
     <div class="sm:col-span-2  mb-6">
-                  <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                  <textarea 
-                  v-model="description"
-                  id="description" rows="8" 
-                  class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"></textarea>
+        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+        <textarea 
+        v-model="description"
+        id="description" rows="8" 
+        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"></textarea>
     </div>
-<div class="flex items-center justify-center w-full mb-6">
-    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+    <div class="flex items-center justify-center w-full mb-6">
+      <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
         <div class="flex flex-col items-center justify-center pt-5 pb-6">
-            <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-            </svg>
-            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+          <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+          </svg>
+          <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
         </div>
-        <input id="dropzone-file" type="file" class="hidden" />
-    </label>
-</div> 
-
-    
-    <div class="flex items-start mb-6">
+        <input id="dropzone-file" type="file" @change="uploadImage" class="hidden" />
+      </label>
+    </div> 
+    <div v-if="selectedFile" class="flex items-start mb-6">
         <div class="flex items-center h-5">
-        <input id="remember" type="checkbox" value="" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-indigo-600 dark:ring-offset-gray-800" required />
-        </div>
-        <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a href="#" class="text-indigo-600 hover:underline dark:text-indigo-500">terms and conditions</a>.</label>
+            <svg class="w-6 h-5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"></path>
+</svg>        </div>
+        <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"><a :href="imageUrl" class="text-indigo-600 hover:underline dark:text-indigo-500">{{ imageName }}</a>.</label>
     </div>
     <button type="submit" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Submit</button>
     </form>
@@ -96,12 +95,16 @@ import { ref, computed, onMounted } from 'vue';
 import { db } from '../main.js';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useStore } from '../store/store.js';
+import { storage } from '../main.js';
+import { getAuth } from 'firebase/auth';
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, getMetadata } from 'firebase/storage'; // Import necessary functions from Firebase Storage
+
+
 
 const store = useStore();
 const userId = computed(() => store.docId);
 const docRef = doc(db, "users", userId.value);
 
-// Define reactive properties
 const firstName = ref('');
 const lastName = ref('');
 const email = ref('');
@@ -128,19 +131,19 @@ async function updateUser() {
     description: description.value,  
   }
     // Update the fields based on your reactive properties
-
     await updateDoc(docRef, dataObj);
 
     console.log('User data updated successfully!');
 }
 
+// Fetch user data from Firestore
 const fetchUser = async () => {
   if (!userId.value) {
     console.log('docId is not set', userId.value);
     return;
   }
 
-  const docRef = doc(db, 'users', userId.value);
+  const docRef = doc(db, "users", userId.value);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     firstName.value = docSnap.data().firstName;
@@ -153,6 +156,7 @@ const fetchUser = async () => {
     price.value = docSnap.data().price;
     description.value = docSnap.data().description;
     password.value = docSnap.data().password;
+
   } else {
     console.log('No such document!');
   }
@@ -161,8 +165,52 @@ const fetchUser = async () => {
 onMounted(() => {
   fetchUser();
 });
+const selectedFile = ref(null);
+const imageUrl = ref('');
+const imageName = ref('');
 
+const uploadImage = async (event) => {
+  selectedFile.value = event.target.files[0];
+  imageName.value = selectedFile.value.name;
+  console.log(selectedFile.value.name);
 
+  if (!selectedFile.value) {
+    console.log('No file selected');
+    return;
+  }
 
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  if (user) {
+    // Create a storage reference with the user's uid
+    const storageReference = storageRef(storage, `profilePictures/${user.uid}`);
+
+    // Upload the file
+    const uploadTask = uploadBytesResumable(storageReference, selectedFile.value);
+
+    // Listen for state changes, errors, and completion of the upload.
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+      }, 
+      (error) => {
+        console.log(error);
+      }, 
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          imageUrl.value = downloadURL;
+          console.log('File available at', downloadURL);
+          // Update user document with the download URL
+          const docRef = doc(db, 'users', user.uid);
+          updateDoc(docRef, { profilePicture: downloadURL });
+        });
+      }
+    );
+  }
+};
 
 </script>
