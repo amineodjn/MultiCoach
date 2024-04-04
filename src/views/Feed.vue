@@ -1,5 +1,5 @@
-<template>
-  <div v-if="firstName">
+<template v-if="firstName">
+  <div>
     <h1>Welcome to our app  {{ firstName }}</h1>
   </div>
 </template>

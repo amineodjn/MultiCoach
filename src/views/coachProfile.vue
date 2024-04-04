@@ -89,6 +89,7 @@
     </form>
   </div>
 </section>
+<sidebar />
 </template>
 
 <script setup>
@@ -100,6 +101,7 @@ import { storage } from '../main.js';
 import { getAuth } from 'firebase/auth';
 import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
 import toast from '../components/toast.vue';
+import sidebar from '../components/sidebar.vue';
 
 
 
@@ -174,7 +176,6 @@ const imageName = ref('');
 const uploadImage = async (event) => {
   selectedFile.value = event.target.files[0];
   imageName.value = selectedFile.value.name;
-  console.log(selectedFile.value.name);
 
   if (!selectedFile.value) {
     console.log('No file selected');
