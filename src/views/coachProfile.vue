@@ -167,6 +167,9 @@ const fetchUser = async () => {
 };
 
 onMounted(() => {
+  if(!userId.value) {
+    console.log('docId is not set', userId.value);
+  }
   fetchUser();
 });
 const selectedFile = ref(null);

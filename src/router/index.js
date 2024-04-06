@@ -37,6 +37,9 @@ const router = createRouter({
       path: '/coach-profile',
       name: 'coachProfile',
       component: () => import('../views/coachProfile.vue'),
+      meta: {
+        requiresAuth: true,
+      }
     },
   ],
 });
