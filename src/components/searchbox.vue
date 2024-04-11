@@ -1,6 +1,6 @@
 <template>
   <div id="exampleWrapper" class="relative">
-    <form class="m-6">
+    <form class="mt-6 m-2 md:m-6">
         <div class="flex">
           <label for="location-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Your Email</label>
           <button @click="dropdownToggle" id="dropdown-button-2" data-dropdown-toggle="dropdown-search-city" class="flex-shrink-0 z-10 inline-flex items-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-primary-700   dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
