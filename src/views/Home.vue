@@ -3,10 +3,10 @@
     <div class="flex flex-col md:flex-row items-start justify-center md:m-10 m-2 rounded-lg" >
       <div class="w-full md:w-1/2 h-screen flex md:flex-row items-start justify-between">
         <searchBox :selectedExperiences="selectedExperiences" class="w-2/3"></searchBox>
-        <div class="flex flex-col items-end mt-6 mr-2">
+        <div class="flex flex-col md:items-end mt-6 mr-2">
           <button id="filterDropdownButton"
             @click="dropdownToggle"
-            data-dropdown-toggle="filterDropdown" class="w-auto md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700   dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+            data-dropdown-toggle="filterDropdown" class="w-auto md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none md:bg-white rounded-lg md:border md:border-gray-200 md:hover:bg-gray-100 hover:text-primary-700   md:dark:focus:ring-gray-700 md:dark:bg-gray-800 dark:text-gray-400 md:dark:border-gray-600 dark:hover:text-white md:dark:hover:bg-gray-700" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-4 w-4 mr-2" viewbox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
             </svg>
