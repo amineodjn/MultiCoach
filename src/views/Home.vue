@@ -33,8 +33,8 @@
           </div>
         </div>
       </div>
-      <div class="w-1/2 h-12">
-      MAP
+      <div class="w-full md:w-1/2 h-screen">
+        <GoogleMap api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
       </div>
   </div>
   </body>
@@ -43,8 +43,11 @@
 </template>
 <script setup>
 import searchBox from '../components/searchbox.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { GoogleMap } from 'vue3-google-map';
 
+
+const center = ref({ lat: 52.00, lng: 20.00 })
 const toggle = ref({})
 const toggled = ref(false)
 const experiences = ref(['Weight loss', 'Strength', 'Squash', 'Spinning', 'Boxing'])
@@ -58,7 +61,11 @@ const select = () => {
   selectedExperiences.value  = Object.keys(toggle.value).filter(key => toggle.value[key] === 'yes');
 }
 
-
+// onMounted(() => {
+//   new window.google.maps.Map(map.value, {
+//     center: { lat: 52.00, lng: 20.00 },
+//     zoom: 6,
+// })});
 </script>
 <style scoped> 
 
