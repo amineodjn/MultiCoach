@@ -1,6 +1,7 @@
 <template v-if="firstName">
   <div>
     <h1>Welcome to our app  {{ firstName }}</h1>
+    <modal />
   </div>
 </template>
 <script setup>
@@ -8,6 +9,7 @@ import { ref, watch, computed } from 'vue';
 import { useStore } from '../store/store.js';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../main.js'; 
+import modal from '../components/modal.vue';
 
 const store = useStore();
 const docId = computed(() => store.docId);

@@ -12,7 +12,7 @@
           <div id="dropdown-search-city" :class="{'hidden' : !toggled}" class="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700" data-popper-placement="bottom" style="position: absolute; top: 75px;  margin: 0px;">
             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button-2">
               <li v-for="city in cities" :key="city" >
-                  <button @click="selectCity(city)" type="button" class="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
+                  <button @click="selectCity(city)" type="button" class="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:text-indigo-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                       <div class="inline-flex items-center">
                           {{ city }}
                       </div>
