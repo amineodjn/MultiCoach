@@ -33,7 +33,9 @@
         <router-link to="/register"  
         href="#"
         :class="[{ 'font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500' : navbarCollapse}, { 'py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-blue-600 text-blue-600 hover:border-blue-500 hover:text-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-blue-500 dark:text-blue-500 dark:hover:text-blue-400 dark:hover:border-blue-400' : !navbarCollapse}]"
+        @click="toggleModal"
         >Get started</router-link>
+        <modal :open="open" @update="toggleModal" />
 
         <!-- <div class="hs-dropdown [--strategy:static] md:[--strategy:fixed] [--adaptive:none] md:[--trigger:hover] md:py-4">
           <button type="button" class="flex items-center w-full text-gray-500 hover:text-gray-400 font-medium dark:text-gray-400 dark:hover:text-gray-500 ">
@@ -93,10 +95,12 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import modal from '../components/modal.vue'
 
 const isLoggedIn = ref(false);
 const router = useRouter();
 const navbarCollapse = ref(false);
+const open = ref(false);
 
 let auth;
 onMounted(() => {
@@ -124,5 +128,9 @@ const HandleLogout = () => {
 const collapse = () => {
   
   navbarCollapse.value = !navbarCollapse.value
+}
+
+const toggleModal = () => {
+  open.value =!open.value;
 }
 </script>
