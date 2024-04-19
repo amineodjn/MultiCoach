@@ -34,7 +34,14 @@
             </div>
         </div>
         </div>
-        <div><card /></div>
+        <div v-for="user in users" :key="user.id">
+          <card 
+            :user="user" 
+            class="mt-2"
+            @book="console.log(user)"
+            @favorite="console.log(user.favorite =!user.favorite)"
+            />
+        </div>
       </div>
       <div class="w-full md:w-1/2 h-screen">
         <GoogleMap api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
@@ -49,6 +56,7 @@ import searchBox from '../components/searchbox.vue'
 import { ref, onMounted } from 'vue'
 import { GoogleMap } from 'vue3-google-map';
 import card from '../components/card.vue'
+import users from '../users.js'
 
 
 const center = ref({ lat: 52.00, lng: 20.00 })
