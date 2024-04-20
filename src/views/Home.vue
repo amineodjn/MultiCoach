@@ -34,12 +34,12 @@
             </div>
         </div>
         </div>
-        <div v-for="user in users" :key="user.id">
+        <div v-for="user in usersData" :key="user.id">
           <card 
             :user="user" 
             class="mt-2"
             @book="console.log(user)"
-            @favorite="console.log(user.favorite =!user.favorite)"
+            @favorite="toggleFavorite"
             />
         </div>
       </div>
@@ -53,17 +53,18 @@
 </template>
 <script setup>
 import searchBox from '../components/searchbox.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { GoogleMap } from 'vue3-google-map';
 import card from '../components/card.vue'
 import users from '../users.js'
 
-
+const usersData = reactive(users)
 const center = ref({ lat: 52.00, lng: 20.00 })
 const toggle = ref({})
 const toggled = ref(false)
 const experiences = ref(['Weight loss', 'Strength', 'Squash', 'Spinning', 'Boxing'])
 const selectedExperiences = ref([])
+const isFavorite = ref(false)
 
 const dropdownToggle = () => {
   toggled.value = !toggled.value
@@ -71,6 +72,10 @@ const dropdownToggle = () => {
 
 const select = () => {
   selectedExperiences.value  = Object.keys(toggle.value).filter(key => toggle.value[key] === 'yes');
+}
+
+const toggleFavorite = (user) => {
+  user.favorite = !user.favorite
 }
 
 // onMounted(() => {
