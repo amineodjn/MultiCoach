@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row items-start justify-center md:m-10 m-2 rounded-lg" >
       <div class="flex flex-col md:w-1/2">
         <div class="w-full flex md:flex-row items-start justify-between">
-          <searchBox :selectedExperiences="selectedExperiences" class="w-2/3"></searchBox>
+          <searchBox :selectedExperiences="selectedExperiences" @citySelected="filterCities" @cityRemoved="clearFilter" class="w-2/3"></searchBox>
           <div class="flex flex-col md:items-end mt-6 mr-2">
             <button id="filterDropdownButton"
               @click="dropdownToggle"
@@ -34,7 +34,15 @@
             </div>
         </div>
         </div>
-        <div v-for="user in usersData" :key="user.id">
+        <div v-if="filteredUsers.length > 0" v-for="user in filteredUsers" :key="user.id">
+          <card 
+            :user="user" 
+            class="mt-2"
+            @book="console.log(user)"
+            @favorite="toggleFavorite"
+            />
+        </div>
+        <div v-if="!filteredUsers.length > 0" v-for="user in usersData" :key="user.id">
           <card 
             :user="user" 
             class="mt-2"
@@ -59,6 +67,7 @@ import card from '../components/card.vue'
 import users from '../users.js'
 
 const usersData = reactive(users)
+const filteredUsers = ref([])
 const center = ref({ lat: 52.00, lng: 20.00 })
 const toggle = ref({})
 const toggled = ref(false)
@@ -69,20 +78,19 @@ const isFavorite = ref(false)
 const dropdownToggle = () => {
   toggled.value = !toggled.value
 }
-
 const select = () => {
   selectedExperiences.value  = Object.keys(toggle.value).filter(key => toggle.value[key] === 'yes');
 }
-
 const toggleFavorite = (user) => {
   user.favorite = !user.favorite
 }
+const filterCities = (city) => {
+    filteredUsers.value = usersData.filter((user) => user.city === city)
+}
+const clearFilter = () => {
+  filteredUsers.value = []
+}
 
-// onMounted(() => {
-//   new window.google.maps.Map(map.value, {
-//     center: { lat: 52.00, lng: 20.00 },
-//     zoom: 6,
-// })});
 </script>
 <style scoped> 
 

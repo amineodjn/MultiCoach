@@ -1,9 +1,9 @@
 <template>
   <div id="exampleWrapper" class="relative">
-    <form class="mt-6 m-2 md:m-6">
+    <form @prevent.default class="mt-6 m-2 md:m-6">
         <div class="flex">
           <label for="location-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Your Email</label>
-          <button @click="dropdownToggle" id="dropdown-button-2" data-dropdown-toggle="dropdown-search-city" class="flex-shrink-0 z-10 inline-flex items-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-primary-700   dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+          <button  @click="dropdownToggle" id="dropdown-button-2" data-dropdown-toggle="dropdown-search-city" class="flex-shrink-0 z-10 inline-flex items-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-primary-700   dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
             <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" viewBox="0 0 24 24"><path fill="currentColor" d="M12 11.5A2.5 2.5 0 0 1 9.5 9A2.5 2.5 0 0 1 12 6.5A2.5 2.5 0 0 1 14.5 9a2.5 2.5 0 0 1-2.5 2.5M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7"/></svg>
               Location <svg class="w-2.5 h-2.5 ms-2.5 mt-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"></path>
@@ -12,7 +12,7 @@
           <div id="dropdown-search-city" :class="{'hidden' : !toggled}" class="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700" data-popper-placement="bottom" style="position: absolute; top: 75px;  margin: 0px;">
             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button-2">
               <li v-for="city in cities" :key="city" >
-                  <button @click="selectCity(city)" type="button" class="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:text-indigo-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
+                  <button  @click="() => { selectCity(city); dropdownToggle(); }" type="button" class="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:text-indigo-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                       <div class="inline-flex items-center">
                           {{ city }}
                       </div>
@@ -43,12 +43,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineEmits, watch } from 'vue'
+const emits = defineEmits(['citySelected', 'cityRemoved'])
 
 const toggled = ref(false)
 const cities = ref(['Poznań', 'Warsaw', 'Wrocław', 'Kraków', 'Gdańsk'])
 const selectedCity = ref('')
 const streetRef = ref(null)
+
+watch(selectedCity, (newVal) => {
+  emits('citySelected', newVal)
+})
 
 const dropdownToggle = () => {
   toggled.value = !toggled.value
@@ -56,10 +61,12 @@ const dropdownToggle = () => {
 
 const selectCity = (city) => {
   selectedCity.value = city
+  emits('citySelected', city)
 }
 
 const removeCity = () => {
   selectedCity.value = ''
+  emits('cityRemoved')
 }
 
 onMounted(async () => {
