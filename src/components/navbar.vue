@@ -26,7 +26,7 @@
     :class="{ 'hidden' : !navbarCollapse}"
     >
       <div class="flex flex-col gap-y-4 gap-x-0 mt-5 md:flex-row md:items-center md:justify-end md:gap-y-0 md:gap-x-7 md:mt-0 md:ps-7">
-        <router-link to="/" class="font-medium text-indigo-600 md:py-6 dark:text-indigo-500" href="#" aria-current="page">Landing</router-link>
+        <router-link to="/" class="font-medium text-indigo-600 md:py-6 dark:text-indigo-500" href="#" aria-current="page">Home</router-link>
         <router-link to="coach-profile" class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Account</router-link>
         <a class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Work</a>
         <a class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Blog</a>

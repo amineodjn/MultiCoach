@@ -85,10 +85,4 @@ const emit = defineEmits(['update'])
 const closeModal = () => {
   emit('update', false)
 }
-
-
-const toggleModal = () => {
-  const modal = document.getElementById('select-modal');
-    modal.classList.toggle('hidden');
-}
 </script>

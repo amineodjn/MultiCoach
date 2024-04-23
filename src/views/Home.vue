@@ -38,7 +38,7 @@
           <card 
             :user="user" 
             class="mt-2"
-            @book="console.log(user)"
+            @book="toggleModal"
             @favorite="toggleFavorite"
             />
         </div>
@@ -46,6 +46,7 @@
       <div class="w-full md:w-1/2 h-screen">
         <GoogleMap api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
       </div>
+      <bookingModal :open="open" @update="open =!open"/>
   </div>
   </body>
 
@@ -57,6 +58,7 @@ import { ref, onMounted, reactive, computed } from 'vue'
 import { GoogleMap } from 'vue3-google-map';
 import card from '../components/card.vue'
 import users from '../users.js'
+import bookingModal from '../components/BookingModal.vue'
 
 const usersData = reactive(users)
 const filteredUsers = ref([])
@@ -66,6 +68,7 @@ const toggled = ref(false)
 const experiences = ref(['Personal Trainer', 'Yoga Instructor', 'Zumba Instructor', 'Spinning Instructor', 'Bodybuilding Coach'])
 const selectedExperiences = ref([])
 const isFavorite = ref(false)
+const open = ref(false)
 
 const usersToShow = computed(() => {
   return filteredUsers.value.length > 0 ? filteredUsers.value : usersData;
@@ -91,6 +94,10 @@ const clearFilter = () => {
 const filterExperiences = (experience) => {
   selectedExperiences.value  = Object.keys(toggle.value).filter(key => toggle.value[key] === 'yes');
   filteredUsers.value = usersData.filter((user) => selectedExperiences.value.includes(user.title))
+}
+
+const toggleModal = () => {
+  open.value =!open.value
 }
 
 </script>
