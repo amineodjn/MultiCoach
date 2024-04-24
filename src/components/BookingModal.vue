@@ -1,53 +1,91 @@
 <template>
+
 <!-- Main modal -->
-<div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
-:class="{ 'hidden': !open }" 
-class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0  bg-black bg-opacity-50 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-2xl max-h-full">
-        <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="ms-auto text-2xl font-bold text-gray-900 dark:text-white">
-                    {{ month }} {{ year }}
-                </h3>
-                <button @click="closeModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="static-modal">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Close modal</span>
-                </button>
-            </div>
-            <!-- Modal body -->
-            <div class="p-4 md:p-5 space-y-4">
-              <date-carousel />
-                <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    With less than a month to go before the European Union enacts new consumer privacy laws for its citizens, companies around the world are updating their terms of service agreements to comply.
-                </p>
-                <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant to ensure a common set of data rights in the European Union. It requires organizations to notify users as soon as possible of high-risk data breaches that could personally affect them.
-                </p>
-            </div>
-            <!-- Modal footer -->
-            <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button data-modal-hide="static-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
-                <button data-modal-hide="static-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
-            </div>
+
+<div id="timepicker-modal" tabindex="-1" aria-hidden="true" 
+  :class="{ 'hidden': !open }" 
+  class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0  bg-black bg-opacity-50 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative p-4 w-full max-w-[23rem] max-h-full">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+        <!-- Modal header -->
+      <div class="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            Schedule an appointment
+        </h3>
+        <button id="close-modal" type="button" 
+          @click="closeModal"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="timepicker-modal">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="p-4 pt-0">
+        <div id="date-picker" datepicker-buttons inline-datepicker datepicker-autoselect-today class="mx-auto sm:mx-0 flex justify-center my-5 [&>div>div]:shadow-none [&>div>div]:bg-gray-50 [&_div>button]:bg-gray-50"></div>
+        <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
+        Pick your time
+        </label>
+        <ul id="timetable" class="grid w-full grid-cols-3 gap-2 mb-5">
+          <li v-for="time in times" :key="time.id">
+            <input type="radio" :id="time.id" value="" class="hidden peer" name="timetable">
+            <label :for="time.id"
+              class="inline-flex items-center justify-center w-full px-2 py-1 text-sm font-medium text-center hover:text-gray-900 dark:hover:text-white               bg-white dark:bg-gray-800 border rounded-lg cursor-pointer text-gray-500 border-gray-200 dark:border-gray-700               dark:peer-checked:border-indigo-500 peer-checked:border-indigo-700 dark:hover:border-gray-600 dark:peer-checked:text-indigo-500               peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-600 dark:peer-checked:bg-indigo-900">
+              {{ time.label }}
+            </label>
+          </li>
+        </ul>
+        <div class="grid grid-cols-2 gap-2">
+            <button type="button" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Save</button>
+            <button type="button" @click="closeModal" data-modal-hide="timepicker-modal" class="py-2.5 px-5 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Discard</button>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 </template>
 <script setup>
-import { ref, defineEmits } from 'vue';
-import * as dateCarousel from 'date-carousel'
-const DateCarousel = dateCarousel.DateCarousel
+import { ref, defineEmits, onMounted } from 'vue';
+import Datepicker from 'flowbite-datepicker/Datepicker';
 
 const props = defineProps({
   open: {
     type: Boolean,
     default: false
   },
+  startHour: {
+    type: Number,
+    default: 6
+  },
+  endHour: {
+    type: Number,
+    default: 22
+  },
 })
+
+const times = ref([]);
+for (let i = props.startHour; i <= props.endHour; i++) {
+  let hour = i;
+  let period = 'AM';
+  if (i > 12) {
+    hour = i - 12;
+    period = 'PM';
+  }
+  times.value.push({ id: `${i}-am`, label: `${hour}:00 ${period}` });
+}
+
+// initialize components based on data attribute selectors
+onMounted(() => {
+    const $Datepicker = document.querySelector('#date-picker')
+
+    if ($Datepicker) {
+        const datePicker = new Datepicker($Datepicker);
+    }
+})
+
+
 
 const emit = defineEmits(['update'])
 

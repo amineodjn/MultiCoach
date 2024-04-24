@@ -46,7 +46,7 @@
       <div class="w-full md:w-1/2 h-screen">
         <GoogleMap api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
       </div>
-      <bookingModal :open="open" @update="open =!open"/>
+      <bookingModal :open="open" @update="open =!open" :startHour="6" :endHour="21" />
   </div>
   </body>
 
