@@ -24,21 +24,25 @@
       </div>
       <!-- Modal body -->
       <div class="p-4 pt-0">
-        <div id="date-picker" datepicker-buttons inline-datepicker datepicker-autoselect-today class="mx-auto sm:mx-0 flex justify-center my-5 [&>div>div]:shadow-none [&>div>div]:bg-gray-50 [&_div>button]:bg-gray-50"></div>
+        <div id="date-picker" :data-date="date" class="mx-auto sm:mx-0 flex justify-center my-5 [&>div>div]:shadow-none [&>div>div]:bg-gray-50 [&_div>button]:bg-gray-50"></div>
         <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
         Pick your time
         </label>
         <ul id="timetable" class="grid w-full grid-cols-3 gap-2 mb-5">
           <li v-for="time in times" :key="time.id">
-            <input type="radio" :id="time.id" value="" class="hidden peer" name="timetable">
+            <input type="radio"  :id="time.id" v-model="selectedTime" :value="time.label" class="hidden peer" name="timetable">
             <label :for="time.id"
-              class="inline-flex items-center justify-center w-full px-2 py-1 text-sm font-medium text-center hover:text-gray-900 dark:hover:text-white               bg-white dark:bg-gray-800 border rounded-lg cursor-pointer text-gray-500 border-gray-200 dark:border-gray-700               dark:peer-checked:border-indigo-500 peer-checked:border-indigo-700 dark:hover:border-gray-600 dark:peer-checked:text-indigo-500               peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-600 dark:peer-checked:bg-indigo-900">
+              class="inline-flex items-center justify-center w-full px-2 py-1 text-sm font-medium text-center hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-800 border rounded-lg cursor-pointer text-gray-500 border-gray-200 dark:border-gray-700 dark:peer-checked:border-indigo-500 peer-checked:border-indigo-700 dark:hover:border-gray-600 dark:peer-checked:text-indigo-500               peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-600 dark:peer-checked:bg-indigo-900">
               {{ time.label }}
             </label>
           </li>
         </ul>
         <div class="grid grid-cols-2 gap-2">
-            <button type="button" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800">Save</button>
+            <button 
+              type="button" 
+              class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
+              @click="saveBooking"
+              >Save</button>
             <button type="button" @click="closeModal" data-modal-hide="timepicker-modal" class="py-2.5 px-5 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Discard</button>
         </div>
       </div>
@@ -49,7 +53,10 @@
 <script setup>
 import { ref, defineEmits, onMounted } from 'vue';
 import Datepicker from 'flowbite-datepicker/Datepicker';
+const date = new Date();
 
+const selectedTime = ref(null);
+const selectedDate = ref(null);
 const props = defineProps({
   open: {
     type: Boolean,
@@ -81,20 +88,36 @@ onMounted(() => {
     const $Datepicker = document.querySelector('#date-picker')
 
     if ($Datepicker) {
-        const datePicker = new Datepicker($Datepicker);
+      selectedDate.value = new Datepicker($Datepicker);
     }
 })
 
-
-
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'selectedDate'])
 
 const closeModal = () => {
   emit('update', false)
 }
 
-const date = new Date();
-const year = date.getFullYear();
-const day = date.getDate();
-const month = date.toLocaleString('default', { month: 'long' });
+const saveBooking = () => {
+  const timestamp = selectedDate.value.dates[0];
+  const date = new Date(timestamp);
+
+  const time = selectedTime.value; 
+  const [hourStr, minuteStr] = time.split(':');
+  const period = minuteStr.slice(-2);
+  let hour = parseInt(hourStr);
+  const minute = parseInt(minuteStr);
+
+  // Convert to 24-hour format
+  if (period === 'PM' && hour !== 12) {
+    hour += 12;
+  } else if (period === 'AM' && hour === 12) {
+    hour = 0;
+  }
+
+  date.setHours(hour);
+  date.setMinutes(minute);
+
+  emit('selectedDate', date)
+}
 </script>
