@@ -118,6 +118,7 @@ onMounted(() => {
 
 
 const HandleLogout = () => {
+  localStorage.clear();
   signOut(auth).then(() => {
     isLoggedIn.value = false;
     localStorage.clear();

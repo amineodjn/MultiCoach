@@ -37,6 +37,7 @@
             </label>
           </li>
         </ul>
+        <p v-if="showError" id="filled_error_help" class="mb-2 text-xs text-red-600 dark:text-red-400"><span class="font-medium">Oh, snapp!</span> please select the date and time.</p>
         <div class="grid grid-cols-2 gap-2">
             <button 
               type="button" 
@@ -53,6 +54,10 @@
 <script setup>
 import { ref, defineEmits, onMounted } from 'vue';
 import Datepicker from 'flowbite-datepicker/Datepicker';
+import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { useRouter } from 'vue-router';
+
+
 const date = new Date();
 
 const selectedTime = ref(null);
@@ -96,28 +101,52 @@ const emit = defineEmits(['update', 'selectedDate'])
 
 const closeModal = () => {
   emit('update', false)
+  emit('selectedDate', null)
+  selectedTime.value = null;
 }
 
+const showError = ref(false);
+const router = useRouter();
+
+
 const saveBooking = () => {
-  const timestamp = selectedDate.value.dates[0];
-  const date = new Date(timestamp);
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in, proceed with booking
+      if (!selectedDate.value || !selectedTime.value) {
+        console.log('Date or time not selected');
+        return;
+      }
 
-  const time = selectedTime.value; 
-  const [hourStr, minuteStr] = time.split(':');
-  const period = minuteStr.slice(-2);
-  let hour = parseInt(hourStr);
-  const minute = parseInt(minuteStr);
+      const timestamp = selectedDate.value.dates[0];
+      const date = new Date(timestamp);
 
-  // Convert to 24-hour format
-  if (period === 'PM' && hour !== 12) {
-    hour += 12;
-  } else if (period === 'AM' && hour === 12) {
-    hour = 0;
-  }
+      const time = selectedTime.value; 
+      const [hourStr, minuteStr] = time.split(':');
+      const period = minuteStr.slice(-2);
+      let hour = parseInt(hourStr);
+      const minute = parseInt(minuteStr);
 
-  date.setHours(hour);
-  date.setMinutes(minute);
+      // Convert to 24-hour format
+      if (period === 'PM' && hour !== 12) {
+        hour += 12;
+      } else if (period === 'AM' && hour === 12) {
+        hour = 0;
+      }
 
-  emit('selectedDate', date)
+      date.setHours(hour);
+      date.setMinutes(minute);
+
+      emit('selectedDate', date)
+    } else {
+      // No user is signed in, handle accordingly
+      console.log('User is not signed in');
+
+      // Store the selected date and time in localStorage
+      localStorage.setItem('selectedDateandTime', date);
+      router.push('/sign-in');
+    }
+  });
 }
 </script>
