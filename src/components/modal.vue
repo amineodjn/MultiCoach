@@ -1,15 +1,4 @@
 <template>
-<!-- Modal toggle -->
-<!-- <button 
-data-modal-target="select-modal" 
-data-modal-toggle="select-modal" 
-class="block text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800" 
-type="button"
-@click="toggleModal"
->
-  Toggle modal
-</button> -->
-
 <!-- Main modal -->
 <div id="select-modal" tabindex="-1" aria-hidden="true" 
 :class="{ 'hidden': !open }"
@@ -41,7 +30,6 @@ class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex ju
                                   <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v5m-3 0h6M4 11h16M5 15h14a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1Z"/>
                                   </svg>
-
                                   Register as a coach
                                 </div>
                             </div>
@@ -56,7 +44,8 @@ class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex ju
                                   <svg class="w-6 h-6 m-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4H1m3 4H1m3 4H1m3 4H1m6.071.286a3.429 3.429 0 1 1 6.858 0M4 1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1Zm9 6.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"/>
                                   </svg>
-                                  Register as a candidate</div>
+                                  Register as a candidate
+                                </div>
                             </div>
                             <svg class="w-4 h-4 ms-3 rtl:rotate-180 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/></svg>
                         </label>

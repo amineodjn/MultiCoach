@@ -47,6 +47,7 @@
         <GoogleMap api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
       </div>
       <bookingModal :open="open" @update="open =!open" :startHour="6" :endHour="21" @selectedDate="selectedDate" />
+      <successModal :open="openModal" @update="openModal =!openModal" />
   </div>
   </body>
 
@@ -59,6 +60,7 @@ import { GoogleMap } from 'vue3-google-map';
 import card from '../components/card.vue'
 import users from '../users.js'
 import bookingModal from '../components/BookingModal.vue'
+import successModal from '../components/successModal.vue';
 
 const usersData = reactive(users)
 const filteredUsers = ref([])
@@ -69,6 +71,7 @@ const experiences = ref(['Personal Trainer', 'Yoga Instructor', 'Zumba Instructo
 const selectedExperiences = ref([])
 const isFavorite = ref(false)
 const open = ref(false)
+const openModal = ref(false)
 
 const usersToShow = computed(() => {
   return filteredUsers.value.length > 0 ? filteredUsers.value : usersData;
@@ -100,8 +103,17 @@ const toggleModal = () => {
   open.value =!open.value
 }
 
+const isValidDate = (d) => {
+  return d instanceof Date && !isNaN(d.getTime());
+}
+
 const selectedDate = (date) => {
-  console.log(date);
+  if (date === null) {
+    open.value = false;
+  } else if (isValidDate(date)) {
+    open.value = false;
+    openModal.value =!openModal.value
+  }
 }
 
 </script>

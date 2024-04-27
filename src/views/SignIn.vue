@@ -72,7 +72,14 @@ const register = () => {
     console.log("Successfully signed in!");
     store.setDocId(auth.currentUser.uid);
     localStorage.setItem('uid', auth.currentUser.uid); // Store uid in localStorage
-    router.push('/feed')
+    router.push('/')
+    // Check if selectedDateandTime exists in localStorage
+    const selectedDateandTime = localStorage.getItem('selectedDateandTime');
+    if (selectedDateandTime) {
+      console.log('Selected date and time:', selectedDateandTime);
+    } else {
+      console.log('No selected date and time');
+    }
   })
   .catch((error) => {
     console.log(error.code);

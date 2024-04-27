@@ -115,7 +115,7 @@ const saveBooking = () => {
     if (user) {
       // User is signed in, proceed with booking
       if (!selectedDate.value || !selectedTime.value) {
-        console.log('Date or time not selected');
+        showError.value = true;
         return;
       }
 
