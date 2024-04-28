@@ -70,7 +70,11 @@ const register = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
   .then((data) => {
     console.log("Successfully signed in!");
+    console.log(store.getUserType(auth.currentUser.uid));
+    console.log(store.setDocId(auth.currentUser.uid));
+    console.log(auth.currentUser.uid);
     store.setDocId(auth.currentUser.uid);
+    store.getUserType(auth.currentUser.uid);
     localStorage.setItem('uid', auth.currentUser.uid); // Store uid in localStorage
     router.push('/')
     // Check if selectedDateandTime exists in localStorage

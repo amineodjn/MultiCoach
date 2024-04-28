@@ -108,7 +108,7 @@ import sidebar from '../components/sidebar.vue';
 
 const store = useStore();
 const userId = computed(() => store.docId);
-const docRef = doc(db, "users", userId.value);
+const docRef = doc(db, "coaches", userId.value);
 
 const firstName = ref('');
 const lastName = ref('');
@@ -148,7 +148,7 @@ const fetchUser = async () => {
     return;
   }
 
-  const docRef = doc(db, "users", userId.value);
+  const docRef = doc(db, "coaches", userId.value);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     firstName.value = docSnap.data().firstName;
@@ -210,7 +210,7 @@ const uploadImage = async (event) => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           imageUrl.value = downloadURL;
           // Update user document with the download URL
-          const docRef = doc(db, 'users', user.uid);
+          const docRef = doc(db, 'coaches', user.uid);
           updateDoc(docRef, { profilePicture: downloadURL });
         });
       }

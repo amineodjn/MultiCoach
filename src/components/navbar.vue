@@ -27,10 +27,10 @@
     >
       <div class="flex flex-col gap-y-4 gap-x-0 mt-5 md:flex-row md:items-center md:justify-end md:gap-y-0 md:gap-x-7 md:mt-0 md:ps-7">
         <router-link to="/" class="font-medium text-indigo-600 md:py-6 dark:text-indigo-500" href="#" aria-current="page">Home</router-link>
-        <router-link to="coach-profile" class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Account</router-link>
+        <router-link :to="route" @click="openProfile" class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Account</router-link>
         <a class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Work</a>
         <a class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Blog</a>
-        <router-link to="/register"  
+        <router-link to="/register-user"  
         href="#"
         :class="[{ 'font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500' : navbarCollapse}, { 'py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-blue-600 text-blue-600 hover:border-blue-500 hover:text-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-blue-500 dark:text-blue-500 dark:hover:text-blue-400 dark:hover:border-blue-400' : !navbarCollapse}]"
         @click="toggleModal"
@@ -92,22 +92,35 @@
 
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import modal from '../components/modal.vue'
+import { getDoc, doc } from 'firebase/firestore';
+import { db } from '../main.js';
+import { useStore } from '../store/store.js';
 
+const store = useStore();
 const isLoggedIn = ref(false);
 const router = useRouter();
 const navbarCollapse = ref(false);
 const open = ref(false);
 
+
 let auth;
-onMounted(() => {
+
+watch(() => store.route, (newRoute) => {
+  route.value = newRoute;
+});
+
+
+onMounted( () => {
+  console.log(store.route);
  auth = getAuth();
  onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in.
+    console.log(user);
     isLoggedIn.value = true;
   } else {
     // No user is signed in.
@@ -115,6 +128,8 @@ onMounted(() => {
   }
  });
 });
+
+const route = ref('');
 
 
 const HandleLogout = () => {
@@ -126,12 +141,16 @@ const HandleLogout = () => {
   });
 }
 
+
 const collapse = () => {
-  
   navbarCollapse.value = !navbarCollapse.value
 }
 
 const toggleModal = () => {
   open.value =!open.value;
+}
+
+const openProfile = () => {
+  router.push(`/${route.value}`)
 }
 </script>

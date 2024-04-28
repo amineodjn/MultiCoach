@@ -11,9 +11,14 @@ const router = createRouter({
       component: () => import('../views/Home.vue'),
     },
     {
-      path: '/register',
+      path: '/register-user',
       name: 'register',
       component: () => import('../views/Register.vue'),
+    },
+    {
+      path: '/register-coach',
+      name: 'register-coach',
+      component: () => import('../views/RegisterCoach.vue'),
     },
     {
       path: '/sign-in',
@@ -37,6 +42,14 @@ const router = createRouter({
       path: '/coach-profile',
       name: 'coachProfile',
       component: () => import('../views/coachProfile.vue'),
+      meta: {
+        requiresAuth: true,
+      }
+    },
+    {
+      path: '/user-profile',
+      name: 'userProfile',
+      component: () => import('../views/userProfile.vue'),
       meta: {
         requiresAuth: true,
       }
