@@ -61,7 +61,9 @@ import card from '../components/card.vue'
 import users from '../users.js'
 import bookingModal from '../components/BookingModal.vue'
 import successModal from '../components/successModal.vue';
+import { useStore } from '../store/store';
 
+const store = useStore();
 const usersData = reactive(users)
 const filteredUsers = ref([])
 const center = ref({ lat: 52.00, lng: 20.00 })
@@ -110,7 +112,7 @@ const isValidDate = (d) => {
 const selectedDate = (date) => {
   if (date === null) {
     open.value = false;
-  } else if (isValidDate(date)) {
+  } else if (isValidDate(date) && store.docId) {
     open.value = false;
     openModal.value =!openModal.value
   }

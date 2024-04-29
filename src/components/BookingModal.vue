@@ -56,10 +56,11 @@ import { ref, defineEmits, onMounted } from 'vue';
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { useRouter } from 'vue-router';
+import { useStore } from '../store/store.js';
 
 
 const date = new Date();
-
+const store = useStore();
 const selectedTime = ref(null);
 const selectedDate = ref(null);
 const props = defineProps({

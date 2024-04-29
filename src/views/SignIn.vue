@@ -53,10 +53,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, defineEmits } from 'vue';
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 import { useStore } from '../store/store.js';
+import { db } from '../main.js';
+import { doc, setDoc } from 'firebase/firestore';
 
 const store = useStore();
 
@@ -64,29 +66,32 @@ const email = ref('');
 const password = ref('');
 const router = useRouter();
 const errMsg = ref('');
+const emit = defineEmits(['selectedTime']);
 
-const register = () => {
+const register =   () => {
   const auth = getAuth();
   signInWithEmailAndPassword(auth, email.value, password.value)
-  .then((data) => {
+  .then(async (data) => {
     console.log("Successfully signed in!");
-    console.log(store.getUserType(auth.currentUser.uid));
-    console.log(store.setDocId(auth.currentUser.uid));
-    console.log(auth.currentUser.uid);
     store.setDocId(auth.currentUser.uid);
     store.getUserType(auth.currentUser.uid);
     localStorage.setItem('uid', auth.currentUser.uid); // Store uid in localStorage
-    router.push('/')
+    
     // Check if selectedDateandTime exists in localStorage
     const selectedDateandTime = localStorage.getItem('selectedDateandTime');
-    if (selectedDateandTime) {
-      console.log('Selected date and time:', selectedDateandTime);
-    } else {
+    router.push('/')
+    const userRef = await doc(db, 'users', auth.currentUser.uid);
+    console.log(selectedDateandTime);
+    if (selectedDateandTime && auth.currentUser.uid) {
+    console.log(userRef);
+     setDoc(userRef, { bookedEvents: [{ bookingTime: selectedDateandTime }] }, { merge: true });
+  }else {
       console.log('No selected date and time');
     }
+    
   })
   .catch((error) => {
-    console.log(error.code);
+    console.log(error.message);
     switch (error.code) {
       case "auth/invalid-email":
         errMsg.value = "Invalid email";
