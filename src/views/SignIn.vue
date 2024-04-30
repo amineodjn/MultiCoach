@@ -81,9 +81,7 @@ const register =   () => {
     const selectedDateandTime = localStorage.getItem('selectedDateandTime');
     router.push('/')
     const userRef = await doc(db, 'users', auth.currentUser.uid);
-    console.log(selectedDateandTime);
     if (selectedDateandTime && auth.currentUser.uid) {
-    console.log(userRef);
      setDoc(userRef, { bookedEvents: [{ bookingTime: selectedDateandTime }] }, { merge: true });
   }else {
       console.log('No selected date and time');

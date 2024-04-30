@@ -80,7 +80,6 @@ const closeModal = () => {
 
 const coachRegister = () => {
   emit('update', false)
-  console.log(emit('update', false));
   router.push('/register-coach');
   closeModal();
 }

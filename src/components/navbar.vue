@@ -116,14 +116,12 @@ watch(() => store.route, (newRoute) => {
 
 
 onMounted( () => {
-  console.log(store.route);
  auth = getAuth();
  onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in.
     isLoggedIn.value = true;
     if(store.docId) {
-    console.log(store.docId);
     }
   } else {
     // No user is signed in.
