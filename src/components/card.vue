@@ -6,7 +6,7 @@
       </div>
       <div class="sm:mx-4 sm:mt-0">
         <h1 class="text-xl font-medium  text-gray-700 capitalize dark:text-white">{{ user.firstName + ' ' + user.lastName }}</h1>
-        <p class="mt-2 text-gray-500 capitalize dark:text-gray-300">{{ user.title }}</p>
+        <p class="mt-2 text-gray-500 capitalize dark:text-gray-300">{{ user.profession }}</p>
         <div class="flex mt-2">
           <a class="flex mr-2 text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-300 " aria-label="gym">
             <svg class="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

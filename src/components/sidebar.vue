@@ -12,7 +12,7 @@
     <div  class="mb-4 flex flex-col items-center">
       <img class="w-20 h-20 rounded mx-auto mb-4" src="../assets/IMG_3577-modified.png" alt="Large avatar">
       <h3 class="text-xl font-bold dark:text-white text-center tracking-wide"><a href="#">{{ firstName }} {{ lastName }}</a></h3>
-      <span class="text-sm text-gray-500 dark:text-gray-400">Personal Trainer</span>
+      <span class="text-sm text-gray-500 dark:text-gray-400">{{ profession }}</span>
     </div>
       <ul class="space-y-2">
           <li>
@@ -188,6 +188,7 @@ const userId = computed(() => store.docId);
 
 const firstName = ref('');
 const lastName = ref('');
+const profession = ref('');
 
 const fetchUser = async () => {
   if (!userId.value) {
@@ -195,12 +196,12 @@ const fetchUser = async () => {
     return;
   }
 
-  const docRef = doc(db, "users", userId.value);
+  const docRef = doc(db, "coaches", userId.value);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     firstName.value = docSnap.data().firstName;
     lastName.value = docSnap.data().lastName;
-
+    profession.value = docSnap.data().profession;
   } else {
     console.log('No such document!');
   }

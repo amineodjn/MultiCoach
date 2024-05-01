@@ -13,7 +13,6 @@ export const useStore = defineStore({
   actions: {
     setDocId(id) {
       this.docId = id;
-      console.log(this.docId);
       localStorage.setItem('uid', id);
     },
     setUserRole(id) {
@@ -24,11 +23,9 @@ export const useStore = defineStore({
       const coachDoc = await getDoc(doc(db, 'coaches', this.docId));
 
       if (userDoc.exists()) {
-        console.log( this.route);
         this.route = 'user-profile';
         return 'user-profile';
       } else if (coachDoc.exists()) {
-        console.log(this.route);
         this.route = 'coach-profile';
         return 'coach-profile';
       } else {

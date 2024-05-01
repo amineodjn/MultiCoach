@@ -86,8 +86,6 @@ import { setDoc, doc} from 'firebase/firestore';
 import { useStore } from '../store/store.js';
 import { useRouter } from 'vue-router';
 
-
-
 const firstName = ref('');
 const lastName = ref('');
 const email = ref('');
@@ -97,13 +95,13 @@ const wrongPwd = ref(false);
 const router = useRouter();
 const store = useStore();
 
-
 const createUser = async (uid) => {
   // Get a document reference with the user's uid
   const docRef = doc(db, "coaches", uid);
 
   // Data to set
   const dataObj = {
+    uid:uid,
     firstName: firstName.value,
     lastName: lastName.value,
     email: email.value,

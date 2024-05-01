@@ -1,64 +1,89 @@
-<template>
-<toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
+<template v-show="success">
+<toast  @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
   <section class="bg-white dark:bg-gray-900">
     <sidebar />
     <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
         <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit your profile</h2>
         <form @submit.prevent="updateUser">
     <div class="grid gap-6 mb-6 md:grid-cols-2">
-        <div>
-            <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First name</label>
-            <input 
-            v-model="firstName"
-            type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="John" required />
-        </div>
-        <div>
-            <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Last name</label>
-            <input 
-            v-model="lastName"
-            type="text" id="last_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Doe" required />
-        </div>
-        <div>
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-    <input 
-    v-model="email" type="email" id="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your email" required />
-        </div>
-        <div>
-          <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-          <input 
-          v-model="password"
-          type="text" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Password" required />
-        </div>
-        <div>
-          <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
-          <input 
-          v-model="city"
-          type="text" id="city" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Poznań" required />
-        </div>   
+        <inputValidation :Modelval="firstName" 
+        title="First name" 
+        :error-message="firstNameError" 
+        placeholder="John"
+        @input="firstName = $event.target.value"
+        :showError="hasEmptyFields"
+        ></inputValidation>
+        <inputValidation 
+          :Modelval="lastName" 
+          title="Last name" 
+          :error-message="lastNameError" 
+          placeholder="Doe"
+          @input="lastName = $event.target.value"
+        ></inputValidation>
 
-        <div>
-            <label for="website" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Website url (optional)</label>
-            <input 
-            v-model="websiteUrl"
-            type="url" id="website" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Multicoach.com" />
-        </div>
-        <div>
-          <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone number</label>
-          <input 
-          v-model="phoneNumber"
-          type="tel" id="phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="xxx-xxx-xxx" pattern="[1-9]{1}[0-9]{2}\s[0-9]{3}\s[0-9]{3}" required />
-        </div>
-        <div>
-            <label for="gym" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gym</label>
-            <input 
-            v-model="gym"
-            type="text" id="gym" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Gym world, can be?" required />
-        </div>
-        <div>
-          <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-          <input 
-          v-model="price" type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-primary-500" placeholder="399 PLN" required="">
-        </div>
+        <inputValidation 
+          :Modelval="email" 
+          title="Your email" 
+          :error-message="emailError" 
+          placeholder="Enter your email"
+          @input="email = $event.target.value"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="password" 
+          title="Password" 
+          :error-message="passwordError" 
+          placeholder="Password"
+          @input="password = $event.target.value"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="profession" 
+          title="Profession" 
+          :error-message="professionError" 
+          placeholder="Personal Trainer"
+          @input="profession = $event.target.value"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="city" 
+          title="City" 
+          :error-message="cityError" 
+          placeholder="Poznań"
+          @input="city = $event.target.value"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="websiteUrl" 
+          title="Website url (optional)" 
+          :error-message="websiteUrlError" 
+          placeholder="Multicoach.com"
+          @input="websiteUrl = $event.target.value"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="phoneNumber" 
+          title="Phone number" 
+          :error-message="phoneNumberError" 
+          placeholder="xxx-xxx-xxx"
+          @input="phoneNumber = $event.target.value"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="gym" 
+          title="Gym" 
+          :error-message="gymError" 
+          placeholder="Gym world, can be?"
+          @input="gym = $event.target.value"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="price" 
+          title="Price" 
+          :error-message="priceError" 
+          placeholder="399 PLN"
+          @input="price = $event.target.value"
+        ></inputValidation>
     </div>
     <div class="sm:col-span-2  mb-6">
         <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
@@ -103,6 +128,7 @@ import { getAuth } from 'firebase/auth';
 import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
 import toast from '../components/toast.vue';
 import sidebar from '../components/sidebar.vue';
+import inputValidation from '../components/inputValidation.vue';
 
 
 
@@ -121,13 +147,40 @@ const price = ref('');
 const description = ref('');
 const password = ref('');
 const success = ref(false);
+const profession = ref('');
+const hasEmptyFields = ref(false);
+const showError = ref(false);
+
+//Helper function
+function createErrorComputed(field, message) {
+  return computed(() => {
+    if (field.value === '' || showError.value) {
+      return message;
+    }
+    return '';
+  });
+}
+//Error messages 
+const firstNameError = createErrorComputed(firstName, 'Please enter your first name');
+const lastNameError = createErrorComputed(lastName, 'Please enter your last name');
+const emailError = createErrorComputed(email, 'Please enter your email');
+const cityError = createErrorComputed(city, 'Please enter your city');
+const websiteUrlError = createErrorComputed(websiteUrl, 'Please enter your website url');
+const phoneNumberError = createErrorComputed(phoneNumber, 'Please enter your phone number');
+const gymError = createErrorComputed(gym, 'Please enter your gym');
+const priceError = createErrorComputed(price, 'Please enter your price');
+const descriptionError = createErrorComputed(description, 'Please enter your description');
+const professionError = createErrorComputed(profession, 'Please enter your profession');
+const passwordError = createErrorComputed(password, 'Please enter your password');
+
 // Function to update user data in Firestore
 async function updateUser() {
   const dataObj = {
-    firstName: firstName.value,
+    firstName: firstName.value ,
     lastName: lastName.value,
     email: email.value,
     password: password.value,
+    profession: profession.value,
     city: city.value,
     websiteUrl: websiteUrl.value,
     phoneNumber: phoneNumber.value,
@@ -135,10 +188,22 @@ async function updateUser() {
     price: price.value,
     description: description.value,  
   }
-    // Update the fields based on your reactive properties
+  const EmptyFields = Object.values(dataObj).filter(field => 
+  {console.log(field);
+    return field === undefined || field === '';
+  });
+  console.log(EmptyFields, 'EmptyFields');
+  hasEmptyFields.value = EmptyFields.length > 0;
+  showError.value = hasEmptyFields.value;
+  console.log(showError.value, 'showError');
+  if (!hasEmptyFields.value) {
     await updateDoc(docRef, dataObj);
     success.value = true;
     console.log('User data updated successfully!');
+  }
+  console.log(hasEmptyFields.value, ' hasEmpty');
+    // Update the fields based on your reactive properties
+    
 }
 
 // Fetch user data from Firestore
@@ -154,6 +219,7 @@ const fetchUser = async () => {
     firstName.value = docSnap.data().firstName;
     lastName.value = docSnap.data().lastName;
     email.value = docSnap.data().email;
+    profession.value = docSnap.data().profession;
     city.value = docSnap.data().city;
     websiteUrl.value = docSnap.data().websiteUrl;
     phoneNumber.value = docSnap.data().phoneNumber;
@@ -161,8 +227,8 @@ const fetchUser = async () => {
     price.value = docSnap.data().price;
     description.value = docSnap.data().description;
     password.value = docSnap.data().password;
-
   } else {
+    success.value = false;
     console.log('No such document!');
   }
 };
@@ -221,7 +287,7 @@ const uploadImage = async (event) => {
 //Toast 
 const resetSuccess = (event) => {
   if (event.animationName.includes('slideOutRight')) {
-      success.value = false;
+    success.value = false;
   }
 };
 </script>

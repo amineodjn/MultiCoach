@@ -86,8 +86,6 @@ import { setDoc, doc} from 'firebase/firestore';
 import { useStore } from '../store/store.js';
 import { useRouter } from 'vue-router';
 
-
-
 const firstName = ref('');
 const lastName = ref('');
 const email = ref('');
@@ -104,6 +102,7 @@ const createUser = async (uid) => {
 
   // Data to set
   const dataObj = {
+    uid:uid,
     firstName: firstName.value,
     lastName: lastName.value,
     email: email.value,

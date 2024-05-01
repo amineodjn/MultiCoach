@@ -34,7 +34,7 @@
             </div>
         </div>
         </div>
-        <div v-for="user in usersToShow" :key="user.id">
+        <div v-for="user in usersData" :key="user.uid">
           <card 
             :user="user" 
             class="mt-2"
@@ -62,9 +62,11 @@ import users from '../users.js'
 import bookingModal from '../components/BookingModal.vue'
 import successModal from '../components/successModal.vue';
 import { useStore } from '../store/store';
+import { db } from '../main.js';
+import { collection, getDocs } from 'firebase/firestore';
 
 const store = useStore();
-const usersData = reactive(users)
+const usersData = ref()
 const filteredUsers = ref([])
 const center = ref({ lat: 52.00, lng: 20.00 })
 const toggle = ref({})
@@ -74,6 +76,14 @@ const selectedExperiences = ref([])
 const isFavorite = ref(false)
 const open = ref(false)
 const openModal = ref(false)
+const bookedUser = ref('')
+
+const getUsers = async () => {
+  const usersCollection = collection(db, 'coaches');
+  const userSnapshot = await getDocs(usersCollection);
+  const userList = userSnapshot.docs.map(doc => doc.data());
+  return userList;
+};
 
 const usersToShow = computed(() => {
   return filteredUsers.value.length > 0 ? filteredUsers.value : usersData;
@@ -101,7 +111,8 @@ const filterExperiences = (experience) => {
   filteredUsers.value = usersData.filter((user) => selectedExperiences.value.includes(user.title))
 }
 
-const toggleModal = () => {
+const toggleModal = (id) => {
+  bookedUser.value = id
   open.value =!open.value
 }
 
@@ -117,6 +128,10 @@ const selectedDate = (date) => {
     openModal.value =!openModal.value
   }
 }
+
+onMounted(async () => {
+  usersData.value = await getUsers();
+});
 
 </script>
 <style scoped> 
