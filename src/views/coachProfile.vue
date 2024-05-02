@@ -11,7 +11,7 @@
         :error-message="firstNameError" 
         placeholder="John"
         @input="firstName = $event.target.value"
-        :showError="hasEmptyFields"
+        :showError="showError.firstName"
         ></inputValidation>
         <inputValidation 
           :Modelval="lastName" 
@@ -19,6 +19,7 @@
           :error-message="lastNameError" 
           placeholder="Doe"
           @input="lastName = $event.target.value"
+          :showError="showError.lastName"
         ></inputValidation>
 
         <inputValidation 
@@ -27,6 +28,7 @@
           :error-message="emailError" 
           placeholder="Enter your email"
           @input="email = $event.target.value"
+          :showError="showError.email"
         ></inputValidation>
 
         <inputValidation 
@@ -35,6 +37,7 @@
           :error-message="passwordError" 
           placeholder="Password"
           @input="password = $event.target.value"
+          :showError="showError.password"
         ></inputValidation>
 
         <inputValidation 
@@ -43,6 +46,7 @@
           :error-message="professionError" 
           placeholder="Personal Trainer"
           @input="profession = $event.target.value"
+          :showError="showError.profession"
         ></inputValidation>
 
         <inputValidation 
@@ -51,6 +55,7 @@
           :error-message="cityError" 
           placeholder="Poznań"
           @input="city = $event.target.value"
+          :showError="showError.city"
         ></inputValidation>
 
         <inputValidation 
@@ -59,6 +64,7 @@
           :error-message="websiteUrlError" 
           placeholder="Multicoach.com"
           @input="websiteUrl = $event.target.value"
+          :showError="showError.websiteUrl"
         ></inputValidation>
 
         <inputValidation 
@@ -67,6 +73,7 @@
           :error-message="phoneNumberError" 
           placeholder="xxx-xxx-xxx"
           @input="phoneNumber = $event.target.value"
+          :showError="showError.phoneNumber"
         ></inputValidation>
 
         <inputValidation 
@@ -75,6 +82,7 @@
           :error-message="gymError" 
           placeholder="Gym world, can be?"
           @input="gym = $event.target.value"
+          :showError="showError.gym"
         ></inputValidation>
 
         <inputValidation 
@@ -83,15 +91,20 @@
           :error-message="priceError" 
           placeholder="399 PLN"
           @input="price = $event.target.value"
+          :showError="showError.price"
         ></inputValidation>
     </div>
-    <div class="sm:col-span-2  mb-6">
-        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-        <textarea 
-        v-model="description"
-        id="description" rows="8" 
-        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"></textarea>
+    <div>
+      <textArea
+    :Modelval="description"
+    title="Description" 
+    :error-message="descriptionError" 
+    placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"
+    @input="description = $event.target.value"
+    :showError="showError.description"
+    ></textArea>
     </div>
+    
     <div class="flex items-center justify-center w-full mb-6">
       <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
         <div class="flex flex-col items-center justify-center pt-5 pb-6">
@@ -119,7 +132,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, reactive } from 'vue';
 import { db } from '../main.js';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useStore } from '../store/store.js';
@@ -129,6 +142,7 @@ import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebas
 import toast from '../components/toast.vue';
 import sidebar from '../components/sidebar.vue';
 import inputValidation from '../components/inputValidation.vue';
+import textArea from '../components/textarea.vue';
 
 
 
@@ -149,7 +163,6 @@ const password = ref('');
 const success = ref(false);
 const profession = ref('');
 const hasEmptyFields = ref(false);
-const showError = ref(false);
 
 //Helper function
 function createErrorComputed(field, message) {
@@ -173,10 +186,24 @@ const descriptionError = createErrorComputed(description, 'Please enter your des
 const professionError = createErrorComputed(profession, 'Please enter your profession');
 const passwordError = createErrorComputed(password, 'Please enter your password');
 
+const showError = reactive({
+  firstName: false,
+  lastName: false,
+  email: false,
+  password: false,
+  profession: false,
+  city: false,
+  websiteUrl: false,
+  phoneNumber: false,
+  gym: false,
+  price: false,
+  description: false,
+});
+
 // Function to update user data in Firestore
 async function updateUser() {
   const dataObj = {
-    firstName: firstName.value ,
+    firstName: firstName.value,
     lastName: lastName.value,
     email: email.value,
     password: password.value,
@@ -188,20 +215,27 @@ async function updateUser() {
     price: price.value,
     description: description.value,  
   }
-  const EmptyFields = Object.values(dataObj).filter(field => 
-  {console.log(field);
-    return field === undefined || field === '';
+  // Reset showError
+  Object.keys(showError).forEach(key => {
+    showError[key] = false;
   });
-  console.log(EmptyFields, 'EmptyFields');
-  hasEmptyFields.value = EmptyFields.length > 0;
-  showError.value = hasEmptyFields.value;
-  console.log(showError.value, 'showError');
-  if (!hasEmptyFields.value) {
+
+  // Check for empty fields
+  Object.entries(dataObj).forEach(([key, value]) => {
+    if (value === undefined || value === '') {
+      showError[key] = true;
+    }
+  });
+
+  // Check if there are any errors
+  const hasErrors = Object.values(showError).some(value => value === true);
+  console.log(showError, 'showError');
+  if (!hasErrors) {
     await updateDoc(docRef, dataObj);
     success.value = true;
     console.log('User data updated successfully!');
   }
-  console.log(hasEmptyFields.value, ' hasEmpty');
+  console.log(hasErrors, ' hasEmpty');
     // Update the fields based on your reactive properties
     
 }
