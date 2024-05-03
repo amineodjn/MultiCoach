@@ -10,7 +10,7 @@
   
   <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
     <div  class="mb-4 flex flex-col items-center">
-      <img class="w-20 h-20 rounded mx-auto mb-4" src="../assets/IMG_3577-modified.png" alt="Large avatar">
+      <img class="w-20 h-20 rounded-full mx-auto mb-4 " :src="profilePicture" alt="Large avatar">
       <h3 class="text-xl font-bold dark:text-white text-center tracking-wide"><a href="#">{{ firstName }} {{ lastName }}</a></h3>
       <span class="text-sm text-gray-500 dark:text-gray-400">{{ profession }}</span>
     </div>
@@ -189,6 +189,7 @@ const userId = computed(() => store.docId);
 const firstName = ref('');
 const lastName = ref('');
 const profession = ref('');
+const profilePicture = ref('');
 
 const fetchUser = async () => {
   if (!userId.value) {
@@ -202,6 +203,7 @@ const fetchUser = async () => {
     firstName.value = docSnap.data().firstName;
     lastName.value = docSnap.data().lastName;
     profession.value = docSnap.data().profession;
+    profilePicture.value = docSnap.data().profilePicture;
   } else {
     console.log('No such document!');
   }

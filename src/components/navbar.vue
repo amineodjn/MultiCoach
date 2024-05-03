@@ -27,7 +27,7 @@
     >
       <div class="flex flex-col gap-y-4 gap-x-0 mt-5 md:flex-row md:items-center md:justify-end md:gap-y-0 md:gap-x-7 md:mt-0 md:ps-7">
         <router-link to="/" class="font-medium text-indigo-600 md:py-6 dark:text-indigo-500" href="#" aria-current="page">Home</router-link>
-        <router-link :to="route" @click="openProfile" class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Profile</router-link>
+        <router-link :to="route" @click="openProfile"  class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Profile</router-link>
         <a class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Work</a>
         <a class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Blog</a>
         <router-link to="/register-user"  
@@ -102,47 +102,71 @@ import { db } from '../main.js';
 import { useStore } from '../store/store.js';
 
 const store = useStore();
-const isLoggedIn = ref(false);
 const router = useRouter();
 const navbarCollapse = ref(false);
 const open = ref(false);
 
+const route = ref('');
+const isLoggedIn = ref(false);
+const isCoach = ref(false)
 
 let auth;
 
-watch(() => store.route, (newRoute) => {
-  route.value = newRoute;
-});
+// watch(() => store.route, (newRoute) => {
+//   route.value = newRoute;
+// });
 
 
-onMounted( () => {
- auth = getAuth();
- onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in.
-    isLoggedIn.value = true;
-    if(store.docId) {
-    }
-  } else {
-    // No user is signed in.
-    isLoggedIn.value = false;
-  }
- });
+// onMounted(async () => {
+//   auth = getAuth();
+//   onAuthStateChanged(auth, async (user) => {
+//     if (user) {
+//       console.log(user.uid);
+//       // User is signed in.
+//       isLoggedIn.value = true;
+//       try{
+//         const userDocRef = doc(db, 'users', user.uid);
+//         const coachDocRef = doc(db, 'coaches', user.uid);
 
-});
+//         const userDocSnap = await getDoc(userDocRef);
+//         const coachDocSnap = await getDoc(coachDocRef);
 
-const route = ref('');
+//         if (userDocSnap.exists() && !isCoach.value) {
+//           console.log('User is in users collection');
+//           store.user = user.uid;
+//           navigateAndStoreRoute('userProfile', user.uid);
+//         } else if (coachDocSnap.exists()) {
+//           console.log('User is in coaches collection');
+//           isCoach.value = true;
+//           store.coach = user.uid; 
+//           navigateAndStoreRoute('coachProfile', user.uid);
+//         } else {
+//           // Handle case when user is not in any collection
+//           console.log('User is not in any collection');
+//         }
 
+//       } catch (error) {
+//         console.log(error);
+//       }
+//     } else {
+//       // No user is signed in.
+//       isLoggedIn.value = false;
+//     }
+//   });
+// });
 
 const HandleLogout = () => {
   localStorage.clear();
   signOut(auth).then(() => {
     isLoggedIn.value = false;
     localStorage.clear();
+    store.docId = null;
+    store.user = null;
+    store.coach = null;
+    store.route = 'home';
     router.push('/');
   });
 }
-
 
 const collapse = () => {
   navbarCollapse.value = !navbarCollapse.value
@@ -150,14 +174,27 @@ const collapse = () => {
 
 const toggleModal = () => {
   open.value =!open.value;
-}
+};
 
-const openProfile = () => {
-  
-  if(route.value.length === 0) {
-    router.push('/sign-in');
-  } else {
-    router.push(`/${route.value}`)
+onMounted( async () => {
+  auth = getAuth();
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      console.log(user.uid);
+      isLoggedIn.value = true;
+      
+    } else {
+      isLoggedIn.value = false;
+    }
+  });
+});
+
+const openProfile = async () => {
+  if (isLoggedIn.value) {
+    const profileRoute = await store.getUserType();
+    router.push(`/${profileRoute}`);
+    route.value = profileRoute;
   }
 }
+
 </script>

@@ -8,7 +8,8 @@ export const useStore = defineStore({
     docId: localStorage.getItem('uid'),
     user: null,
     coach: null,
-    route: null, // add this to your state
+    route: null,
+    role: null // add this to your state
   }),
   actions: {
     setDocId(id) {
@@ -23,11 +24,12 @@ export const useStore = defineStore({
       const coachDoc = await getDoc(doc(db, 'coaches', this.docId));
 
       if (userDoc.exists()) {
-        this.route = 'user-profile';
-        return 'user-profile';
+        this.route = 'user-profile/' + this.docId;
+        this.user = this.docId;
+        return this.route;
       } else if (coachDoc.exists()) {
-        this.route = 'coach-profile';
-        return 'coach-profile';
+        this.route = 'coach-profile/' + this.docId
+        return this.route;
       } else {
         return null;
       }

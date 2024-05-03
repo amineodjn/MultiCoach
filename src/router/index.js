@@ -39,7 +39,7 @@ const router = createRouter({
       component: () => import('../views/ResetPwd.vue'),
     },
     {
-      path: '/coach-profile',
+      path: '/coach-profile/:uid',
       name: 'coachProfile',
       component: () => import('../views/coachProfile.vue'),
       meta: {
@@ -47,7 +47,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/user-profile',
+      path: '/user-profile/:uid',
       name: 'userProfile',
       component: () => import('../views/userProfile.vue'),
       meta: {

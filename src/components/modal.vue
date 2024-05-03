@@ -83,4 +83,8 @@ const userRegister = () => {
   router.push('/register-user')
   emit('update', false)
 }
+
+const closeModal = () => {
+  emit('update', false)
+}
 </script>
