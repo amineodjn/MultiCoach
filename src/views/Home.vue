@@ -34,7 +34,7 @@
             </div>
         </div>
         </div>
-        <div v-for="user in usersData" :key="user.uid">
+        <div v-for="user in usersToShow" :key="user.uid">
           <card 
             :user="user" 
             class="mt-2"
@@ -66,12 +66,12 @@ import { db } from '../main.js';
 import { collection, getDocs } from 'firebase/firestore';
 
 const store = useStore();
-const usersData = ref()
+const usersData = ref([])
 const filteredUsers = ref([])
 const center = ref({ lat: 52.00, lng: 20.00 })
 const toggle = ref({})
 const toggled = ref(false)
-const experiences = ref(['Personal Trainer', 'Yoga Instructor', 'Zumba Instructor', 'Spinning Instructor', 'Bodybuilding Coach'])
+const experiences = ref([])
 const selectedExperiences = ref([])
 const isFavorite = ref(false)
 const open = ref(false)
@@ -86,7 +86,7 @@ const getUsers = async () => {
 };
 
 const usersToShow = computed(() => {
-  return filteredUsers.value.length > 0 ? filteredUsers.value : usersData;
+  return filteredUsers.value.length > 0 ? filteredUsers.value : usersData.value;
 })
 
 const dropdownToggle = () => {
@@ -94,13 +94,12 @@ const dropdownToggle = () => {
 }
 const select = () => {
   selectedExperiences.value  = Object.keys(toggle.value).filter(key => toggle.value[key] === 'yes');
-  console.log(selectedExperiences.value);
 }
 const toggleFavorite = (user) => {
   user.favorite = !user.favorite
 }
 const filterCities = (city) => {
-    filteredUsers.value = usersData.filter((user) => user.city === city)
+  filteredUsers.value = usersData.value.filter((user) => user.city === city)
 }
 const clearFilter = () => {
   filteredUsers.value = []
@@ -108,7 +107,7 @@ const clearFilter = () => {
 
 const filterExperiences = (experience) => {
   selectedExperiences.value  = Object.keys(toggle.value).filter(key => toggle.value[key] === 'yes');
-  filteredUsers.value = usersData.filter((user) => selectedExperiences.value.includes(user.title))
+  filteredUsers.value = usersData.value.filter((user) => selectedExperiences.value.includes(user.profession))
 }
 
 const toggleModal = (id) => {
@@ -131,6 +130,7 @@ const selectedDate = (date) => {
 
 onMounted(async () => {
   usersData.value = await getUsers();
+  experiences.value = usersData.value.map(user => user.profession)
 });
 
 </script>

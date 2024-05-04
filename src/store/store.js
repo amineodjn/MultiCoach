@@ -26,9 +26,11 @@ export const useStore = defineStore({
       if (userDoc.exists()) {
         this.route = 'user-profile/' + this.docId;
         this.user = this.docId;
+        console.log(this.route);
         return this.route;
       } else if (coachDoc.exists()) {
         this.route = 'coach-profile/' + this.docId
+        console.log(this.route);
         return this.route;
       } else {
         return null;

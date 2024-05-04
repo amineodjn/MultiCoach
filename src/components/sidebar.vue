@@ -181,8 +181,6 @@ import { db } from '../main.js';
 import { doc, getDoc } from 'firebase/firestore';
 import { useStore } from '../store/store.js';
 
-
-
 const store = useStore();
 const userId = computed(() => store.docId);
 

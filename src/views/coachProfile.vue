@@ -167,6 +167,7 @@ const hasEmptyFields = ref(false);
 //Helper function
 function createErrorComputed(field, message) {
   return computed(() => {
+    console.log(field.value);
     if (field.value === '' || showError.value) {
       return message;
     }
@@ -237,7 +238,6 @@ async function updateUser() {
   }
   console.log(hasErrors, ' hasEmpty');
     // Update the fields based on your reactive properties
-    
 }
 
 // Fetch user data from Firestore
@@ -268,6 +268,7 @@ const fetchUser = async () => {
 };
 
 onMounted(() => {
+  console.log(userId.value);
   if(!userId.value) {
     console.log('docId is not set', userId.value);
   }

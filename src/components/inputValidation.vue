@@ -13,7 +13,7 @@
 <script setup>
 const props = defineProps({
   showError: Boolean,
-  Modelval: String,
+  Modelval: [String,Number],
   title: String,
   errorMessage: String,
   placeholder: String,
