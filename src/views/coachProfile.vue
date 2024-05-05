@@ -85,14 +85,6 @@
           :showError="showError.gym"
         ></inputValidation>
 
-        <inputValidation 
-          :Modelval="price" 
-          title="Price" 
-          :error-message="priceError" 
-          placeholder="399 PLN"
-          @input="price = $event.target.value"
-          :showError="showError.price"
-        ></inputValidation>
     </div>
     <div>
       <textArea
@@ -144,8 +136,6 @@ import sidebar from '../components/sidebar.vue';
 import inputValidation from '../components/inputValidation.vue';
 import textArea from '../components/textarea.vue';
 
-
-
 const store = useStore();
 const userId = computed(() => store.docId);
 const docRef = doc(db, "coaches", userId.value);
@@ -157,35 +147,41 @@ const city = ref('');
 const websiteUrl = ref('');
 const phoneNumber = ref('');
 const gym = ref('');
-const price = ref('');
 const description = ref('');
 const password = ref('');
 const success = ref(false);
 const profession = ref('');
 const hasEmptyFields = ref(false);
 
+const errorMessages = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  description: '',
+});
+
+
 //Helper function
-function createErrorComputed(field, message) {
+function createErrorComputed(field, key) {
   return computed(() => {
-    console.log(field.value);
-    if (field.value === '' || showError.value) {
-      return message;
+    if (field.value === '' || showError[key]) {
+      return errorMessages[key];
     }
     return '';
   });
 }
 //Error messages 
-const firstNameError = createErrorComputed(firstName, 'Please enter your first name');
-const lastNameError = createErrorComputed(lastName, 'Please enter your last name');
-const emailError = createErrorComputed(email, 'Please enter your email');
-const cityError = createErrorComputed(city, 'Please enter your city');
-const websiteUrlError = createErrorComputed(websiteUrl, 'Please enter your website url');
-const phoneNumberError = createErrorComputed(phoneNumber, 'Please enter your phone number');
-const gymError = createErrorComputed(gym, 'Please enter your gym');
-const priceError = createErrorComputed(price, 'Please enter your price');
-const descriptionError = createErrorComputed(description, 'Please enter your description');
-const professionError = createErrorComputed(profession, 'Please enter your profession');
-const passwordError = createErrorComputed(password, 'Please enter your password');
+const firstNameError = createErrorComputed(firstName, 'firstName');
+const lastNameError = createErrorComputed(lastName, 'lastName');
+const emailError = createErrorComputed(email, 'email');
+const cityError = createErrorComputed(city, 'city');
+const websiteUrlError = createErrorComputed(websiteUrl, 'websiteUrl');
+const phoneNumberError = createErrorComputed(phoneNumber, 'phoneNumber');
+const gymError = createErrorComputed(gym, 'gym');
+const descriptionError = createErrorComputed(description, 'description');
+const professionError = createErrorComputed(profession, 'profession');
+const passwordError = createErrorComputed(password, 'password');
 
 const showError = reactive({
   firstName: false,
@@ -197,10 +193,12 @@ const showError = reactive({
   websiteUrl: false,
   phoneNumber: false,
   gym: false,
-  price: false,
   description: false,
 });
 
+function splitCamelCase(str) {
+  return str.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
+}
 // Function to update user data in Firestore
 async function updateUser() {
   const dataObj = {
@@ -213,7 +211,6 @@ async function updateUser() {
     websiteUrl: websiteUrl.value,
     phoneNumber: phoneNumber.value,
     gym: gym.value,
-    price: price.value,
     description: description.value,  
   }
   // Reset showError
@@ -230,13 +227,19 @@ async function updateUser() {
 
   // Check if there are any errors
   const hasErrors = Object.values(showError).some(value => value === true);
-  console.log(showError, 'showError');
   if (!hasErrors) {
     await updateDoc(docRef, dataObj);
     success.value = true;
     console.log('User data updated successfully!');
   }
-  console.log(hasErrors, ' hasEmpty');
+  else {
+    Object.entries(showError).forEach(([key, value]) => {
+      if (value === true) {
+        showError[key] = true;
+        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`;
+      }
+    });
+  }
     // Update the fields based on your reactive properties
 }
 
@@ -258,7 +261,6 @@ const fetchUser = async () => {
     websiteUrl.value = docSnap.data().websiteUrl;
     phoneNumber.value = docSnap.data().phoneNumber;
     gym.value = docSnap.data().gym;
-    price.value = docSnap.data().price;
     description.value = docSnap.data().description;
     password.value = docSnap.data().password;
   } else {
@@ -268,7 +270,6 @@ const fetchUser = async () => {
 };
 
 onMounted(() => {
-  console.log(userId.value);
   if(!userId.value) {
     console.log('docId is not set', userId.value);
   }

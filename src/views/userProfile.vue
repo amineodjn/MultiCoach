@@ -6,66 +6,49 @@
           <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit your profile</h2>
           <form @submit.prevent="updateUser">
       <div class="grid gap-6 mb-6 md:grid-cols-2">
-          <div>
-              <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First name</label>
-              <input 
-              v-model="firstName"
-              type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="John" required />
-          </div>
-          <div>
-              <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Last name</label>
-              <input 
-              v-model="lastName"
-              type="text" id="last_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Doe" required />
-          </div>
-          <div>
-              <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-      <input 
-      v-model="email" type="email" id="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter your email" required />
-          </div>
-          <div>
-            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-            <input 
-            v-model="password"
-            type="text" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Password" required />
-          </div>
-          <div>
-            <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
-            <input 
-            v-model="city"
-            type="text" id="city" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Poznań" required />
-          </div>   
-  
-          <div>
-              <label for="website" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Website url (optional)</label>
-              <input 
-              v-model="websiteUrl"
-              type="url" id="website" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Multicoach.com" />
-          </div>
-          <div>
-            <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone number</label>
-            <input 
-            v-model="phoneNumber"
-            type="tel" id="phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="xxx-xxx-xxx" pattern="[1-9]{1}[0-9]{2}\s[0-9]{3}\s[0-9]{3}" required />
-          </div>
-          <div>
-              <label for="gym" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gym</label>
-              <input 
-              v-model="gym"
-              type="text" id="gym" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" placeholder="Gym world, can be?" required />
-          </div>
-          <div>
-            <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-            <input 
-            v-model="price" type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-primary-500" placeholder="399 PLN" required="">
-          </div>
+        <inputValidation :Modelval="firstName" 
+        title="First name" 
+        :error-message="firstNameError" 
+        placeholder="John"
+        @input="firstName = $event.target.value"
+        :showError="showError.firstName"
+        ></inputValidation>
+        <inputValidation 
+          :Modelval="lastName" 
+          title="Last name" 
+          :error-message="lastNameError" 
+          placeholder="Doe"
+          @input="lastName = $event.target.value"
+          :showError="showError.lastName"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="email" 
+          title="Your email" 
+          :error-message="emailError" 
+          placeholder="Enter your email"
+          @input="email = $event.target.value"
+          :showError="showError.email"
+        ></inputValidation>
+
+        <inputValidation 
+          :Modelval="password" 
+          title="Password" 
+          :error-message="passwordError" 
+          placeholder="Password"
+          @input="password = $event.target.value"
+          :showError="showError.password"
+        ></inputValidation>
       </div>
-      <div class="sm:col-span-2  mb-6">
-          <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-          <textarea 
-          v-model="description"
-          id="description" rows="8" 
-          class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"></textarea>
+      <div>
+        <textArea
+          :Modelval="description"
+          title="Description" 
+          :error-message="descriptionError" 
+          placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"
+          @input="description = $event.target.value"
+          :showError="showError.description"
+        ></textArea>
       </div>
       <div class="flex items-center justify-center w-full mb-6">
         <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
@@ -80,11 +63,11 @@
         </label>
       </div> 
       <div v-if="selectedFile" class="flex items-start mb-6">
-          <div class="flex items-center h-5">
-              <svg class="w-6 h-5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"></path>
-  </svg>        </div>
-          <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"><a :href="imageUrl" class="text-indigo-600 hover:underline dark:text-indigo-500">{{ imageName }}</a>.</label>
+        <div class="flex items-center h-5">
+          <svg class="w-6 h-5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"></path></svg>
+        </div>
+        <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"><a :href="imageUrl" class="text-indigo-600 hover:underline dark:text-indigo-500">{{ imageName }}</a>.</label>
       </div>
       <button type="submit" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Submit</button>
       </form>
@@ -94,7 +77,7 @@
   </template>
   
   <script setup>
-  import { ref, computed, onMounted } from 'vue';
+  import { ref, computed, onMounted, reactive  } from 'vue';
   import { db } from '../main.js';
   import { doc, updateDoc, getDoc } from 'firebase/firestore';
   import { useStore } from '../store/store.js';
@@ -103,6 +86,8 @@
   import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
   import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
+  import inputValidation from '../components/inputValidation.vue';
+  import textArea from '../components/textarea.vue';
   
   
   
@@ -113,33 +98,85 @@
   const firstName = ref('');
   const lastName = ref('');
   const email = ref('');
-  const city = ref('');
-  const websiteUrl = ref('');
-  const phoneNumber = ref('');
-  const gym = ref('');
-  const price = ref('');
-  const description = ref('');
   const password = ref('');
+  const description = ref('');
   const success = ref(false);
+  const hasEmptyFields = ref(false);
+
+  const errorMessages = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  description: '',
+});
+
+// Function to create computed properties for error messages
+function createErrorComputed(field, key) {
+  return computed(() => {
+    if (field.value === '' || showError[key]) {
+      return errorMessages[key];
+    }
+    return '';
+  });
+}
+// Error messages 
+const firstNameError = createErrorComputed(firstName, 'firstName');
+const lastNameError = createErrorComputed(lastName, 'lastName');
+const emailError = createErrorComputed(email, 'email');
+const passwordError = createErrorComputed(password, 'password');
+const descriptionError = createErrorComputed(description, 'description');
+
+const showError = reactive({
+  firstName: false,
+  lastName: false,
+  email: false,
+  password: false,
+  description: false,
+});
+
+function splitCamelCase(str) {
+  return str.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
+}
   // Function to update user data in Firestore
   async function updateUser() {
-    const dataObj = {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      email: email.value,
-      password: password.value,
-      city: city.value,
-      websiteUrl: websiteUrl.value,
-      phoneNumber: phoneNumber.value,
-      gym: gym.value,
-      price: price.value,
-      description: description.value,  
-    }
-      // Update the fields based on your reactive properties
-      await updateDoc(docRef, dataObj);
-      success.value = true;
-      console.log('User data updated successfully!');
+  const dataObj = {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    email: email.value,
+    password: password.value,
+    description: description.value,  
   }
+  // Reset showError
+  Object.keys(showError).forEach(key => {
+    showError[key] = false;
+  });
+
+  // Check for empty fields
+  Object.entries(dataObj).forEach(([key, value]) => {
+    if (value === undefined || value === '') {
+      showError[key] = true;
+    }
+  });
+
+  // Check if there are any errors
+  const hasErrors = Object.values(showError).some(value => value === true);
+  if (!hasErrors) {
+    await updateDoc(docRef, dataObj);
+    success.value = true;
+    console.log('User data updated successfully!');
+  } 
+
+  if (hasErrors) {
+    Object.entries(showError).forEach(([key, value]) => {
+      if (value === true) {
+        showError[key] = true;
+        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`; // Update the error message
+      }
+    });
+  }
+    // Update the fields based on your reactive properties
+}
   
   // Fetch user data from Firestore
   const fetchUser = async () => {
@@ -154,13 +191,8 @@
       firstName.value = docSnap.data().firstName;
       lastName.value = docSnap.data().lastName;
       email.value = docSnap.data().email;
-      city.value = docSnap.data().city;
-      websiteUrl.value = docSnap.data().websiteUrl;
-      phoneNumber.value = docSnap.data().phoneNumber;
-      gym.value = docSnap.data().gym;
-      price.value = docSnap.data().price;
-      description.value = docSnap.data().description;
       password.value = docSnap.data().password;
+      description.value = docSnap.data().description;
   
     } else {
       console.log('No such document!');
@@ -221,7 +253,7 @@
   //Toast 
   const resetSuccess = (event) => {
     if (event.animationName.includes('slideOutRight')) {
-        success.value = false;
+      success.value = false;
     }
   };
   </script>

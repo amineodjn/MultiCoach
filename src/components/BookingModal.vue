@@ -55,7 +55,7 @@
   import { onAuthStateChanged, getAuth } from "firebase/auth";
   import { useRouter } from 'vue-router';
   import { db } from '../main.js';
-  import { doc, setDoc } from 'firebase/firestore';
+  import { doc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
   
   const selectedTime = ref(null);
   const selectedDate = ref(null);
@@ -72,6 +72,10 @@
       type: Number,
       default: 22
     },
+    bookedCoach: {
+      type: String,
+      default: ''
+    }
   })
   
   const times = ref([]);
@@ -138,7 +142,10 @@
         // Save the booking to Firestore
         const userRef = doc(db, 'users', auth.currentUser.uid);
         if (date && auth.currentUser.uid) {
-          await setDoc(userRef, { bookedEvents: [{ bookingTime: date }] }, { merge: true });
+          const newEvent = { bookingTime: date, bookedCoach: props.bookedCoach };
+          await updateDoc(userRef, { 
+            bookedEvents: arrayUnion(newEvent) 
+          });
         }
         emit('selectedDate', date)
       } else {

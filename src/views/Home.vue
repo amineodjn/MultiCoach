@@ -46,7 +46,7 @@
       <div class="w-full md:w-1/2 h-screen">
         <GoogleMap api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
       </div>
-      <bookingModal :open="open" @update="open =!open" :startHour="6" :endHour="21" @selectedDate="selectedDate" />
+      <bookingModal :open="open" @update="open =!open" :startHour="6" :endHour="21" @selectedDate="selectedDate" :bookedCoach="bookedCoach" />
       <successModal :open="openModal" @update="openModal =!openModal" />
   </div>
   </body>
@@ -76,7 +76,7 @@ const selectedExperiences = ref([])
 const isFavorite = ref(false)
 const open = ref(false)
 const openModal = ref(false)
-const bookedUser = ref('')
+const bookedCoach = ref('')
 
 const getUsers = async () => {
   const usersCollection = collection(db, 'coaches');
@@ -111,7 +111,9 @@ const filterExperiences = (experience) => {
 }
 
 const toggleModal = (id) => {
-  bookedUser.value = id
+  console.log(id);
+
+  bookedCoach.value = id
   open.value =!open.value
 }
 
@@ -130,7 +132,10 @@ const selectedDate = (date) => {
 
 onMounted(async () => {
   usersData.value = await getUsers();
-  experiences.value = usersData.value.map(user => user.profession)
+  experiences.value = usersData.value
+    .filter(user => user.profession && user.profession !== '')
+    .map(user => user.profession);
+  console.log(experiences.value);
 });
 
 </script>

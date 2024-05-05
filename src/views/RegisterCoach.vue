@@ -126,7 +126,7 @@ const register = () => {
   .then((data) => {
     console.log("Successfully registered!");
     createUser(auth.currentUser.uid);
-    router.push('/feed')
+    router.push('/')
   })
   .catch((error) => {
     console.log(error.code);
@@ -137,7 +137,7 @@ const SignInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(getAuth(), provider)
     .then((result) => {
-       router.push('/feed');
+       router.push('/');
     })
     .catch((error) => {
       console.log(error.message);
