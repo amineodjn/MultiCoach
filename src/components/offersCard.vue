@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between w-2/3 mx-4 px-6 py-2 transition-colors duration-300 transform border cursor-pointer rounded-xl hover:shadow-lg dark:border-gray-700 dark:hover:border-transparent">
+  <div class="flex justify-between w-1/2 mx-4 px-6 py-2 transition-colors duration-300 transform border cursor-pointer rounded-xl hover:shadow-lg dark:border-gray-700 dark:hover:border-transparent">
     <div class="flex flex-col sm:-mx-4 sm:flex-row">
       <div class="flex items-center">
         <img class="flex-shrink-0 object-cover w-20 h-20 rounded-full sm:mx-4 ring-4 ring-gray-300 hover:ring-indigo-300" :src="offer.offerPicture" alt="">

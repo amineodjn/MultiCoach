@@ -4,7 +4,7 @@
       <sidebar v-if="false" />
       <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
           <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add your offer</h2>
-          <form @submit.prevent="updateUser">
+          <form @submit.prevent="updateOffer">
       <div class="grid gap-6 mb-6 md:grid-cols-2">
         <inputValidation :Modelval="offerName" 
         title="Offer name" 
@@ -34,7 +34,7 @@
       </div>
       <div class="flex flex-col justify-center w-full mb-6">
         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload your offer image</label>
-        <input @change="uploadImage" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file">
+        <input @change="imageEvent = $event" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file">
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or GIF (MAX. 800x400px).</p>
       </div> 
       <div v-if="selectedFile" class="flex items-start mb-6">
@@ -54,7 +54,7 @@
   <script setup>
   import { ref, computed, onMounted, reactive  } from 'vue';
   import { db } from '../main.js';
-  import { doc, updateDoc, getDoc } from 'firebase/firestore';
+  import { doc, updateDoc, getDoc, collection, addDoc } from 'firebase/firestore';
   import { useStore } from '../store/store.js';
   import { storage } from '../main.js';
   import { getAuth } from 'firebase/auth';
@@ -68,13 +68,16 @@
   
   const store = useStore();
   const userId = computed(() => store.docId);
-  const docRef = doc(db, "users", userId.value);
+  const docRef = doc(db, "coaches", userId.value);
+  const offerId = ref('');
+  const imageEvent = ref(null);
   
   const offerName = ref('');
   const offerDescription  = ref('');
   const price = ref('');
   const success = ref(false);
   const hasEmptyFields = ref(false);
+  
 
   const errorMessages = reactive({
   offerName: '',
@@ -106,12 +109,13 @@ function splitCamelCase(str) {
   return str.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
 }
   // Function to update user data in Firestore
-  async function updateUser() {
+  async function updateOffer() {
   const dataObj = {
     offerName: offerName.value,
     offerDescription: offerDescription.value,  
     price: price.value,
   }
+
   // Reset showError
   Object.keys(showError).forEach(key => {
     showError[key] = false;
@@ -127,9 +131,21 @@ function splitCamelCase(str) {
   // Check if there are any errors
   const hasErrors = Object.values(showError).some(value => value === true);
   if (!hasErrors) {
-    await updateDoc(docRef, dataObj);
+    // Create a reference to the Offers subcollection
+    const offersRef = collection(docRef, 'Offers');
+    
+    // Add the offer to the Offers subcollection
+    const offerDocRef = await addDoc(offersRef, dataObj);
+    offerId.value = offerDocRef.id;
+    await updateDoc(offerDocRef, { uid: offerId.value });
+    uploadImage(imageEvent.value);
     success.value = true;
-    console.log('User data updated successfully!');
+    // Clear the form values
+    offerName.value = '';
+    offerDescription.value = '';
+    price.value = '';
+    imageEvent.value = null;
+
   } 
 
   if (hasErrors) {
@@ -140,7 +156,6 @@ function splitCamelCase(str) {
       }
     });
   }
-    // Update the fields based on your reactive properties
 }
   
   // Fetch user data from Firestore
@@ -186,7 +201,7 @@ function splitCamelCase(str) {
   
     if (user) {
       // Create a storage reference with the user's uid
-      const storageReference = storageRef(storage, `profilePictures/${user.uid}`);
+      const storageReference = storageRef(storage, `offerImages/${user.uid}`);
   
       // Upload the file
       const uploadTask = uploadBytesResumable(storageReference, selectedFile.value);
@@ -205,8 +220,8 @@ function splitCamelCase(str) {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             imageUrl.value = downloadURL;
             // Update user document with the download URL
-            const docRef = doc(db, 'users', user.uid);
-            updateDoc(docRef, { profilePicture: downloadURL });
+            const offerRef = doc(db, 'coaches', user.uid, 'Offers', offerId.value);
+            updateDoc(offerRef, { offerImage: downloadURL });
           });
         }
       );
