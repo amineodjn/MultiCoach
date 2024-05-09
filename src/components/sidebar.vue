@@ -8,7 +8,7 @@
 
 <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidenav">
   
-  <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+  <div class="overflow-y-auto py-5 px-3 h-screen bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
     <div  class="mb-4 flex flex-col items-center">
       <img class="w-20 h-20 rounded-full mx-auto mb-4 " :src="profilePicture" alt="Large avatar">
       <h3 class="text-xl font-bold dark:text-white text-center tracking-wide"><a href="#">{{ firstName }} {{ lastName }}</a></h3>

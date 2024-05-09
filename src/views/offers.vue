@@ -1,11 +1,13 @@
 <template>
   <div class="flex flex-col justify-center items-center md:m-10 m-2 rounded-lg"> 
-    <offersForm />
     <offersCard 
-   :offer="offer" 
-    class="mt-2"
-    @book="toggleModal"
-    @favorite="toggleFavorite" />
+        v-for="offer in offers" :key="offer.uid"
+        :offer="offer" 
+        class="mt-2"
+        @book="toggleModal"
+        @favorite="toggleFavorite" />
+    <offersForm />
+      
   </div>
 
 </template>
@@ -13,18 +15,35 @@
 <script setup>
 import offersCard from '../components/offersCard.vue'
 import offersForm from '../components/offersForm.vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue';
+import { collection, getDocs, doc, where } from 'firebase/firestore';
+import { db } from '../main'; 
+import { useStore } from '../store/store';
 
-const offer = ref({
-  uid: 1,
-  name: 'face-to-face training',
-  duration: '1h',
-  price: 100,
-  description: 'offer 1 description',
-  offerPicture: 'https://picsum.photos/200/300',
-  gym: 'fit fat',
-  city: 'Poznań',
-})
+
+const store = useStore();
+const offers = ref([]);
+const user = ref(null); 
+
+const fetchOffers = async () => {
+  if (!store.docId) {
+    console.log('docId is not set', store.docId);
+    return;
+  }
+
+  const offersRef = collection(db, "coaches", store.docId, "Offers");
+  const querySnapshot = await getDocs(offersRef);
+
+  if (!querySnapshot.empty) {
+    const data = querySnapshot.docs.map(doc => doc.data());
+    offers.value = data;
+  } else {
+    console.log('No such document!');
+  }
+};
+
+onMounted(async () => {
+  fetchOffers();});
 
 const toggleModal = () => {
   console.log('toggle modal')

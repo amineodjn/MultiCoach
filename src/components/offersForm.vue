@@ -17,9 +17,24 @@
           :Modelval="price" 
           title="Price" 
           :error-message="priceError" 
-          placeholder="100 PLN"
+          placeholder="100"
           @input="price = $event.target.value"
           :showError="showError.price"
+        ></inputValidation>
+        <locationInput
+        :Modelval="location" 
+        title="Location" 
+        :error-message="locationError" 
+        placeholder="Poznań"
+        @input="location = $event"
+        ></locationInput>
+        <inputValidation 
+          :Modelval="gym" 
+          title="Gym" 
+          :error-message="gymError" 
+          placeholder="Gym world, can be?"
+          @input="gym = $event.target.value"
+          :showError="showError.gym"
         ></inputValidation>
       </div>
       <div>
@@ -62,6 +77,7 @@
   import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
   import inputValidation from '../components/inputValidation.vue';
+  import locationInput from '../components/locationInput.vue';
   import textArea from '../components/textarea.vue';
   
   
@@ -75,6 +91,8 @@
   const offerName = ref('');
   const offerDescription  = ref('');
   const price = ref('');
+  const location = ref('');
+  const gym = ref('');
   const success = ref(false);
   const hasEmptyFields = ref(false);
   
@@ -83,6 +101,8 @@
   offerName: '',
   offerDescription: '',
   price: '',
+  location: '',
+  gym: '',
 });
 
 // Function to create computed properties for error messages
@@ -98,11 +118,15 @@ function createErrorComputed(field, key) {
 const offerNameError = createErrorComputed(offerName, 'offerName');
 const offerDescriptionError = createErrorComputed(offerDescription, 'offerDescription');
 const priceError = createErrorComputed(price, 'price');
+const locationError = createErrorComputed(location, 'location');
+const gymError = createErrorComputed(gym, 'gym');
 
 const showError = reactive({
   offerName: false,
   offerDescription: false,
   price: false,
+  location: false,
+  gym: false,
 });
 
 function splitCamelCase(str) {
@@ -114,6 +138,8 @@ function splitCamelCase(str) {
     offerName: offerName.value,
     offerDescription: offerDescription.value,  
     price: price.value,
+    location: location.value,
+    gym: gym.value
   }
 
   // Reset showError
@@ -144,6 +170,8 @@ function splitCamelCase(str) {
     offerName.value = '';
     offerDescription.value = '';
     price.value = '';
+    location.value = '';
+    gym.value = '';
     imageEvent.value = null;
 
   } 
@@ -171,6 +199,8 @@ function splitCamelCase(str) {
       offerName.value = docSnap.data().offerName;
       offerDescription.value = docSnap.data().offerDescription;
       price.value = docSnap.data().price;
+      location.value = docSnap.data().location;
+      gym.value = docSnap.data().gym;
   
     } else {
       console.log('No such document!');
@@ -190,22 +220,22 @@ function splitCamelCase(str) {
   const uploadImage = async (event) => {
     selectedFile.value = event.target.files[0];
     imageName.value = selectedFile.value.name;
-  
+
     if (!selectedFile.value) {
       console.log('No file selected');
       return;
     }
-  
+
     const auth = getAuth();
     const user = auth.currentUser;
-  
+
     if (user) {
-      // Create a storage reference with the user's uid
-      const storageReference = storageRef(storage, `offerImages/${user.uid}`);
-  
+      // Create a storage reference with the user's uid and the image name
+      const storageReference = storageRef(storage, `offerImages/${user.uid}/${selectedFile.value.name}`);
+
       // Upload the file
       const uploadTask = uploadBytesResumable(storageReference, selectedFile.value);
-  
+
       // Listen for state changes, errors, and completion of the upload.
       uploadTask.on('state_changed',
         (snapshot) => {
