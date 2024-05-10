@@ -135,7 +135,6 @@ onMounted(async () => {
   experiences.value = usersData.value
     .filter(user => user.profession && user.profession !== '')
     .map(user => user.profession);
-  console.log(experiences.value);
 });
 
 </script>
