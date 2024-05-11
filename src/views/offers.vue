@@ -7,6 +7,8 @@
         v-for="offer in offers" :key="offer.uid"
         :offer="offer" 
         class="mt-2"
+        :customWidth="'w-1/2'"
+        :coachAccess="true"
         @book="toggleModal"
         @favorite="deleteOffer" />
   </div>
@@ -30,7 +32,6 @@ import { useStore } from '../store/store';
 
 const store = useStore();
 const offers = ref([]);
-const user = ref(null); 
 
 const fetchOffers = async () => {
   if (!store.docId) {

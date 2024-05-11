@@ -1,6 +1,10 @@
 <template>
-  <div class="flex justify-between w-1/2 mx-4 px-6 py-2 transition-colors duration-300 transform border cursor-pointer rounded-xl hover:shadow-lg dark:border-gray-700 dark:hover:border-transparent">
-    <div class="flex flex-col sm:-mx-4 sm:flex-row">
+  <div 
+  class="flex justify-between mx-4 px-6 py-2 transition-colors duration-300 transform border cursor-pointer rounded-xl hover:shadow-lg dark:border-gray-700 dark:hover:border-transparent"
+  :class="customWidth"
+  >
+  
+  <div class="flex flex-col sm:-mx-4 sm:flex-row">
       <div class="flex items-center">
         <img class="flex-shrink-0 object-cover w-20 h-20 rounded-full sm:mx-4 ring-4 ring-gray-300 hover:ring-indigo-300" :src="offer.offerImage" alt="">
       </div>
@@ -31,10 +35,30 @@
       </div>
     </div>
     <div class="flex flex-col items-end justify-between">
-      <div @click="$emit('favorite', offer.uid)">
+      <div v-if="coachAccess" @click="$emit('deleteOffer', offer.uid)">
         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
         </svg>
+      </div>
+      <div v-else @click="isSelected = !isSelected">
+        <svg v-if="!isSelected" @click="$emit('favorite', offer.uid)" class="w-6 h-6 text-indigo-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+        </svg>
+        <svg v-else @click="$emit('favorite', '')" class="w-6 h-6 text-green-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"/>
+        </svg>
+
+        <!-- <svg  
+        v-if="user.favorite"
+        class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+        <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z"/>
+        </svg>
+        <svg 
+          v-else-if="!user.favorite"
+          class="w-6 h-6 text-gray-800 dark:text-white" 
+          aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"/>
+        </svg> -->
       </div>
       <button @click="$emit('book', offer.uid)" type="button" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
         <svg class="w-6 h-6 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -47,11 +71,22 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
+const isSelected = ref(false);
 
 const props = defineProps({
   offer: {
     type:Object,
     required:true
+  },
+  customWidth : {
+    type: String,
+    default: 'w-1/2'
+  },
+  coachAccess: {
+    type: Boolean,
+    default: false
   }
 })
 </script>

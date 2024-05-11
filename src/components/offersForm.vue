@@ -166,6 +166,7 @@ function splitCamelCase(str) {
     await updateDoc(offerDocRef, { uid: offerId.value });
     uploadImage(imageEvent.value);
     success.value = true;
+
     // Clear the form values
     offerName.value = '';
     offerDescription.value = '';
@@ -173,7 +174,7 @@ function splitCamelCase(str) {
     location.value = '';
     gym.value = '';
     imageEvent.value = null;
-
+    
   } 
 
   if (hasErrors) {
@@ -187,7 +188,7 @@ function splitCamelCase(str) {
 }
   
   // Fetch user data from Firestore
-  const fetchUser = async () => {
+  const fetchOffers = async () => {
     if (!userId.value) {
       console.log('docId is not set', userId.value);
       return;
@@ -211,7 +212,7 @@ function splitCamelCase(str) {
     if(!userId.value) {
       console.log('docId is not set', userId.value);
     }
-    fetchUser();
+    fetchOffers();
   });
   const selectedFile = ref(null);
   const imageUrl = ref('');
