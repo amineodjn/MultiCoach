@@ -10,7 +10,7 @@
         :customWidth="'w-1/2'"
         :coachAccess="true"
         @book="toggleModal"
-        @favorite="deleteOffer" />
+        @deleteOffer="deleteOffer" />
   </div>
   <div class="flex flex-col justify-center items-center mt-10 m-2 rounded-lg">
     <h2 class="mb-4 w-1/2 text-2xl font-bold text-gray-900 dark:text-white">Add your offer</h2>

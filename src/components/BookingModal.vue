@@ -6,7 +6,7 @@
     <!-- <div class="relative p-4 w-full max-w-[23rem] max-h-full"> -->
       <div class="relative p-4 max-h-full">
       <!-- Modal content -->
-      <div v-if="!showSecondModal" class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+      <div v-if="!showSecondModal && !showTimeLine" class="relative bg-white rounded-lg shadow dark:bg-gray-800 modal-content">
         <div class="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               Pick your offer
@@ -20,7 +20,7 @@
               <span class="sr-only">Close modal</span>
           </button>
         </div>
-        <div class="p-4 pt-0">
+        <div class="p-4 offers-container">
           <offersCard 
             v-for="offer in offers" :key="offer.uid"
             :offer="offer" 
@@ -29,15 +29,17 @@
             @book="selectOffer"
             @favorite="selectOffer" />
         </div>
-        <div class="flex items-center justify-center">
+        <div class="flex items-center justify-center p-4">
           <button 
+            :disabled="!bookedOffer"
             type="button" 
             class="text-white w-1/2 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
+            :class="{ 'bg-gray-300 hover:bg-gray-300': !bookedOffer }"
             @click="selectDateAndTime"
             >Next</button>
         </div>
       </div>
-      <div v-if="showSecondModal" class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+      <div v-if="showSecondModal" class="relative bg-white rounded-lg shadow dark:bg-gray-800 modal-content">
           <!-- Modal header -->
         <div class="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -53,7 +55,7 @@
           </button>
         </div> 
         <!-- Modal body -->
-        <div class="p-4 pt-0 flex">
+        <div class="p-4 pt-0 flex justify-center">
           <div id="date-picker" :data-date="selectedDate" class="mx-auto sm:mx-0 flex justify-center my-5 [&>div>div]:shadow-none [&>div>div]:bg-gray-50 [&_div>button]:bg-gray-50"></div>
           <div class="my-5 p-4">
             <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
@@ -70,15 +72,46 @@
           </ul>
           <p v-if="showError" id="filled_error_help" class="mb-2 text-xs text-red-600 dark:text-red-400"><span class="font-medium">Oh, snapp!</span> please select the date and time.</p>
           </div>
+        </div>
+        <div class="flex items-center justify-center">
+              <button 
+              :disabled="!selectedTime"
+                type="button" 
+                class="text-white w-1/2 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
+                :class="{ 'bg-gray-300 hover:bg-gray-300': !selectedTime }"
+                @click="showTimeline"
+                >next</button>
+          </div>
+      </div>
+      <div v-if="showTimeLine" class="relative bg-white rounded-lg shadow dark:bg-gray-800 modal-content">
+          <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              Booking details
+          </h3>
+          <button id="close-modal" type="button" 
+            @click="closeModal"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="timepicker-modal">
+              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+              </svg>
+              <span class="sr-only">Close modal</span>
+          </button>
+        </div> 
+        <!-- Modal body -->
+        <div class="p-4 ml-10 flex">
+         <timeline v-if="showTimeLine" :selectedTime="date" :offerName="bookedOfferName"></timeline>
           
           
         </div>
         <div class="flex items-center justify-center">
               <button 
+              :disabled="!selectedTime"
                 type="button" 
                 class="text-white w-1/2 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
+                :class="{ 'bg-gray-300 hover:bg-gray-300': !selectedTime }"
                 @click="saveBooking"
-                >next</button>
+                >Confirm</button>
           </div>
       </div>
     </div>
@@ -92,6 +125,7 @@
   import { db } from '../main.js';
   import { doc, collection, updateDoc, arrayUnion, getDocs  } from 'firebase/firestore';
   import offersCard from '../components/offersCard.vue'
+  import timeline from '../components/timeline.vue'
 
   import { useStore } from '../store/store';
 
@@ -99,6 +133,7 @@
 const store = useStore();
 const offers = ref([]);
 const user = ref(null); 
+const date = ref(null);
 
 const fetchOffers = async () => {
   console.log('fetching offers', props.bookedCoach) ;
@@ -173,8 +208,41 @@ onMounted(async () => {
     emit('selectedDate', null)
     selectedTime.value = null;
     showSecondModal.value = false;
+    showTimeLine.value = false;
+  }
+  const showTimeLine = ref(false);
+  const showTimeline = () => {
+    showTimeLine.value = !showTimeLine.value
+    showSecondModal.value = false;
+    if (!selectedDate.value || !selectedTime.value) {
+    showError.value = true;
+    return;
   }
 
+  const timestamp = selectedDate.value.dates[0];
+  date.value = new Date(timestamp);
+
+  const time = selectedTime.value; 
+  console.log(selectedTime.value, 'time');
+  const [hourStr, minuteStr] = time.split(':');
+  const period = minuteStr.slice(-2);
+  let hour = parseInt(hourStr);
+  const minute = parseInt(minuteStr);
+
+  // Convert to 24-hour format
+  if (period === 'PM' && hour !== 12) {
+    hour += 12;
+  } else if (period === 'AM' && hour === 12) {
+    hour = 0;
+  }
+ console.log(hour, 'hour'); 
+  date.value.setHours(hour);
+  date.value.setMinutes(minute);
+
+  // Store the selected date and time in localStorage
+  localStorage.setItem('selectedDateandTime', date);
+  console.log(date.value, 'date');
+  }
   const showSecondModal = ref(false);
   watch(() => showSecondModal.value, () => {
   nextTick().then(() => {
@@ -186,13 +254,19 @@ onMounted(async () => {
 }, { immediate: true });
 
 const bookedOffer = ref(null);
-  const selectOffer = (uid) => {
-    bookedOffer.value = uid;
-    console.log('new favorite', bookedOffer.value);
-  }
+const bookedOfferName = ref(null);
+
+const selectOffer = (uid, offerName) => {
+  console.log(offerName, 'offerName');
+  bookedOffer.value = uid;
+  bookedOfferName.value = offerName;
+  console.log('new favorite', bookedOffer.value);
+
+ 
+}
 
   const selectDateAndTime = () => {
-    showSecondModal.value = !showSecondModal.value
+    showSecondModal.value = !showSecondModal.value   
   }
   
   const showError = ref(false);
@@ -204,30 +278,8 @@ const bookedOffer = ref(null);
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in, proceed with booking
-        if (!selectedDate.value || !selectedTime.value) {
-          showError.value = true;
-          return;
-        }
+        const date = new Date(localStorage.getItem('selectedDateandTime'));
   
-        const timestamp = selectedDate.value.dates[0];
-        const date = new Date(timestamp);
-  
-        const time = selectedTime.value; 
-        const [hourStr, minuteStr] = time.split(':');
-        const period = minuteStr.slice(-2);
-        let hour = parseInt(hourStr);
-        const minute = parseInt(minuteStr);
-  
-        // Convert to 24-hour format
-        if (period === 'PM' && hour !== 12) {
-          hour += 12;
-        } else if (period === 'AM' && hour === 12) {
-          hour = 0;
-        }
-  
-        date.setHours(hour);
-        date.setMinutes(minute);
-
         // Save the booking to Firestore
         const userRef = doc(db, 'users', auth.currentUser.uid);
         if (date && auth.currentUser.uid) {
@@ -240,11 +292,19 @@ const bookedOffer = ref(null);
       } else {
         // No user is signed in, handle accordingly
         console.log('User is not signed in');
-  
-        // Store the selected date and time in localStorage
-        localStorage.setItem('selectedDateandTime', date);
         router.push('/sign-in');
       }
     });
   }
-  </script>
+</script>
+
+<style scoped>
+.offers-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.modal-content {
+  width: 800px; 
+  max-width: 100%; 
+}
+</style>
