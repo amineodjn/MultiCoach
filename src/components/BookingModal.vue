@@ -6,7 +6,7 @@
     <!-- <div class="relative p-4 w-full max-w-[23rem] max-h-full"> -->
       <div class="relative p-4 max-h-full">
       <!-- Modal content -->
-      <div v-if="!showSecondModal && !showTimeLine" class="relative bg-white rounded-lg shadow dark:bg-gray-800 modal-content">
+      <div v-show="!showSecondModal && !showTimeLine" class="relative bg-white rounded-lg shadow dark:bg-gray-800 modal-content">
         <div class="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               Pick your offer
@@ -26,17 +26,17 @@
             :offer="offer" 
             :customWidth="'w-auto'"
             class="mt-2"
-            @book="selectOffer"
+            @book="selectDateAndTime"
             @favorite="selectOffer" />
         </div>
-        <div class="flex items-center justify-center p-4">
-          <button 
-            :disabled="!bookedOffer"
-            type="button" 
-            class="text-white w-1/2 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
-            :class="{ 'bg-gray-300 hover:bg-gray-300': !bookedOffer }"
-            @click="selectDateAndTime"
-            >Next</button>
+        <div class="flex items-center justify-end p-4">
+          <button :disabled="!bookedOffer" 
+                  @click="selectDateAndTime" 
+                  class="w-6 h-6 text-gray-800 dark:text-white">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
+                  </svg>
+          </button>
         </div>
       </div>
       <div v-if="showSecondModal" class="relative bg-white rounded-lg shadow dark:bg-gray-800 modal-content">
@@ -73,17 +73,25 @@
           <p v-if="showError" id="filled_error_help" class="mb-2 text-xs text-red-600 dark:text-red-400"><span class="font-medium">Oh, snapp!</span> please select the date and time.</p>
           </div>
         </div>
-        <div class="flex items-center justify-center">
-              <button 
-              :disabled="!selectedTime"
-                type="button" 
-                class="text-white w-1/2 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
-                :class="{ 'bg-gray-300 hover:bg-gray-300': !selectedTime }"
-                @click="showTimeline"
-                >next</button>
-          </div>
-      </div>
-      <div v-if="showTimeLine" class="relative bg-white rounded-lg shadow dark:bg-gray-800 modal-content">
+        <div class="flex items-center justify-between p-4">
+          
+          <button  
+                  @click="showSecondModal = false" 
+                  class="w-6 h-6 text-gray-800 dark:text-white">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4"/>
+                  </svg>
+          </button>
+          <button 
+            @click="showTimeline" 
+            class="w-6 h-6 text-gray-800 dark:text-white">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
+            </svg>
+          </button>
+        </div>
+      </div>  
+      <div v-show="showTimeLine" class="relative bg-white rounded-lg shadow dark:bg-gray-800 modal-content">
           <!-- Modal header -->
         <div class="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -223,7 +231,6 @@ onMounted(async () => {
   date.value = new Date(timestamp);
 
   const time = selectedTime.value; 
-  console.log(selectedTime.value, 'time');
   const [hourStr, minuteStr] = time.split(':');
   const period = minuteStr.slice(-2);
   let hour = parseInt(hourStr);
@@ -235,13 +242,11 @@ onMounted(async () => {
   } else if (period === 'AM' && hour === 12) {
     hour = 0;
   }
- console.log(hour, 'hour'); 
   date.value.setHours(hour);
   date.value.setMinutes(minute);
 
   // Store the selected date and time in localStorage
   localStorage.setItem('selectedDateandTime', date);
-  console.log(date.value, 'date');
   }
   const showSecondModal = ref(false);
   watch(() => showSecondModal.value, () => {
@@ -257,15 +262,14 @@ const bookedOffer = ref(null);
 const bookedOfferName = ref(null);
 
 const selectOffer = (uid, offerName) => {
-  console.log(offerName, 'offerName');
   bookedOffer.value = uid;
   bookedOfferName.value = offerName;
-  console.log('new favorite', bookedOffer.value);
-
- 
+  console.log(bookedOfferName.value);
 }
 
   const selectDateAndTime = () => {
+    console.log(bookedOfferName.value);
+
     showSecondModal.value = !showSecondModal.value   
   }
   
