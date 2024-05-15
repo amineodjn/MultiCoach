@@ -97,8 +97,6 @@ import { onBeforeMount, onMounted, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import modal from '../components/modal.vue'
-import { getDoc, doc } from 'firebase/firestore';
-import { db } from '../main.js';
 import { useStore } from '../store/store.js';
 
 const store = useStore();

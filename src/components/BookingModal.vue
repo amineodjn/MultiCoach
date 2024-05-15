@@ -74,7 +74,6 @@
           </div>
         </div>
         <div class="flex items-center justify-between p-4">
-          
           <button  
                   @click="showSecondModal = false" 
                   class="w-6 h-6 text-gray-800 dark:text-white">
@@ -109,18 +108,28 @@
         <!-- Modal body -->
         <div class="p-4 ml-10 flex">
          <timeline v-if="showTimeLine" :selectedTime="date" :offerName="bookedOfferName"></timeline>
-          
-          
         </div>
-        <div class="flex items-center justify-center">
-              <button 
-              :disabled="!selectedTime"
-                type="button" 
-                class="text-white w-1/2 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
-                :class="{ 'bg-gray-300 hover:bg-gray-300': !selectedTime }"
-                @click="saveBooking"
-                >Confirm</button>
-          </div>
+        <div class="flex items-center justify-between p-4">
+          <button  
+                  v-if="showTimeLine"
+                  @click="returnToSecondModal" 
+                  class="w-6 h-6 text-gray-800 dark:text-white">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4"/>
+                  </svg>
+          </button>
+          <button 
+            :disabled="!selectedTime"
+            type="button" 
+            class="text-white w-1/2 flex items-center justify-center bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 m-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
+            :class="{ 'bg-gray-300 hover:bg-gray-300': !selectedTime }"
+            @click="saveBooking">
+            Confirm <svg class="w-6 h-6 ml-4 text-white-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10.051 8.102-3.778.322-1.994 1.994a.94.94 0 0 0 .533 1.6l2.698.316m8.39 1.617-.322 3.78-1.994 1.994a.94.94 0 0 1-1.595-.533l-.4-2.652m8.166-11.174a1.366 1.366 0 0 0-1.12-1.12c-1.616-.279-4.906-.623-6.38.853-1.671 1.672-5.211 8.015-6.31 10.023a.932.932 0 0 0 .162 1.111l.828.835.833.832a.932.932 0 0 0 1.111.163c2.008-1.102 8.35-4.642 10.021-6.312 1.475-1.478 1.133-4.77.855-6.385Zm-2.961 3.722a1.88 1.88 0 1 1-3.76 0 1.88 1.88 0 0 1 3.76 0Z"/>
+</svg>
+
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -226,7 +235,6 @@ onMounted(async () => {
     showError.value = true;
     return;
   }
-
   const timestamp = selectedDate.value.dates[0];
   date.value = new Date(timestamp);
 
@@ -246,7 +254,8 @@ onMounted(async () => {
   date.value.setMinutes(minute);
 
   // Store the selected date and time in localStorage
-  localStorage.setItem('selectedDateandTime', date);
+  console.log(date.value);
+  localStorage.setItem('selectedDateandTime', date.value);
   }
   const showSecondModal = ref(false);
   watch(() => showSecondModal.value, () => {
@@ -269,7 +278,6 @@ const selectOffer = (uid, offerName) => {
 
   const selectDateAndTime = () => {
     console.log(bookedOfferName.value);
-
     showSecondModal.value = !showSecondModal.value   
   }
   
@@ -300,6 +308,10 @@ const selectOffer = (uid, offerName) => {
       }
     });
   }
+  const returnToSecondModal = () => {
+    showSecondModal.value = true;
+    showTimeLine.value = false;
+  };
 </script>
 
 <style scoped>

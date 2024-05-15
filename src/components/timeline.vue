@@ -12,7 +12,7 @@
             <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"/>
           </svg>          
         </div>
-        <p class="text-sm">Step details here</p>
+        <p class="text-sm">{{firstName + ' ' + lastName}}</p>
     </li>
     <li class="mb-10 ms-6">
         <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
@@ -55,12 +55,37 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
+import { useStore } from '../store/store';
+import { db } from '../main.js';
+import { getDoc, doc } from 'firebase/firestore';
 
-
+const firstName = ref('');
+const lastName = ref('');
+const store = useStore();
+const docId = computed(() => {
+  return store.docId;
+})
 const date = computed(() => {
   return props.selectedTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' });
 })
+
+const fetchUser = async () => {
+  const docRef = doc(db, "users", docId.value); // Replace "users" with your collection name
+
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    console.log("Document data:", docSnap.data());
+    firstName.value = docSnap.data().firstName;
+    lastName.value = docSnap.data().lastName;
+    // Now you can use firstName and lastName
+  } else {
+    console.log("No such document!");
+  }
+};
+
+fetchUser();
 
 const props = defineProps({
   selectedTime: {
