@@ -106,7 +106,7 @@
           </button>
         </div> 
         <!-- Modal body -->
-        <div class="p-4 ml-10 flex">
+        <div class="p-4 ml-10 flex justify-between">
          <timeline v-if="showTimeLine" :selectedTime="date" :offerName="bookedOfferName"></timeline>
         </div>
         <div class="flex items-center justify-between p-4">
@@ -119,15 +119,12 @@
                   </svg>
           </button>
           <button 
-            :disabled="!selectedTime"
+            :disabled="!selectedTime || !docId"
             type="button" 
-            class="text-white w-1/2 flex items-center justify-center bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 m-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
-            :class="{ 'bg-gray-300 hover:bg-gray-300': !selectedTime }"
+            class="text-white w-1/2  focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 m-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
+            :class="{ 'bg-gray-300 hover:bg-gray-300': !docId, 'bg-indigo-700 hover:bg-indigo-800' : docId }"
             @click="saveBooking">
-            Confirm <svg class="w-6 h-6 ml-4 text-white-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10.051 8.102-3.778.322-1.994 1.994a.94.94 0 0 0 .533 1.6l2.698.316m8.39 1.617-.322 3.78-1.994 1.994a.94.94 0 0 1-1.595-.533l-.4-2.652m8.166-11.174a1.366 1.366 0 0 0-1.12-1.12c-1.616-.279-4.906-.623-6.38.853-1.671 1.672-5.211 8.015-6.31 10.023a.932.932 0 0 0 .162 1.111l.828.835.833.832a.932.932 0 0 0 1.111.163c2.008-1.102 8.35-4.642 10.021-6.312 1.475-1.478 1.133-4.77.855-6.385Zm-2.961 3.722a1.88 1.88 0 1 1-3.76 0 1.88 1.88 0 0 1 3.76 0Z"/>
-</svg>
-
+            Confirm booking 
           </button>
         </div>
       </div>
@@ -143,7 +140,6 @@
   import { doc, collection, updateDoc, arrayUnion, getDocs  } from 'firebase/firestore';
   import offersCard from '../components/offersCard.vue'
   import timeline from '../components/timeline.vue'
-
   import { useStore } from '../store/store';
 
 
@@ -151,6 +147,7 @@ const store = useStore();
 const offers = ref([]);
 const user = ref(null); 
 const date = ref(null);
+const docId = store.docId;
 
 const fetchOffers = async () => {
   console.log('fetching offers', props.bookedCoach) ;
@@ -209,15 +206,6 @@ onMounted(async () => {
     times.value.push({ id: `${i}-am`, label: `${hour}:00 ${period}` });
   }
   
-  // // initialize components based on data attribute selectors
-  // onMounted(() => {
-  //     const $Datepicker = document.querySelector('#date-picker')
-  
-  //     if ($Datepicker) {
-  //       selectedDate.value = new Datepicker($Datepicker);
-  //     }
-  // })
-  
   const emit = defineEmits(['update', 'selectedDate'])
   
   const closeModal = () => {
@@ -273,11 +261,9 @@ const bookedOfferName = ref(null);
 const selectOffer = (uid, offerName) => {
   bookedOffer.value = uid;
   bookedOfferName.value = offerName;
-  console.log(bookedOfferName.value);
 }
 
   const selectDateAndTime = () => {
-    console.log(bookedOfferName.value);
     showSecondModal.value = !showSecondModal.value   
   }
   

@@ -110,49 +110,6 @@ const isCoach = ref(false)
 
 let auth;
 
-// watch(() => store.route, (newRoute) => {
-//   route.value = newRoute;
-// });
-
-
-// onMounted(async () => {
-//   auth = getAuth();
-//   onAuthStateChanged(auth, async (user) => {
-//     if (user) {
-//       console.log(user.uid);
-//       // User is signed in.
-//       isLoggedIn.value = true;
-//       try{
-//         const userDocRef = doc(db, 'users', user.uid);
-//         const coachDocRef = doc(db, 'coaches', user.uid);
-
-//         const userDocSnap = await getDoc(userDocRef);
-//         const coachDocSnap = await getDoc(coachDocRef);
-
-//         if (userDocSnap.exists() && !isCoach.value) {
-//           console.log('User is in users collection');
-//           store.user = user.uid;
-//           navigateAndStoreRoute('userProfile', user.uid);
-//         } else if (coachDocSnap.exists()) {
-//           console.log('User is in coaches collection');
-//           isCoach.value = true;
-//           store.coach = user.uid; 
-//           navigateAndStoreRoute('coachProfile', user.uid);
-//         } else {
-//           // Handle case when user is not in any collection
-//           console.log('User is not in any collection');
-//         }
-
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     } else {
-//       // No user is signed in.
-//       isLoggedIn.value = false;
-//     }
-//   });
-// });
-
 const HandleLogout = () => {
   localStorage.clear();
   signOut(auth).then(() => {

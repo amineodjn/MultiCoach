@@ -8,11 +8,15 @@
         </span>
         <div class="flex items-center">
           <h3 class="mr-2 font-medium leading-tight">Personal Info</h3>
-          <svg class="w-6 h-6 text-green-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <svg v-if="isLoggedIn" class="w-6 h-6 text-red-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z" clip-rule="evenodd"/>
+          </svg>
+          <svg v-else class="w-6 h-6 text-green-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
             <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"/>
-          </svg>          
+          </svg>         
         </div>
-        <p class="text-sm">{{firstName + ' ' + lastName}}</p>
+        <p v-if="isLoggedIn" class="text-sm">Please proceed to <router-link to="sign-in" class="text-indigo-600">login</router-link> to confirm the booking</p>
+        <p  v-else class="text-sm">{{firstName + ' ' + lastName}}</p>
     </li>
     <li class="mb-10 ms-6">
         <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
@@ -55,21 +59,25 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStore } from '../store/store';
 import { db } from '../main.js';
 import { getDoc, doc } from 'firebase/firestore';
+import { useRouter } from 'vue-router';
 
 const firstName = ref('');
 const lastName = ref('');
 const store = useStore();
+const router = useRouter();
 const docId = computed(() => {
   return store.docId;
 })
 const date = computed(() => {
   return props.selectedTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' });
 })
-
+const isLoggedIn = computed(() => {
+  return !firstName.value || !lastName.value;
+});
 const fetchUser = async () => {
   const docRef = doc(db, "users", docId.value); // Replace "users" with your collection name
 
@@ -85,8 +93,11 @@ const fetchUser = async () => {
   }
 };
 
-fetchUser();
-
+onMounted(() => {
+  if(docId.value) {
+    fetchUser()
+  }
+});
 const props = defineProps({
   selectedTime: {
     type: Date,

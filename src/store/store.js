@@ -5,7 +5,7 @@ import { db } from '../main.js'
 export const useStore = defineStore({
   id: 'main',
   state: () => ({
-    docId: localStorage.getItem('uid'),
+    docId: '',
     user: null,
     coach: null,
     route: null,
@@ -16,9 +16,6 @@ export const useStore = defineStore({
       this.docId = id;
       localStorage.setItem('uid', id);
     },
-    setUserRole(id) {
-      
-    },
     async getUserType() {
       const userDoc = await getDoc(doc(db, 'users', this.docId));
       const coachDoc = await getDoc(doc(db, 'coaches', this.docId));
@@ -26,11 +23,9 @@ export const useStore = defineStore({
       if (userDoc.exists()) {
         this.route = 'user-profile/' + this.docId;
         this.user = this.docId;
-        console.log(this.route);
         return this.route;
       } else if (coachDoc.exists()) {
         this.route = 'coach-profile/' + this.docId
-        console.log(this.route);
         return this.route;
       } else {
         return null;
