@@ -28,12 +28,13 @@
             class="mt-2"
             @book="selectDateAndTime"
             @favorite="selectOffer" />
+            <emptyState v-if="offers.length === 0" />
         </div>
         <div class="flex items-center justify-end p-4">
           <button :disabled="!bookedOffer" 
                   @click="selectDateAndTime" 
                   class="w-6 h-6 text-gray-800 dark:text-white">
-                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <svg  v-if="offers.length > 0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
                   </svg>
           </button>
@@ -141,6 +142,7 @@
   import offersCard from '../components/offersCard.vue'
   import timeline from '../components/timeline.vue'
   import { useStore } from '../store/store';
+  import emptyState from './emptyState.vue';
 
 
 const store = useStore();
@@ -163,6 +165,7 @@ const fetchOffers = async () => {
     const data = querySnapshot.docs.map(doc => doc.data());
     offers.value = data;
   } else {
+    offers.value = [];
     console.log('No such document!');
   }
 };
