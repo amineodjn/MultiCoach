@@ -66,7 +66,7 @@ const selectCity = (city) => {
 
 const removeCity = () => {
   selectedCity.value = ''
-  emits('cityRemoved')
+  emits('cityRemoved', '')
 }
 
 onMounted(async () => {

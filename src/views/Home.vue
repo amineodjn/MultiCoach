@@ -1,7 +1,7 @@
 <template>
   <body>
     <div class="flex flex-col md:flex-row items-start justify-center md:m-10 m-2 rounded-lg" >
-      <div class="flex flex-col md:w-1/2">
+      <div class="flex flex-col h-screen md:w-1/2">
         <div class="w-full flex md:flex-row items-start justify-between">
           <searchBox :selectedExperiences="selectedExperiences" @citySelected="filterCities" @cityRemoved="clearFilter" class="w-2/3"></searchBox>
           <div class="flex flex-col md:items-end mt-6 mr-2">
@@ -49,6 +49,12 @@
       </div>
       <bookingModal :open="open" @update="open =!open" :startHour="6" :endHour="21" @selectedDate="selectedDate" :bookedCoach="bookedCoach" />
       <successModal :open="openModal" @update="openModal =!openModal" />
+      <popUpModal 
+        :open="openPopUp" 
+        :text="text"
+        @confirm="console.log('confirm')"
+        @cancel="cancel"
+      />
   </div>
   </body>
 
@@ -66,7 +72,7 @@ import { useStore } from '../store/store';
 import { db } from '../main.js';
 import { collection, getDocs } from 'firebase/firestore';
 import emptyState from '../components/emptyState.vue';
-
+import popUpModal from '../components/popUpModal.vue';
 const store = useStore();
 const usersData = ref([])
 const filteredUsers = ref([])
@@ -75,10 +81,14 @@ const toggle = ref({})
 const toggled = ref(false)
 const experiences = ref([])
 const selectedExperiences = ref([])
+const selectedCity = ref('')
 const isFavorite = ref(false)
 const open = ref(false)
 const openModal = ref(false)
 const bookedCoach = ref('')
+const selectedDateandTime = ref(localStorage.getItem('selectedDateandTime'));
+const offerName = ref(localStorage.getItem('bookedOfferName'));
+
 
 const getUsers = async () => {
   const usersCollection = collection(db, 'coaches');
@@ -98,22 +108,48 @@ const toggleFavorite = (user) => {
   user.favorite = !user.favorite
 }
 const filterCities = (city) => {
-  filteredUsers.value = usersData.value.filter((user) => user.city === city)
-
-  console.log(filteredUsers.value);
+  if(city.length > 0 ) {
+    selectedCity.value = city;
+    const users = usersData.value;
+    filteredUsers.value = users.filter((user) => user.city === city)
+  }
 }
 const clearFilter = () => {
-  filteredUsers.value = []
+  selectedCity.value = '';
+  if(selectedExperiences.value.length === 0) {
+    filteredUsers.value = usersData.value;
+    return;
+  } else {
+    filteredUsers.value = usersData.value.filter((user) => {
+    return selectedExperiences.value.includes(user.profession) })
+  }
 }
 
-const filterExperiences = (experience) => {
-  selectedExperiences.value  = Object.keys(toggle.value).filter(key => toggle.value[key] === 'yes');
-  filteredUsers.value = filteredUsers.value.filter((user) => selectedExperiences.value.includes(user.profession))
+const filterExperiences = () => {
+  selectedExperiences.value = Object.keys(toggle.value).filter(key => toggle.value[key] === 'yes');
+
+  if(selectedExperiences.value.length === 0 && selectedCity.value === '') {
+    filteredUsers.value = usersData.value;
+    return;
+  }
+
+  filteredUsers.value = usersData.value.filter(user => {
+    const hasSelectedExperience = selectedExperiences.value.includes(user.profession);
+    const isInSelectedCity = user.city === selectedCity.value;
+
+    if (selectedCity.value && selectedExperiences.value.length > 0) {
+      return hasSelectedExperience && isInSelectedCity;
+    } else if (selectedExperiences.value.length > 0) {
+      return hasSelectedExperience;
+    } else if (selectedCity.value) {
+      return isInSelectedCity;
+    }
+
+    return false;
+  });
 }
 
 const toggleModal = (id) => {
-  console.log(id);
-
   bookedCoach.value = id
   open.value =!open.value
 }
@@ -131,12 +167,31 @@ const selectedDate = (date) => {
   }
 }
 
+///Confirmation Modal
+const openPopUp = computed(() => {
+  return selectedDateandTime.value.length > 0;
+})
+const toLocaleStringTimeOrDate = (date) => {
+      const formattedDate = new Date(date);
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return formattedDate.toLocaleDateString(undefined, options);
+};
+const text = computed(() => {
+  return `Are you sure you want to book ${offerName.value} at ${toLocaleStringTimeOrDate(selectedDateandTime.value)}?`
+})
+
+const cancel = () => {
+  localStorage.removeItem('selectedDateandTime');
+  localStorage.removeItem('bookedOffer');
+  localStorage.removeItem('bookedOfferName');
+  localStorage.removeItem('bookedCoach');
+};
 onMounted(async () => {
   usersData.value = await getUsers();
   filteredUsers.value = usersData.value;
-  experiences.value = usersData.value
+  experiences.value = [...new Set(usersData.value
     .filter(user => user.profession && user.profession !== '')
-    .map(user => user.profession);
+    .map(user => user.profession))];
 });
 
 </script>

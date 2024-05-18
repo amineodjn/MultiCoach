@@ -245,7 +245,6 @@ onMounted(async () => {
   date.value.setMinutes(minute);
 
   // Store the selected date and time in localStorage
-  console.log(date.value);
   localStorage.setItem('selectedDateandTime', date.value);
   }
   const showSecondModal = ref(false);
@@ -264,6 +263,9 @@ const bookedOfferName = ref(null);
 const selectOffer = (uid, offerName) => {
   bookedOffer.value = uid;
   bookedOfferName.value = offerName;
+  localStorage.setItem('bookedOffer', bookedOffer.value);
+  localStorage.setItem('bookedOfferName', bookedOfferName.value);
+  localStorage.setItem('bookedCoach', props.bookedCoach);
 }
 
   const selectDateAndTime = () => {
@@ -284,10 +286,14 @@ const selectOffer = (uid, offerName) => {
         // Save the booking to Firestore
         const userRef = doc(db, 'users', auth.currentUser.uid);
         if (date && auth.currentUser.uid) {
-          const newEvent = { bookedOffer: bookedOffer.value, bookingTime: date, bookedCoach: props.bookedCoach };
+          const newEvent = { bookedOffer: bookedOffer.value, offerName: bookedOfferName.value, bookingTime: date, bookedCoach: props.bookedCoach };
           await updateDoc(userRef, { 
             bookedEvents: arrayUnion(newEvent) 
           });
+          localStorage.removeItem('selectedDateandTime');
+          localStorage.removeItem('bookedOffer');
+          localStorage.removeItem('bookedOfferName');
+          localStorage.removeItem('bookedCoach');
         }
         emit('selectedDate', date)
       } else {

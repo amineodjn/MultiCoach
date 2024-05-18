@@ -58,7 +58,7 @@ import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopu
 import { useRouter } from 'vue-router';
 import { useStore } from '../store/store.js';
 import { db } from '../main.js';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 const store = useStore();
 
@@ -79,11 +79,26 @@ const register =   () => {
     
     // Check if selectedDateandTime exists in localStorage
     const selectedDateandTime = localStorage.getItem('selectedDateandTime');
+    const bookedCoach = localStorage.getItem('bookedCoach');
+    const bookedOfferName = localStorage.getItem('bookedOfferName');
+    const bookedOffer = localStorage.getItem('bookedOffer');
+
     router.push('/')
     const userRef = await doc(db, 'users', auth.currentUser.uid);
-    if (selectedDateandTime && auth.currentUser.uid) {
-     setDoc(userRef, { bookedEvents: [{ bookingTime: selectedDateandTime }] }, { merge: true });
-  }else {
+    if (selectedDateandTime && 
+        auth.currentUser.uid && 
+        bookedCoach && 
+        bookedOfferName && 
+        bookedOffer) {
+          const newEvent = { bookedOffer: bookedOffer, offerName: bookedOfferName, bookingTime: selectedDateandTime, bookedCoach: bookedCoach };
+          await updateDoc(userRef, { 
+            bookedEvents: arrayUnion(newEvent) 
+          });
+          // localStorage.removeItem('selectedDateandTime');
+          // localStorage.removeItem('bookedOffer');
+          // localStorage.removeItem('bookedOfferName');
+          // localStorage.removeItem('bookedCoach');
+    }else {
       console.log('No selected date and time');
     }
     
