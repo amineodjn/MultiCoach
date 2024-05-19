@@ -124,7 +124,7 @@
             type="button" 
             class="text-white w-1/2  focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 m-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
             :class="{ 'bg-gray-300 hover:bg-gray-300': !docId, 'bg-indigo-700 hover:bg-indigo-800' : docId }"
-            @click="saveBooking">
+            @click="confirmBooking">
             Confirm booking 
           </button>
         </div>
@@ -134,14 +134,13 @@
   </template>
   <script setup>
   import { ref, defineEmits, onMounted, watch, nextTick } from 'vue';
-  import Datepicker from 'flowbite-datepicker/Datepicker';
-  import { onAuthStateChanged, getAuth } from "firebase/auth";
   import { useRouter } from 'vue-router';
+  import { useStore } from '../store/store';
   import { db } from '../main.js';
-  import { doc, collection, updateDoc, arrayUnion, getDocs  } from 'firebase/firestore';
+  import { collection, getDocs  } from 'firebase/firestore';
+  import Datepicker from 'flowbite-datepicker/Datepicker';
   import offersCard from '../components/offersCard.vue'
   import timeline from '../components/timeline.vue'
-  import { useStore } from '../store/store';
   import emptyState from './emptyState.vue';
 
 
@@ -209,7 +208,7 @@ onMounted(async () => {
     times.value.push({ id: `${i}-am`, label: `${hour}:00 ${period}` });
   }
   
-  const emit = defineEmits(['update', 'selectedDate'])
+  const emit = defineEmits(['update', 'selectedDate', 'confirmBooking'])
   
   const closeModal = () => {
     emit('update', false)
@@ -275,34 +274,10 @@ const selectOffer = (uid, offerName) => {
   const showError = ref(false);
   const router = useRouter();
   
-  
-  const saveBooking = async () => {
-    const auth = getAuth();
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // User is signed in, proceed with booking
-        const date = new Date(localStorage.getItem('selectedDateandTime'));
-  
-        // Save the booking to Firestore
-        const userRef = doc(db, 'users', auth.currentUser.uid);
-        if (date && auth.currentUser.uid) {
-          const newEvent = { bookedOffer: bookedOffer.value, offerName: bookedOfferName.value, bookingTime: date, bookedCoach: props.bookedCoach };
-          await updateDoc(userRef, { 
-            bookedEvents: arrayUnion(newEvent) 
-          });
-          localStorage.removeItem('selectedDateandTime');
-          localStorage.removeItem('bookedOffer');
-          localStorage.removeItem('bookedOfferName');
-          localStorage.removeItem('bookedCoach');
-        }
-        emit('selectedDate', date)
-      } else {
-        // No user is signed in, handle accordingly
-        console.log('User is not signed in');
-        router.push('/sign-in');
-      }
-    });
-  }
+  const confirmBooking = () => {
+    emit('confirmBooking')
+  };
+
   const returnToSecondModal = () => {
     showSecondModal.value = true;
     showTimeLine.value = false;

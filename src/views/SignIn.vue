@@ -76,32 +76,7 @@ const register =   () => {
     store.setDocId(auth.currentUser.uid);
     store.getUserType(auth.currentUser.uid);
     localStorage.setItem('uid', auth.currentUser.uid); // Store uid in localStorage
-    
-    // Check if selectedDateandTime exists in localStorage
-    const selectedDateandTime = localStorage.getItem('selectedDateandTime');
-    const bookedCoach = localStorage.getItem('bookedCoach');
-    const bookedOfferName = localStorage.getItem('bookedOfferName');
-    const bookedOffer = localStorage.getItem('bookedOffer');
-
     router.push('/')
-    const userRef = await doc(db, 'users', auth.currentUser.uid);
-    if (selectedDateandTime && 
-        auth.currentUser.uid && 
-        bookedCoach && 
-        bookedOfferName && 
-        bookedOffer) {
-          const newEvent = { bookedOffer: bookedOffer, offerName: bookedOfferName, bookingTime: selectedDateandTime, bookedCoach: bookedCoach };
-          await updateDoc(userRef, { 
-            bookedEvents: arrayUnion(newEvent) 
-          });
-          // localStorage.removeItem('selectedDateandTime');
-          // localStorage.removeItem('bookedOffer');
-          // localStorage.removeItem('bookedOfferName');
-          // localStorage.removeItem('bookedCoach');
-    }else {
-      console.log('No selected date and time');
-    }
-    
   })
   .catch((error) => {
     console.log(error.message);

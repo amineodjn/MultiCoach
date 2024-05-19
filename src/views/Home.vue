@@ -47,12 +47,12 @@
       <div class="w-full md:w-1/2 h-screen">
         <GoogleMap api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
       </div>
-      <bookingModal :open="open" @update="open =!open" :startHour="6" :endHour="21" @selectedDate="selectedDate" :bookedCoach="bookedCoach" />
+      <bookingModal :open="open" @update="open =!open" :startHour="6" :endHour="21" @confirmBooking="confirmBooking" @selectedDate="selectedDate" :bookedCoach="bookedCoach" />
       <successModal :open="openModal" @update="openModal =!openModal" />
       <popUpModal 
         :open="openPopUp" 
         :text="text"
-        @confirm="console.log('confirm')"
+        @confirm="confirmBooking"
         @cancel="cancel"
       />
   </div>
@@ -62,17 +62,20 @@
 </template>
 <script setup>
 import searchBox from '../components/searchbox.vue'
-import { ref, onMounted, reactive, computed } from 'vue'
-import { GoogleMap } from 'vue3-google-map';
-import card from '../components/card.vue'
-import users from '../users.js'
-import bookingModal from '../components/BookingModal.vue'
-import successModal from '../components/successModal.vue';
-import { useStore } from '../store/store';
+import { ref, onMounted, computed } from 'vue'
 import { db } from '../main.js';
-import { collection, getDocs } from 'firebase/firestore';
+import { doc, collection, getDocs, updateDoc, arrayUnion } from 'firebase/firestore';
+import { onAuthStateChanged, getAuth  } from "firebase/auth";
+import { GoogleMap } from 'vue3-google-map';
+import { useStore } from '../store/store';
+import card from '../components/card.vue'
 import emptyState from '../components/emptyState.vue';
 import popUpModal from '../components/popUpModal.vue';
+import bookingModal from '../components/BookingModal.vue'
+import successModal from '../components/successModal.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const store = useStore();
 const usersData = ref([])
 const filteredUsers = ref([])
@@ -86,7 +89,6 @@ const isFavorite = ref(false)
 const open = ref(false)
 const openModal = ref(false)
 const bookedCoach = ref('')
-const selectedDateandTime = ref(localStorage.getItem('selectedDateandTime'));
 const offerName = ref(localStorage.getItem('bookedOfferName'));
 
 
@@ -168,9 +170,17 @@ const selectedDate = (date) => {
 }
 
 ///Confirmation Modal
-const openPopUp = computed(() => {
-  return selectedDateandTime.value.length > 0;
-})
+const openPopUp = ref(false);
+const selectedDateandTime = computed(() => {
+  const selectedDate = localStorage.getItem('selectedDateandTime');
+  if(!selectedDate) {
+    openPopUp.value = false;
+  } else {
+    openPopUp.value = true;
+  }
+  return selectedDate
+});
+
 const toLocaleStringTimeOrDate = (date) => {
       const formattedDate = new Date(date);
       const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -180,7 +190,42 @@ const text = computed(() => {
   return `Are you sure you want to book ${offerName.value} at ${toLocaleStringTimeOrDate(selectedDateandTime.value)}?`
 })
 
+const confirmBooking = async () => {
+   const bookedOffer = localStorage.getItem('bookedOffer');
+   const bookedOfferName = localStorage.getItem('bookedOfferName');
+   const bookedCoach = localStorage.getItem('bookedCoach');
+   
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in, proceed with booking
+        const date = new Date(localStorage.getItem('selectedDateandTime'));
+  
+        // Save the booking to Firestore
+        const userRef = doc(db, 'users', auth.currentUser.uid);
+        if (date && auth.currentUser.uid) {
+          const newEvent = { bookedOffer: bookedOffer, offerName: bookedOfferName, bookingTime: date, bookedCoach: bookedCoach };
+          await updateDoc(userRef, { 
+            bookedEvents: arrayUnion(newEvent) 
+          });
+          localStorage.removeItem('selectedDateandTime');
+          localStorage.removeItem('bookedOffer');
+          localStorage.removeItem('bookedOfferName');
+          localStorage.removeItem('bookedCoach');
+          openModal.value=true;
+          open.value = false;
+          openPopUp.value= false;
+        }
+      } else {
+        // No user is signed in, handle accordingly
+        console.log('User is not signed in');
+        router.push('/sign-in');
+      }
+    });
+  }
+
 const cancel = () => {
+  openPopUp.value = false;
   localStorage.removeItem('selectedDateandTime');
   localStorage.removeItem('bookedOffer');
   localStorage.removeItem('bookedOfferName');
