@@ -75,6 +75,10 @@ const register =   () => {
     console.log("Successfully signed in!");
     store.setDocId(auth.currentUser.uid);
     store.getUserType(auth.currentUser.uid);
+    console.log(data.user);
+    store.setUser(data.user);
+    store.fetchUser('users');
+    store.fetchUser('coaches');
     localStorage.setItem('uid', auth.currentUser.uid); // Store uid in localStorage
     router.push('/')
   })
