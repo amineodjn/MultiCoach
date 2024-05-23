@@ -147,7 +147,7 @@ onMounted( async () => {
 const openProfile = async () => {
   if (isLoggedIn.value) {
     const profileRoute = await store.getUserType();
-    router.push(`/${profileRoute}`);
+    router.push('/myProfile');
     route.value = profileRoute;
   }
 }

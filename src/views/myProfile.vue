@@ -10,7 +10,7 @@
               </figure>
               <div class="-mt-24">
                 <div class="relative flex border-4 mx-auto rounded-full flex-col items-center dark:border-neutral-800" style="width: 120px; height: 120px;">
-                  <img class="object-cover w-full h-full rounded-full shadow-lg" src="../assets/IMG_3577-modified.png" alt="Bonnie image"/>
+                  <img class="object-cover w-full h-full rounded-full shadow-lg" :src="profilePicture" alt="Profile picture"/>
                 </div>
                 <div class="flex flex-col items-center mt-3">
                   <h1 class="text-xl font-medium text-gray-900 dark:text-white">{{firstName + ' ' + lastName}}</h1>
@@ -47,85 +47,7 @@
                 </div>
               </div>
             </div>
-            <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-              <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit your profile</h2>
-              <form @submit.prevent="updateUser">
-                <div class="grid gap-6 mb-6 md:grid-cols-2">
-                  <inputValidation :Modelval="firstName" 
-                  title="First name" 
-                  :error-message="firstNameError" 
-                  placeholder="John"
-                  @input="firstName = $event.target.value"
-                  :showError="showError.firstName"
-                  ></inputValidation>
-                  <inputValidation 
-                    :Modelval="lastName" 
-                    title="Last name" 
-                    :error-message="lastNameError" 
-                    placeholder="Doe"
-                    @input="lastName = $event.target.value"
-                    :showError="showError.lastName"
-                  ></inputValidation>
-          
-                  <inputValidation 
-                    :Modelval="email" 
-                    title="Your email" 
-                    :error-message="emailError" 
-                    placeholder="Enter your email"
-                    @input="email = $event.target.value"
-                    :showError="showError.email"
-                  ></inputValidation>
-          
-                  <inputValidation 
-                    :Modelval="password" 
-                    title="Password" 
-                    :error-message="passwordError" 
-                    placeholder="Password"
-                    @input="password = $event.target.value"
-                    :showError="showError.password"
-                  ></inputValidation>
-
-                  <inputValidation 
-                    :Modelval="userName" 
-                    title="Username" 
-                    :error-message="userNameError" 
-                    placeholder="Username"
-                    @input="userName = $event.target.value"
-                    :showError="showError.userName"
-                  ></inputValidation>
-                </div>
-                <div>
-                  <textArea
-                    :Modelval="description"
-                    title="Description" 
-                    :error-message="descriptionError" 
-                    placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"
-                    @input="description = $event.target.value"
-                    :showError="showError.description"
-                  ></textArea>
-                </div>
-                <div class="flex items-center justify-center w-full mb-6">
-                  <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                      </svg>
-                      <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                      <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-                    </div>
-                    <input id="dropzone-file" type="file" @change="uploadImage" class="hidden" />
-                  </label>
-                </div> 
-                <div v-if="selectedFile" class="flex items-start mb-6">
-                  <div class="flex items-center h-5">
-                    <svg class="w-6 h-5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"></path></svg>
-                  </div>
-                  <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"><a :href="imageUrl" class="text-indigo-600 hover:underline dark:text-indigo-500">{{ imageName }}</a>.</label>
-                </div>
-                <button type="submit" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Submit</button>
-              </form>
-            </div>
+            <offers />
         </div> 
       </div> 
     </main>    
@@ -142,6 +64,7 @@
   import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
   import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
+  import offers from '../views/offers.vue';
   import inputValidation from '../components/inputValidation.vue';
   import textArea from '../components/textarea.vue';
   
@@ -151,12 +74,13 @@
   const userId = computed(() => store.docId);
   const docRef = doc(db, "users", userId.value);
   
-  const firstName = ref('');
-  const lastName = ref('');
-  const email = ref('');
-  const password = ref('');
-  const description = ref('');
-  const userName = ref('');
+  const firstName = ref(store.user.firstName);
+  const lastName = ref(store.user.lastName);
+  const email = ref(store.user.email);
+  const password = ref(store.user.password);
+  const description = ref(store.user.description);
+  const userName = ref(store.user.userName);
+  const profilePicture = ref(store.user.profilePicture);
   const success = ref(false);
   const hasEmptyFields = ref(false);
 
@@ -240,32 +164,12 @@ function splitCamelCase(str) {
 }
   
   // Fetch user data from Firestore
-  const fetchUser = async () => {
-    if (!userId.value) {
-      console.log('docId is not set', userId.value);
-      return;
-    }
   
-    const docRef = doc(db, "users", userId.value);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      firstName.value = docSnap.data().firstName;
-      lastName.value = docSnap.data().lastName;
-      email.value = docSnap.data().email;
-      password.value = docSnap.data().password;
-      userName.value = docSnap.data().userName;
-      description.value = docSnap.data().description;
-  
-    } else {
-      console.log('No such document!');
-    }
-  };
   
   onMounted(() => {
     if(!userId.value) {
       console.log('docId is not set', userId.value);
     }
-    fetchUser();
   });
   const selectedFile = ref(null);
   const imageUrl = ref('');

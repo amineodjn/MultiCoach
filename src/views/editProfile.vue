@@ -10,7 +10,7 @@
               </figure>
               <div class="-mt-24">
                 <div class="relative flex border-4 mx-auto rounded-full flex-col items-center dark:border-neutral-800" style="width: 120px; height: 120px;">
-                  <img class="object-cover w-full h-full rounded-full shadow-lg" src="../assets/IMG_3577-modified.png" alt="Bonnie image"/>
+                  <img class="object-cover w-full h-full rounded-full shadow-lg" :src="profilePicture" alt="profile picutre"/>
                 </div>
                 <div class="flex flex-col items-center mt-3">
                   <h1 class="text-xl font-medium text-gray-900 dark:text-white">{{firstName + ' ' + lastName}}</h1>
@@ -84,14 +84,50 @@
                     @input="password = $event.target.value"
                     :showError="showError.password"
                   ></inputValidation>
-
+          
                   <inputValidation 
-                    :Modelval="userName" 
-                    title="Username" 
-                    :error-message="userNameError" 
-                    placeholder="Username"
-                    @input="userName = $event.target.value"
-                    :showError="showError.userName"
+                    :Modelval="profession" 
+                    title="Profession" 
+                    :error-message="professionError" 
+                    placeholder="Personal Trainer"
+                    @input="profession = $event.target.value"
+                    :showError="showError.profession"
+                  ></inputValidation>
+          
+                  <inputValidation 
+                    :Modelval="city" 
+                    title="City" 
+                    :error-message="cityError" 
+                    placeholder="Poznań"
+                    @input="city = $event.target.value"
+                    :showError="showError.city"
+                  ></inputValidation>
+          
+                  <inputValidation 
+                    :Modelval="websiteUrl" 
+                    title="Website url (optional)" 
+                    :error-message="websiteUrlError" 
+                    placeholder="Multicoach.com"
+                    @input="websiteUrl = $event.target.value"
+                    :showError="showError.websiteUrl"
+                  ></inputValidation>
+          
+                  <inputValidation 
+                    :Modelval="phoneNumber" 
+                    title="Phone number" 
+                    :error-message="phoneNumberError" 
+                    placeholder="xxx-xxx-xxx"
+                    @input="phoneNumber = $event.target.value"
+                    :showError="showError.phoneNumber"
+                  ></inputValidation>
+          
+                  <inputValidation 
+                    :Modelval="gym" 
+                    title="Gym" 
+                    :error-message="gymError" 
+                    placeholder="Gym world, can be?"
+                    @input="gym = $event.target.value"
+                    :showError="showError.gym"
                   ></inputValidation>
                 </div>
                 <div>
@@ -151,12 +187,18 @@
   const userId = computed(() => store.docId);
   const docRef = doc(db, "users", userId.value);
   
-  const firstName = ref('');
-  const lastName = ref('');
-  const email = ref('');
-  const password = ref('');
-  const description = ref('');
-  const userName = ref('');
+  const firstName = ref(store.user.firstName);
+  const lastName = ref(store.user.lastName);
+  const email = ref(store.user.email);
+  const password = ref(store.user.password);
+  const description = ref(store.user.description);
+  const userName = ref(store.user.userName);
+  const profilePicture = ref(store.user.profilePicture);
+  const profession = ref(store.user.profession);
+  const city = ref(store.user.city);
+  const websiteUrl = ref(store.user.websiteUrl);
+  const gym = ref(store.user.gym);
+  const phoneNumber = ref(store.user.phoneNumber);
   const success = ref(false);
   const hasEmptyFields = ref(false);
 
@@ -240,32 +282,12 @@ function splitCamelCase(str) {
 }
   
   // Fetch user data from Firestore
-  const fetchUser = async () => {
-    if (!userId.value) {
-      console.log('docId is not set', userId.value);
-      return;
-    }
   
-    const docRef = doc(db, "users", userId.value);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      firstName.value = docSnap.data().firstName;
-      lastName.value = docSnap.data().lastName;
-      email.value = docSnap.data().email;
-      password.value = docSnap.data().password;
-      userName.value = docSnap.data().userName;
-      description.value = docSnap.data().description;
-  
-    } else {
-      console.log('No such document!');
-    }
-  };
   
   onMounted(() => {
     if(!userId.value) {
       console.log('docId is not set', userId.value);
     }
-    fetchUser();
   });
   const selectedFile = ref(null);
   const imageUrl = ref('');
