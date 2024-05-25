@@ -47,7 +47,9 @@
                 </div>
               </div>
             </div>
-            <offers />
+            <div class="container mx-auto py-6" >
+              <offers />
+            </div>
         </div> 
       </div> 
     </main>    
@@ -57,7 +59,7 @@
   <script setup>
   import { ref, computed, onMounted, reactive  } from 'vue';
   import { db } from '../main.js';
-  import { doc, updateDoc, getDoc } from 'firebase/firestore';
+  import { doc, updateDoc } from 'firebase/firestore';
   import { useStore } from '../store/store.js';
   import { storage } from '../main.js';
   import { getAuth } from 'firebase/auth';
@@ -65,9 +67,7 @@
   import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
   import offers from '../views/offers.vue';
-  import inputValidation from '../components/inputValidation.vue';
-  import textArea from '../components/textarea.vue';
-  
+
   
   
   const store = useStore();
