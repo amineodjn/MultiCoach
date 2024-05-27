@@ -68,6 +68,15 @@
                   ></inputValidation>
           
                   <inputValidation 
+                    :Modelval="userName" 
+                    title="Username" 
+                    :error-message="userNameError" 
+                    placeholder="coach_10"
+                    @input="userName = $event.target.value"
+                    :showError="showError.userName"
+                  ></inputValidation>
+
+                  <inputValidation 
                     :Modelval="email" 
                     title="Your email" 
                     :error-message="emailError" 
@@ -185,7 +194,7 @@
   
   const store = useStore();
   const userId = computed(() => store.docId);
-  const docRef = doc(db, "users", userId.value);
+  const docRef = store.user.coache ? store.userDoc("coaches") : store.userDoc("users");
   
   const firstName = ref(store.user.firstName);
   const lastName = ref(store.user.lastName);
@@ -220,12 +229,17 @@ function createErrorComputed(field, key) {
     return '';
   });
 }
-// Error messages 
+//Error messages 
 const firstNameError = createErrorComputed(firstName, 'firstName');
 const lastNameError = createErrorComputed(lastName, 'lastName');
 const emailError = createErrorComputed(email, 'email');
-const passwordError = createErrorComputed(password, 'password');
+const cityError = createErrorComputed(city, 'city');
+const websiteUrlError = createErrorComputed(websiteUrl, 'websiteUrl');
+const phoneNumberError = createErrorComputed(phoneNumber, 'phoneNumber');
+const gymError = createErrorComputed(gym, 'gym');
 const descriptionError = createErrorComputed(description, 'description');
+const professionError = createErrorComputed(profession, 'profession');
+const passwordError = createErrorComputed(password, 'password');
 const userNameError = createErrorComputed(userName, 'userName');
 
 const showError = reactive({

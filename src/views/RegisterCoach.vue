@@ -106,6 +106,7 @@ const createUser = async (uid) => {
     lastName: lastName.value,
     email: email.value,
     password: password.value,
+    coach: true,
   }
 
   // Set the data on the document

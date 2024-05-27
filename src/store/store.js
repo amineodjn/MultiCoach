@@ -36,6 +36,7 @@ export const useStore = defineStore({
           profession: docSnap.data().profession,
           profilePicture: docSnap.data().profilePicture,
           websiteUrl: docSnap.data().websiteUrl,
+          coach: docSnap.data().coach,
         };
       } else {
         console.log('No such document!');
@@ -60,6 +61,9 @@ export const useStore = defineStore({
       } else {
         return null;
       }
+    },
+    userDoc(type) {
+      return doc(db, type, this.docId);
     }
   }
 });
