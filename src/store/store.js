@@ -53,10 +53,10 @@ export const useStore = defineStore({
       const coachDoc = await getDoc(doc(db, 'coaches', this.docId));
 
       if (userDoc.exists()) {
-        this.route = 'user-profile/' + this.docId;
+        this.route = '/user-profile/' + this.docId;
         return this.route;
       } else if (coachDoc.exists()) {
-        this.route = 'coach-profile/' + this.docId
+        this.route = '/coach-profile/' + this.docId
         return this.route;
       } else {
         return null;

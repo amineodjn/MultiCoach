@@ -25,8 +25,9 @@
           :coachAccess="true"
           @book="toggleModal"
           @deleteOffer="deleteOffer" />
+      <emptyState v-if="displayedOffers.length === 0" />
     </div>
-    <div class="text-center dark:border-neutral-70 hover:bg-gray-50">
+    <div v-if="displayedOffers.length > 0" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex  items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
          @click="viewAllProjects">
         {{ showAllOffers ? 'Show less' : 'Show all' }}
@@ -51,6 +52,7 @@ import { onMounted, ref, computed } from 'vue';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../main'; 
 import { useStore } from '../store/store';
+import emptyState from '../components/emptyState.vue';
 
 
 const store = useStore();

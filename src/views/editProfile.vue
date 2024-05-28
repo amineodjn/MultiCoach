@@ -102,15 +102,14 @@
                     @input="profession = $event.target.value"
                     :showError="showError.profession"
                   ></inputValidation>
-          
-                  <inputValidation 
+
+                  <locationInput
                     :Modelval="city" 
                     title="City" 
                     :error-message="cityError" 
                     placeholder="Poznań"
-                    @input="city = $event.target.value"
-                    :showError="showError.city"
-                  ></inputValidation>
+                    @input="city = $event"
+                    ></locationInput>
           
                   <inputValidation 
                     :Modelval="websiteUrl" 
@@ -189,12 +188,13 @@
   import sidebar from '../components/sidebar.vue';
   import inputValidation from '../components/inputValidation.vue';
   import textArea from '../components/textarea.vue';
-  
+  import locationInput from '../components/locationInput.vue';
+
   
   
   const store = useStore();
   const userId = computed(() => store.docId);
-  const docRef = store.user.coache ? store.userDoc("coaches") : store.userDoc("users");
+  const docRef = store.user.coach ? store.userDoc("coaches") : store.userDoc("users");
   
   const firstName = ref(store.user.firstName);
   const lastName = ref(store.user.lastName);
@@ -279,6 +279,8 @@ function splitCamelCase(str) {
   // Check if there are any errors
   const hasErrors = Object.values(showError).some(value => value === true);
   if (!hasErrors) {
+    console.log(docRef.value);
+    console.log(docRef);
     await updateDoc(docRef, dataObj);
     success.value = true;
     console.log('User data updated successfully!');
