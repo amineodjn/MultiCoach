@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm">
+  <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
     <div class="flex justify-between items-center py-4 px-5">
       <h2 class="text-2xl font-bold">Offers</h2>
       <div class="flex items-center md:justify-end space-x-2">

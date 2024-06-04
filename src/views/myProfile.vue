@@ -4,7 +4,7 @@
       <main id="content" class="content-container">
         <div class="mx-auto">
           <div class="md:pt-5 sm:pt-0 sm:pb-0 sm:p-5 p-2">
-            <div class="w-full pb-0 p-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-neutral-800 dark:border-neutral-700 ">
+            <div class="w-full pb-0 p-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-neutral-800 dark:border-neutral-700">
               <figure>
                 <svg class="w-full" preserveAspectRatio="none" width="1113" height="161" viewBox="0 0 1113 161" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_666_220723)"><rect x="0.5" width="1112" height="161" rx="12" fill="white"></rect><rect x="1" width="1112" height="348" fill="#D9DEEA"></rect><path d="M512.694 359.31C547.444 172.086 469.835 34.2204 426.688 -11.3096H1144.27V359.31H512.694Z" fill="#C0CBDD"></path><path d="M818.885 185.745C703.515 143.985 709.036 24.7949 726.218 -29.5801H1118.31V331.905C1024.49 260.565 963.098 237.945 818.885 185.745Z" fill="#8192B0"></path><defs><clipPath id="clip0_666_220723"><rect x="0.5" width="1112" height="161" rx="12" fill="white"></rect></clipPath></defs></g></svg>
               </figure>
