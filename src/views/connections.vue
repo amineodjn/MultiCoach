@@ -47,6 +47,9 @@
                 </div>
               </div>
             </div>
+            <div class="container mx-auto py-6" >
+              <favoriteCoaches />
+            </div>
         </div> 
       </div> 
     </main>    
@@ -63,9 +66,8 @@
   import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
   import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
-  import inputValidation from '../components/inputValidation.vue';
-  import textArea from '../components/textarea.vue';
-  
+  import favoriteCoaches from '../views/favoriteCoaches.vue';
+
   
   
   const store = useStore();

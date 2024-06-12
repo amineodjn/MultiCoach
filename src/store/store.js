@@ -7,6 +7,7 @@ export const useStore = defineStore({
   state: () => ({
     docId: '',
     user: {},
+    favoriteCoaches: [],
     route: null,
   }),
   actions: {

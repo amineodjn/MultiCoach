@@ -39,7 +39,7 @@
             :user="user" 
             class="mt-2"
             @book="toggleModal"
-            @favorite="toggleFavorite"
+            @favorite="toggleFavorite(user)"
             />
         </div>
         <emptyState v-if="filteredUsers.length === 0" class="mx-4" />
@@ -99,16 +99,22 @@ const getUsers = async () => {
   return userList;
 };
 
-// const usersToShow = computed(() => {
-//   return filteredUsers.value.length > 0 ? filteredUsers.value : usersData.value;
-// })
-
 const dropdownToggle = () => {
   toggled.value = !toggled.value
 }
-const toggleFavorite = (user) => {
-  user.favorite = !user.favorite
-}
+
+let favoriteCoaches = [];
+
+const toggleFavorite = (coach) => {
+  coach.favorite = !coach.favorite;
+
+  if (coach.favorite) {
+    favoriteCoaches.push(coach);
+  } else {
+    favoriteCoaches = favoriteCoaches.filter(c => c.uid !== coach.uid);
+  }
+ store.favoriteCoaches = favoriteCoaches;
+};
 const filterCities = (city) => {
   if(city.length > 0 ) {
     selectedCity.value = city;
