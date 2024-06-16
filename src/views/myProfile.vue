@@ -26,7 +26,7 @@
                     </svg>
                     My Profile
                   </router-link>
-                  <router-link class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm font-medium whitespace-nowrap text-gray-500 focus:outline-none focus:text-indigo-800 dark:text-indigo-500" to="/connections">
+                  <router-link class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-indigo-600 focus:outline-none focus:text-indigo-600 dark:text-neutral-500 dark:hover:text-indigo-500" to="/connections">
                     <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
                       <circle cx="12" cy="10" r="3"></circle>
@@ -40,6 +40,12 @@
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
                     Edit Profile
+                  </router-link>
+                  <router-link v-if="isCoach" class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-indigo-600 focus:outline-none focus:text-indigo-600 dark:text-neutral-500 dark:hover:text-indigo-500" to="/schedule">
+                    <svg class="flex-shrink-0 size-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                    </svg>
+                    Schedule
                   </router-link>
                 </nav>
                 <div>
@@ -83,6 +89,7 @@
   const profilePicture = ref(store.user.profilePicture);
   const success = ref(false);
   const hasEmptyFields = ref(false);
+  const isCoach = store.user.coach;
 
   const errorMessages = reactive({
   firstName: '',

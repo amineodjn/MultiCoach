@@ -63,9 +63,9 @@ const router = createRouter({
       }
     },
     {
-      path: '/myProfile2',
-      name: 'myProfile2',
-      component: () => import('../views/myProfile2.vue'),
+      path: '/schedule',
+      name: 'schedule',
+      component: () => import('../views/schedule.vue'),
       meta: {
         requiresAuth: true,
       }
