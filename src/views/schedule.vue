@@ -80,7 +80,7 @@
   <script setup>
   import { ref, computed, onMounted, reactive  } from 'vue';
   import { db } from '../main.js';
-  import { doc, updateDoc, setDoc } from 'firebase/firestore';
+  import { doc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
   import { useStore } from '../store/store.js';
   import { storage } from '../main.js';
   import { getAuth } from 'firebase/auth';
@@ -110,21 +110,12 @@
   userName: '',
   description: '',
 });
-const days = ref([
-  { name: 'Monday', startTime: '09:00', endTime: '18:00' },
-  { name: 'Tuesday', startTime: '09:00', endTime: '18:00' },
-  { name: 'Wednesday', startTime: '09:00', endTime: '18:00' },
-  { name: 'Thursday', startTime: '09:00', endTime: '18:00' },
-  { name: 'Friday', startTime: '09:00', endTime: '18:00' },
-  { name: 'Saturday', startTime: '09:00', endTime: '18:00' },
-  { name: 'Sunday', startTime: '09:00', endTime: '18:00' }
-]);
+const days = ref([]);
 
 const submitSchedule = async () => {
-  const coachId = store.docId; // replace with actual coach ID
-  const coachRef = doc(db, 'coaches', coachId);
+  const coachRef = doc(db, 'coaches', userId.value);
   const schedule = days.value.reduce((acc, day) => {
-    acc[day.name.toLowerCase()] = { startTime: day.startTime, endTime: day.endTime };
+    acc[day.name] = { startTime: day.startTime, endTime: day.endTime };
     return acc;
   }, {});
   await setDoc(coachRef, { schedule }, { merge: true });
@@ -199,12 +190,35 @@ function splitCamelCase(str) {
   }
     // Update the fields based on your reactive properties
 }
-  
-  onMounted(() => {
-    if(!userId.value) {
+
+  onMounted(async () => {
+  const coachRef = doc(db, 'coaches', userId.value);
+  const docSnap = await getDoc(coachRef);
+
+  if(!userId.value) {
       console.log('docId is not set', userId.value);
     }
-  });
+
+  if (docSnap.data().schedule) {
+    const schedule = docSnap.data().schedule;
+    days.value = Object.keys(schedule).map(day => ({
+      name: day,
+      startTime: schedule[day].startTime,
+      endTime: schedule[day].endTime
+    }));
+  } else {
+    days.value = [
+    { name: 'Monday', startTime: '09:00', endTime: '18:00' },
+    { name: 'Tuesday', startTime: '09:00', endTime: '18:00' },
+    { name: 'Wednesday', startTime: '09:00', endTime: '18:00' },
+    { name: 'Thursday', startTime: '09:00', endTime: '18:00' },
+    { name: 'Friday', startTime: '09:00', endTime: '18:00' },
+    { name: 'Saturday', startTime: '09:00', endTime: '18:00' },
+    { name: 'Sunday', startTime: '09:00', endTime: '18:00' }
+  ];
+    console.log("No such document!");
+  }
+})
   const selectedFile = ref(null);
   const imageUrl = ref('');
   const imageName = ref('');
