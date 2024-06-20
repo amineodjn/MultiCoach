@@ -41,7 +41,8 @@ const showForm = ref(false);
 const showAllOffers = ref(false);
 
 const favoriteCoaches = computed(() => {
-  const favorites = store.favoriteCoaches;
+  const favorites = store.user.favoriteCoaches;
+  console.log('favorites', favorites);
   if(!showAllOffers.value) {
     return favorites.slice(0, 3);
   }
@@ -69,12 +70,6 @@ const fetchOffers = async () => {
   }
 };
 
-const addOffer = () => {
-  showForm.value = !showForm.value;
-  if (showForm.value) {
-    window.location.hash = '#offersFormDiv';
-  }
-};
 
 onMounted(async () => {
   fetchOffers();});

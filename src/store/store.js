@@ -38,6 +38,8 @@ export const useStore = defineStore({
           profilePicture: docSnap.data().profilePicture,
           websiteUrl: docSnap.data().websiteUrl,
           coach: docSnap.data().coach,
+          favoriteCoaches: docSnap.data().favoriteCoaches,
+          schedule: docSnap.data().schedule
         };
       } else {
         console.log('No such document!');

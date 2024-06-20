@@ -38,6 +38,7 @@
           <card 
             :user="user" 
             class="mt-2"
+            :favorite="store.user.favoriteCoaches.some(c => c.uid === user.uid)"
             @book="toggleModal"
             @favorite="toggleFavorite(user)"
             />
@@ -64,7 +65,7 @@
 import searchBox from '../components/searchbox.vue'
 import { ref, onMounted, computed } from 'vue'
 import { db } from '../main.js';
-import { doc, collection, getDocs, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, collection, getDocs, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
 import { onAuthStateChanged, getAuth  } from "firebase/auth";
 import { GoogleMap } from 'vue3-google-map';
 import { useStore } from '../store/store';
@@ -103,17 +104,23 @@ const dropdownToggle = () => {
   toggled.value = !toggled.value
 }
 
-let favoriteCoaches = [];
+let favoriteCoaches = store.favoriteCoaches;
 
-const toggleFavorite = (coach) => {
+const toggleFavorite = async (coach) => {
   coach.favorite = !coach.favorite;
-
+  
   if (coach.favorite) {
     favoriteCoaches.push(coach);
   } else {
     favoriteCoaches = favoriteCoaches.filter(c => c.uid !== coach.uid);
   }
+  const userRef = store.user.coach ? store.userDoc('coaches') :  store.userDoc('users');
+  await updateDoc(userRef, { favoriteCoaches: favoriteCoaches }, { merge: true });
  store.favoriteCoaches = favoriteCoaches;
+ console.log((coach.uid));
+  console.log(store.favoriteCoaches.map(c => c.uid = coach.uid));
+  console.log(isFavorite);
+  console.log(store.favoriteCoaches);
 };
 const filterCities = (city) => {
   if(city.length > 0 ) {
@@ -240,6 +247,7 @@ const cancel = () => {
 onMounted(async () => {
   usersData.value = await getUsers();
   filteredUsers.value = usersData.value;
+  console.log(usersData.value, 'usersData.value');
   experiences.value = [...new Set(usersData.value
     .filter(user => user.profession && user.profession !== '')
     .map(user => user.profession))];

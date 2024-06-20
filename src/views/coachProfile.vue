@@ -341,6 +341,8 @@ const fetchUser = async () => {
     success.value = false;
     console.log('No such document!');
   }
+  console.log(city.value);
+
 };
 
 onMounted(() => {
