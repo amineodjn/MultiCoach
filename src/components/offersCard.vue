@@ -1,6 +1,6 @@
 <template>
   <div 
-  class="bg-white flex items-center justify-between px-5 py-4 border-b w-full"
+  class="bg-white flex items-center justify-between px-5 py-4 w-full"
   :class="customWidth"
   >
   <div class="flex flex-col sm:-mx-4 sm:flex-row">

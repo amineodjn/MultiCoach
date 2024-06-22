@@ -91,6 +91,11 @@ const router = createRouter({
       name: 'offers',
       component: () => import('../views/offers.vue'),
     },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/profile.vue'),
+    },
   ],
 });
 

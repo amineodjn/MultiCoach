@@ -79,12 +79,11 @@ const isLoggedIn = computed(() => {
   return !firstName.value || !lastName.value;
 });
 const fetchUser = async () => {
-  const docRef = doc(db, "users", docId.value); // Replace "users" with your collection name
+  const docRef = store.user.coach ? store.userDoc('coaches') :  store.userDoc('users');
 
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
     firstName.value = docSnap.data().firstName;
     lastName.value = docSnap.data().lastName;
     // Now you can use firstName and lastName

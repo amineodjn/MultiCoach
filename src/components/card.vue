@@ -5,7 +5,8 @@
         <img class="flex-shrink-0 object-cover w-20 h-20 rounded-full sm:mx-4 ring-4 ring-gray-300 hover:ring-indigo-300" :src="user.profilePicture" alt="">
       </div>
       <div class="sm:mx-4 sm:mt-0">
-        <h1 class="text-xl font-medium  text-gray-700 capitalize dark:text-white">{{ user.firstName + ' ' + user.lastName }}</h1>
+        <RouterLink to="/profile"><h1 class="text-xl font-medium  text-gray-700 capitalize dark:text-white">{{ user.firstName + ' ' + user.lastName }}</h1></RouterLink>
+        
         <p class="mt-2 text-gray-500 capitalize dark:text-gray-300">{{ user.profession }}</p>
         <div class="flex mt-2">
           <a class="flex mr-2 text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-300 " aria-label="gym">

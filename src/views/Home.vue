@@ -174,8 +174,8 @@ const filterExperiences = () => {
 }
 
 const toggleModal = (id) => {
-  bookedCoach.value = idfetchFavoriteCoaches
-  open.value =!open.value
+  bookedCoach.value = id;
+  open.value =!open.value;
 }
 
 const isValidDate = (d) => {
@@ -224,7 +224,7 @@ const confirmBooking = async () => {
         const date = new Date(localStorage.getItem('selectedDateandTime'));
   
         // Save the booking to Firestore
-        const userRef = doc(db, 'users', auth.currentUser.uid);
+        const userRef =  store.user.coach ? doc(db, 'coaches', auth.currentUser.uid) : doc(db, 'users', auth.currentUser.uid);
         if (date && auth.currentUser.uid) {
           const newEvent = { bookedOffer: bookedOffer, offerName: bookedOfferName, bookingTime: date, bookedCoach: bookedCoach };
           await updateDoc(userRef, { 
