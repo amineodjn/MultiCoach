@@ -45,12 +45,6 @@ export const useStore = defineStore({
         console.log('No such document!');
       }
     },
-    setUser(user) {
-      // this.user = user;
-      // this.email = user.email;
-      // console.log(user.email);
-
-    },
     async getUserType() {
       const userDoc = await getDoc(doc(db, 'users', this.docId));
       const coachDoc = await getDoc(doc(db, 'coaches', this.docId));

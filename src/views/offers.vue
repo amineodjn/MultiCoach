@@ -83,7 +83,6 @@ const viewAllProjects = () => {
 
 const fetchOffers = async () => {
   if (!store.docId) {
-    console.log('docId is not set', store.docId);
     return;
   }
 
@@ -117,8 +116,6 @@ const deleteOffer = async (uid) => {
 
   try {
     await deleteDoc(offerRef);
-    console.log(`Offer with uid ${uid} has been deleted.`);
-    // Fetch the updated list of offers after deleting
     fetchOffers();
   } catch (error) {
     console.error("Error deleting offer: ", error);

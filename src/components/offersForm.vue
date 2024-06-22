@@ -189,7 +189,6 @@ function splitCamelCase(str) {
   // Fetch user data from Firestore
   const fetchOffers = async () => {
     if (!userId.value) {
-      console.log('docId is not set', userId.value);
       return;
     }
   

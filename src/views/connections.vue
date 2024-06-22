@@ -154,7 +154,6 @@ function splitCamelCase(str) {
   if (!hasErrors) {
     await updateDoc(docRef, dataObj);
     success.value = true;
-    console.log('User data updated successfully!');
   } 
 
   if (hasErrors) {

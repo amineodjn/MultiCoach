@@ -151,9 +151,7 @@ const date = ref(null);
 const docId = store.docId;
 
 const fetchOffers = async () => {
-  console.log('fetching offers', props.bookedCoach) ;
   if (!props.bookedCoach) {
-    console.log('docId is not set', props.bookedCoach);
     return;
   }
 
@@ -165,7 +163,6 @@ const fetchOffers = async () => {
     offers.value = data;
   } else {
     offers.value = [];
-    console.log('No such document!');
   }
 };
 

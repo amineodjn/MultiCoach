@@ -135,7 +135,6 @@ onMounted( async () => {
   auth = getAuth();
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      console.log(user.uid);
       isLoggedIn.value = true;
       
     } else {

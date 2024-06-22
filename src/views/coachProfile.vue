@@ -302,7 +302,6 @@ async function updateUser() {
   if (!hasErrors) {
     await updateDoc(docRef, dataObj);
     success.value = true;
-    console.log('User data updated successfully!');
   }
   else {
     Object.entries(showError).forEach(([key, value]) => {
@@ -341,8 +340,6 @@ const fetchUser = async () => {
     success.value = false;
     console.log('No such document!');
   }
-  console.log(city.value);
-
 };
 
 onMounted(() => {

@@ -38,7 +38,7 @@
           <card 
             :user="user" 
             class="mt-2"
-            :favorite="store.user.favoriteCoaches.some(c => c.uid === user.uid)"
+            :favorite="isFavorite(user)"
             @book="toggleModal"
             @favorite="toggleFavorite(user)"
             />
@@ -63,9 +63,9 @@
 </template>
 <script setup>
 import searchBox from '../components/searchbox.vue'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onBeforeUpdate } from 'vue'
 import { db } from '../main.js';
-import { doc, collection, getDocs, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
+import { doc, collection, getDocs, getDoc, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
 import { onAuthStateChanged, getAuth  } from "firebase/auth";
 import { GoogleMap } from 'vue3-google-map';
 import { useStore } from '../store/store';
@@ -86,7 +86,6 @@ const toggled = ref(false)
 const experiences = ref([])
 const selectedExperiences = ref([])
 const selectedCity = ref('')
-const isFavorite = ref(false)
 const open = ref(false)
 const openModal = ref(false)
 const bookedCoach = ref('')
@@ -104,29 +103,39 @@ const dropdownToggle = () => {
   toggled.value = !toggled.value
 }
 
-let favoriteCoaches = store.favoriteCoaches;
+let favoriteCoaches = ref([]);
 
-const toggleFavorite = async (coach) => {
-  coach.favorite = !coach.favorite;
-  
-  if (coach.favorite) {
-    favoriteCoaches.push(coach);
+const fetchFavoriteCoaches = async () => {
+  const docRef = store.user.coach ? store.userDoc("coaches") : store.userDoc("users");
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const user = docSnap.data();
+    favoriteCoaches.value = user.favoriteCoaches;
   } else {
-    favoriteCoaches = favoriteCoaches.filter(c => c.uid !== coach.uid);
+    console.log("No such document!");
+  }
+}
+
+const  isFavorite = (user) => {
+  return favoriteCoaches.value.some((c) => c.uid === user.uid);
+}
+const toggleFavorite = async (coach) => {  
+  isFavorite(coach);
+  const isAlreadyConnected = favoriteCoaches.value.find(c => c.uid === coach.uid);
+  if (!isAlreadyConnected) {
+    favoriteCoaches.value.push(coach);
+  } else {
+    favoriteCoaches.value = favoriteCoaches.value.filter(c => c.uid !== coach.uid);
   }
   const userRef = store.user.coach ? store.userDoc('coaches') :  store.userDoc('users');
-  await updateDoc(userRef, { favoriteCoaches: favoriteCoaches }, { merge: true });
- store.favoriteCoaches = favoriteCoaches;
- console.log((coach.uid));
-  console.log(store.favoriteCoaches.map(c => c.uid = coach.uid));
-  console.log(isFavorite);
-  console.log(store.favoriteCoaches);
+  await updateDoc(userRef, { favoriteCoaches: favoriteCoaches.value }, { merge: true });
+  store.favoriteCoaches = favoriteCoaches.value;
+  
 };
 const filterCities = (city) => {
   if(city.length > 0 ) {
     selectedCity.value = city;
-    const users = usersData.value;
-    filteredUsers.value = users.filter((user) => user.city === city)
+    filteredUsers.value = usersData.value.filter((user) => user.city === city)
   }
 }
 const clearFilter = () => {
@@ -165,7 +174,7 @@ const filterExperiences = () => {
 }
 
 const toggleModal = (id) => {
-  bookedCoach.value = id
+  bookedCoach.value = idfetchFavoriteCoaches
   open.value =!open.value
 }
 
@@ -231,7 +240,6 @@ const confirmBooking = async () => {
         }
       } else {
         // No user is signed in, handle accordingly
-        console.log('User is not signed in');
         router.push('/sign-in');
       }
     });
@@ -247,12 +255,13 @@ const cancel = () => {
 onMounted(async () => {
   usersData.value = await getUsers();
   filteredUsers.value = usersData.value;
-  console.log(usersData.value, 'usersData.value');
   experiences.value = [...new Set(usersData.value
     .filter(user => user.profession && user.profession !== '')
     .map(user => user.profession))];
 });
-
+onBeforeUpdate(() => {
+  fetchFavoriteCoaches();
+})
 </script>
 <style scoped> 
 

@@ -285,11 +285,8 @@ function splitCamelCase(str) {
   // Check if there are any errors
   const hasErrors = Object.values(showError).some(value => value === true);
   if (!hasErrors) {
-    console.log(docRef.value);
-    console.log(docRef);
     await updateDoc(docRef, dataObj);
     success.value = true;
-    console.log('User data updated successfully!');
   } 
 
   if (hasErrors) {
@@ -320,7 +317,6 @@ function splitCamelCase(str) {
     imageName.value = selectedFile.value.name;
   
     if (!selectedFile.value) {
-      console.log('No file selected');
       return;
     }
   

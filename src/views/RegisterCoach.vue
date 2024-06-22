@@ -112,7 +112,6 @@ const createUser = async (uid) => {
   // Set the data on the document
   await setDoc(docRef, dataObj);
 
-  console.log("Document was added successfully with ID: ", docRef.id);
   store.setDocId(docRef.id); // Store the docRef.id in Pinia
   localStorage.setItem('uid', docRef.id);
 }
@@ -125,7 +124,6 @@ const register = () => {
   const auth = getAuth();
   createUserWithEmailAndPassword(auth, email.value, password.value)
   .then((data) => {
-    console.log("Successfully registered!");
     createUser(auth.currentUser.uid);
     router.push('/')
   })

@@ -177,7 +177,6 @@ function splitCamelCase(str) {
   if (!hasErrors) {
     await updateDoc(docRef, dataObj);
     success.value = true;
-    console.log('User data updated successfully!');
   } 
 
   if (hasErrors) {
@@ -228,7 +227,6 @@ function splitCamelCase(str) {
     imageName.value = selectedFile.value.name;
   
     if (!selectedFile.value) {
-      console.log('No file selected');
       return;
     }
   

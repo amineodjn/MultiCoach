@@ -227,7 +227,6 @@ function splitCamelCase(str) {
   if (!hasErrors) {
     await updateDoc(docRef, dataObj);
     success.value = true;
-    console.log('User data updated successfully!');
   } 
 
   if (hasErrors) {
@@ -244,7 +243,6 @@ function splitCamelCase(str) {
   // Fetch user data from Firestore
   const fetchUser = async () => {
     if (!userId.value) {
-      console.log('docId is not set', userId.value);
       return;
     }
   
@@ -265,7 +263,7 @@ function splitCamelCase(str) {
   
   onMounted(() => {
     if(!userId.value) {
-      console.log('docId is not set', userId.value);
+      return;
     }
     fetchUser();
   });

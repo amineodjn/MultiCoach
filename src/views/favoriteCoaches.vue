@@ -6,15 +6,15 @@
     </div>
     <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm">
       <favoritesCard 
-          v-for="coach in favoriteCoaches" :key="coach.uid"
+          v-for="coach in connectionList" :key="coach.uid"
           :favoriteCoach="coach" 
           :customWidth="'w-1/2'"
           :coachAccess="false"
           @book="toggleModal"
           @deleteOffer="deleteOffer" />
-      <emptyState v-if="favoriteCoaches.length === 0" />
+      <emptyState v-if="connectionList.length === 0" />
     </div>
-    <div v-if="favoriteCoaches.length > 0" class="text-center dark:border-neutral-70 hover:bg-gray-50">
+    <div class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex  items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
          @click="viewAllProjects">
         {{ showAllOffers ? 'Show less' : 'Show all' }}
@@ -29,7 +29,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDoc,getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../main'; 
 import { useStore } from '../store/store';
 import emptyState from '../components/emptyState.vue';
@@ -39,14 +39,26 @@ import favoritesCard from '../components/favoritesCard.vue';
 const store = useStore();
 const showForm = ref(false);
 const showAllOffers = ref(false);
+const favoriteCoaches = ref([]);
 
-const favoriteCoaches = computed(() => {
-  const favorites = store.user.favoriteCoaches;
-  console.log('favorites', favorites);
-  if(!showAllOffers.value) {
-    return favorites.slice(0, 3);
+const fetchFavoriteCoaches = async () => {
+  const docRef = store.user.coach ? store.userDoc("coaches") : store.userDoc("users");
+
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const user = docSnap.data();
+    favoriteCoaches.value = user.favoriteCoaches;
+  } else {
+    console.log("No such document!");
   }
-  return favorites;
+}
+
+const connectionList = computed(() => {
+  if(!showAllOffers.value) {
+    return favoriteCoaches.value.slice(0, 3);
+  }
+  return favoriteCoaches.value;
 });
 
 const viewAllProjects = () => {
@@ -72,7 +84,9 @@ const fetchOffers = async () => {
 
 
 onMounted(async () => {
-  fetchOffers();});
+  fetchOffers();
+  fetchFavoriteCoaches();
+});
 
 const toggleModal = () => {
   console.log('toggle modal')
@@ -83,8 +97,6 @@ const deleteOffer = async (uid) => {
 
   try {
     await deleteDoc(offerRef);
-    console.log(`Offer with uid ${uid} has been deleted.`);
-    // Fetch the updated list of offers after deleting
     fetchOffers();
   } catch (error) {
     console.error("Error deleting offer: ", error);
