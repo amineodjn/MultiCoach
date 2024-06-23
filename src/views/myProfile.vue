@@ -54,6 +54,7 @@
               </div>
             </div>
             <div class="container mx-auto py-6" >
+              <classes />
               <offers />
             </div>
         </div> 
@@ -72,6 +73,7 @@
   import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
   import offers from '../views/offers.vue';
+  import classes from './classes.vue';
 
   
   
