@@ -35,8 +35,8 @@
           @input="gym = $event.target.value"
           :showError="showError.gym"
         ></inputValidation>
-        <datePicker  v-model="date"></datePicker>
-        <timePicker v-model="time"></timePicker>
+        <datePicker  v-model="date" />
+        <timePicker v-model="time" />
       </div>
       <div>
         <textArea

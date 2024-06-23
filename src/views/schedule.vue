@@ -63,7 +63,7 @@
                     <div class="flex flex-col mb-6 md:grid-cols-2">
                       <div class="flex justify-between items-center mt-3" v-for="(day, index) in days" :key="index">
                         <h3 class="mt-7">{{ day.name }}</h3>
-                        <timePicker :day="day.name.toLowerCase()" v-model:startTime="day.startTime" v-model:endTime="day.endTime" />
+                        <timePickerRange :day="day.name.toLowerCase()" v-model:startTime="day.startTime" v-model:endTime="day.endTime" />
                       </div>
                     </div>
                     <button type="submit" class="text-white mb-6 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Confirm</button>
@@ -87,7 +87,7 @@
   import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
   import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
-  import timePicker from '../components/timePicker.vue';
+  import timePickerRange from '../components/timePickerRange.vue';
 
   const store = useStore();
   const userId = computed(() => store.docId);
