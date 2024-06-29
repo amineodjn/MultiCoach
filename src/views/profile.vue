@@ -72,17 +72,18 @@
                   <div class="first:pt-0 pt-4">
                     <h2 class="text-sm leading-5 mb-3 font-semibold text-gray-800"> Connections </h2>
                     <ul class="space-y-2">
-                      <li>
+                      <li v-for="connection in user.favoriteCoaches" :key="connection.uid">
                         <div class="flex items-center gap-x-3">
-                          <span class="flex flex-shrink-0 justify-center items-center w-9 h-9 bg-white text-gray-700 text-opacity-100 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 border border-gray-200 border-opacity-100 rounded-full uppercase font-medium text-xs leading-4">  
-                            Rd
+                          <img v-if="connection.profilePicture" class="flex flex-shrink-0 justify-center items-center rounded-full w-9 h-9" :src="connection.profilePicture" alt="Connection image">  
+                          <span v-else class="flex flex-shrink-0 justify-center items-center w-9 h-9 bg-white text-gray-700 text-opacity-100 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 border border-gray-200 border-opacity-100 rounded-full uppercase font-medium text-xs leading-4">  
+                            {{ getInitials(connection.firstName, connection.lastName) }}
                           </span>
                           <div class="flex-grow">
-                            <a class="block text-gray-800 text-opacity-100 font-medium text-sm leading-5 dark:text-neutral-200 hover:text-indigo-500 focus:text-indigo-500 dark:hover:text-indigo-500 dark:focus:text-indigo-500" href="">
-                              {{user.firstName + ' ' + user.lastName}}
-                            </a>
+                            <router-link :to="`/profile/${connection.uid}`" class="block text-gray-800 text-opacity-100 font-medium text-sm leading-5 dark:text-neutral-200 hover:text-indigo-500 focus:text-indigo-500 dark:hover:text-indigo-500 dark:focus:text-indigo-500" href="">
+                              {{connection.firstName + ' ' + connection.lastName}}
+                            </router-link>
                             <p class="text-sm text-gray-500 dark:text-neutral-500">
-                              {{user.userName}}
+                              {{connection.userName}}
                             </p>
                           </div>
                         </div>
@@ -93,7 +94,8 @@
                 </div>
                 <!--End sidebar-->
                 <div class="xl:pl-5 flex-grow space-y-2">
-                 <userOffer uid="2su1OLOxhcOVCIVxIfLUMwB0iRI3" /> 
+                 <userOffer :uid="uid" /> 
+                 <classOffer :uid="uid" />
                 </div>
               </div>
             </div>
@@ -103,11 +105,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useStore } from '../store/store';
 import userOffer from './userOffer.vue';
+import classOffer from './classOffer.vue';
+import { useRoute } from 'vue-router';
 
+const props = defineProps()
+const route = useRoute();
+const uid = ref(route.params.uid);
 const store = useStore();
-const user = store.user;
+const user = ref({});
 
+function getInitials(firstName, lastName) {
+  return `${firstName.charAt(0)}${lastName.charAt(0)}`;
+}
+
+async function fetchCoachData() {
+  user.value = await store.fetchCoach('coaches', uid.value);
+}
+
+onMounted(fetchCoachData);
+
+watch(() => route.params.uid, (newUid, oldUid) => {
+  if (newUid !== oldUid) {
+    uid.value = newUid;
+    fetchCoachData();
+  }
+});
 </script>

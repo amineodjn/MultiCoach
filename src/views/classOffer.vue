@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
     <div class="flex justify-between items-center py-4 px-5">
-      <h2 class="text-2xl font-bold">Your classes</h2>
+      <h2 class="text-gray-800 text-lg font-semibold inline-block">Classes</h2>
       <div class="flex items-center md:justify-end space-x-2">
         <div class="relative">
           <input v-model="searchTerm" type="text" placeholder="Search" class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-indigo-800">
@@ -9,12 +9,6 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
           </svg>
         </div>
-        <button @click="addOffer" type="button" class="px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">
-          <svg class="w-6 h-6 text-white-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
-          </svg>
-          Add class
-        </button>
       </div>
     </div>
     <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm">
@@ -22,7 +16,7 @@
           v-for="Class in displayedClasses" :key="Class.uid"
           :Class="Class" 
           :customWidth="'w-1/2'"
-          :coachAccess="true"
+          :coachAccess="false"
           @book="toggleModal"
           @deleteOffer="deleteOffer" />
       <emptyState v-if="displayedClasses.length === 0" />
@@ -34,20 +28,14 @@
         <svg class="flex-shrink-0  w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m9 18 6-6-6-6"></path>
         </svg>
-      </a>         
-    </div>
-    <div id="classesFormDiv" v-show="showForm" class="p-4">
-      <h2 class="text-2xl font-bold">Add Classes</h2>
-      <div v-show="showForm" class="flex flex-col justify-center items-center mt-2 m-2 rounded-lg">
-        <classesForm />
-      </div>
+      </a>          
     </div>
   </div>
 </template>
 
 <script setup>
 
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../main'; 
 import { useStore } from '../store/store';
@@ -60,6 +48,13 @@ const classes = ref([]);
 const showForm = ref(false);
 const showAllClasses = ref(false);
 const searchTerm = ref('');
+
+const props = defineProps({
+  uid: {
+    type: String,
+    required: true
+  }
+})
 
 const displayedClasses = computed(() => {
   let filteredClasses = classes.value;
@@ -82,11 +77,11 @@ const viewAllProjects = () => {
 };
 
 const fetchClasses = async () => {
-  if (!store.docId) {
+  if (!props.uid) {
     return;
   }
 
-  const classesRef = collection(db, "coaches", store.docId, "classes");
+  const classesRef = collection(db, "coaches", props.uid, "classes");
   const querySnapshot = await getDocs(classesRef);
 
   if (!querySnapshot.empty) {
@@ -95,22 +90,21 @@ const fetchClasses = async () => {
   }
 };
 
-const addOffer = () => {
-  showForm.value = !showForm.value;
-  if (showForm.value) {
-    window.location.hash = '#classesFormDiv';
-  }
-};
-
 onMounted(async () => {
   fetchClasses();});
+
+watch(() => props.uid, (newUid, oldUid) => {
+  if (newUid !== oldUid) {
+    fetchClasses();
+  }
+});
 
 const toggleModal = () => {
   console.log('toggle modal')
 }
 
 const deleteOffer = async (uid) => {
-  const classRef = doc(db, "coaches", store.docId, "classes", uid);
+  const classRef = doc(db, "coaches", props.uid, "classes", uid);
 
   try {
     await deleteDoc(classRef);

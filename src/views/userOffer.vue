@@ -35,7 +35,7 @@
 
 <script setup>
 import offersCard from '../components/offersCard.vue'
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../main'; 
 import emptyState from '../components/emptyState.vue';
@@ -90,6 +90,12 @@ const fetchOffers = async () => {
 
 onMounted(async () => {
   fetchOffers();});
+
+watch(() => props.uid, (newUid, oldUid) => {
+  if (newUid !== oldUid) {
+    fetchOffers();
+  }
+});
 
 const toggleModal = () => {
   console.log('toggle modal')

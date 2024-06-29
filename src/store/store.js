@@ -45,6 +45,39 @@ export const useStore = defineStore({
         console.log('No such document!');
       }
     },
+    async fetchCoach(userType, uid) {
+      if (!uid) {
+        console.log('docId is not set', uid);
+        return;
+      }
+  
+      const docRef = doc(db, userType, uid);
+      const docSnap = await getDoc(docRef);
+      let user = {};
+
+      if (docSnap.exists()) {
+        user = {
+          firstName: docSnap.data().firstName,
+          lastName: docSnap.data().lastName,
+          email: docSnap.data().email,
+          password: docSnap.data().password,
+          userName: docSnap.data().userName,
+          description: docSnap.data().description,
+          gym: docSnap.data().gym,
+          city: docSnap.data().city,
+          phoneNumber: docSnap.data().phoneNumber,
+          profession: docSnap.data().profession,
+          profilePicture: docSnap.data().profilePicture,
+          websiteUrl: docSnap.data().websiteUrl,
+          coach: docSnap.data().coach,
+          favoriteCoaches: docSnap.data().favoriteCoaches,
+          schedule: docSnap.data().schedule
+        };
+      } else {
+        console.log('No such document!');
+      }
+      return user;
+    },
     async getUserType() {
       const userDoc = await getDoc(doc(db, 'users', this.docId));
       const coachDoc = await getDoc(doc(db, 'coaches', this.docId));
