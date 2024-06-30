@@ -72,7 +72,8 @@
                   <div class="first:pt-0 pt-4">
                     <h2 class="text-sm leading-5 mb-3 font-semibold text-gray-800"> Connections </h2>
                     <ul class="space-y-2">
-                      <li v-for="connection in user.favoriteCoaches" :key="connection.uid">
+                      <li v-if="!user.favoriteCoaches" class="text-gray-800 text-sm leading-5 gap-x-3 inline-flex items-center dark:text-neutral-200">No connections available</li>
+                      <li v-else v-for="connection in user.favoriteCoaches" :key="connection.uid">
                         <div class="flex items-center gap-x-3">
                           <img v-if="connection.profilePicture" class="flex flex-shrink-0 justify-center items-center rounded-full w-9 h-9" :src="connection.profilePicture" alt="Connection image">  
                           <span v-else class="flex flex-shrink-0 justify-center items-center w-9 h-9 bg-white text-gray-700 text-opacity-100 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 border border-gray-200 border-opacity-100 rounded-full uppercase font-medium text-xs leading-4">  
@@ -86,6 +87,17 @@
                               {{connection.userName}}
                             </p>
                           </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="first:pt-0 pt-4">
+                    <h2 class="text-sm leading-5 mb-3 font-semibold text-gray-800"> Schedule </h2>
+                    <ul class="space-y-2">
+                      <li>
+                        <div v-for="(value, key) in user.schedule" :key="value.index" class="text-gray-800 text-sm leading-5 flex justify-between items-center dark:text-neutral-200">
+                          <span>{{ capitalaizefirstLetter(key) }}</span>
+                          <span>{{ value.startTime }} - {{ value.endTime }}</span>
                         </div>
                       </li>
                     </ul>
@@ -121,11 +133,16 @@ function getInitials(firstName, lastName) {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`;
 }
 
+function capitalaizefirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 async function fetchCoachData() {
   user.value = await store.fetchCoach('coaches', uid.value);
 }
 
 onMounted(fetchCoachData);
+
 
 watch(() => route.params.uid, (newUid, oldUid) => {
   if (newUid !== oldUid) {

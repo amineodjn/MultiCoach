@@ -21,7 +21,7 @@
           @deleteOffer="deleteOffer" />
       <emptyState v-if="displayedClasses.length === 0" />
     </div>
-    <div v-if="displayedClasses.length > 0" class="text-center dark:border-neutral-70 hover:bg-gray-50">
+    <div v-if="displayedClasses.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
          @click="viewAllProjects">
         {{ showAllClasses ? 'Show less' : 'Show all' }}
@@ -55,6 +55,7 @@ const props = defineProps({
     required: true
   }
 })
+const uid = ref(props.uid);
 
 const displayedClasses = computed(() => {
   let filteredClasses = classes.value;
@@ -81,12 +82,14 @@ const fetchClasses = async () => {
     return;
   }
 
-  const classesRef = collection(db, "coaches", props.uid, "classes");
+  const classesRef = collection(db, "coaches", uid.value, "classes");
   const querySnapshot = await getDocs(classesRef);
 
   if (!querySnapshot.empty) {
     const data = querySnapshot.docs.map(doc => doc.data());
     classes.value = data;
+  } else {
+    classes.value = [];
   }
 };
 
@@ -95,6 +98,9 @@ onMounted(async () => {
 
 watch(() => props.uid, (newUid, oldUid) => {
   if (newUid !== oldUid) {
+    
+    uid.value = newUid;
+    console.log(uid.value, 'uid');
     fetchClasses();
   }
 });
@@ -104,7 +110,7 @@ const toggleModal = () => {
 }
 
 const deleteOffer = async (uid) => {
-  const classRef = doc(db, "coaches", props.uid, "classes", uid);
+  const classRef = doc(db, "coaches", uid.vlaue, "classes", uid);
 
   try {
     await deleteDoc(classRef);

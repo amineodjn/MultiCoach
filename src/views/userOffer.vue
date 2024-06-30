@@ -21,7 +21,7 @@
       />
       <emptyState v-if="displayedOffers.length === 0" />
     </div>
-    <div v-if="displayedOffers.length > 0" class="text-center dark:border-neutral-70 hover:bg-gray-50">
+    <div v-if="displayedOffers.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex  items-center text-blue-600 font-medium text-sm leading-5 pt-4 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
          @click="viewAllProjects">
         {{ showAllOffers ? 'Show less' : 'Show all' }}
@@ -51,6 +51,8 @@ const props = defineProps({
     required: true
   }
 })
+const uid = ref(props.uid);
+
 
 const displayedOffers = computed(() => {
   let filteredOffers = offers.value;
@@ -73,26 +75,28 @@ const viewAllProjects = () => {
 };
 
 const fetchOffers = async () => {
-  if (!props.uid) {
+  if (!uid.value) {
     return;
   }
 
-  const offersRef = collection(db, "coaches", props.uid, "Offers");
+  const offersRef = collection(db, "coaches", uid.value, "Offers");
   const querySnapshot = await getDocs(offersRef);
 
   if (!querySnapshot.empty) {
     const data = querySnapshot.docs.map(doc => doc.data());
     offers.value = data;
   }
+  else {
+    offers.value = [];
+  }
 };
-
-
 
 onMounted(async () => {
   fetchOffers();});
 
 watch(() => props.uid, (newUid, oldUid) => {
   if (newUid !== oldUid) {
+    uid.value = newUid;
     fetchOffers();
   }
 });
@@ -100,5 +104,4 @@ watch(() => props.uid, (newUid, oldUid) => {
 const toggleModal = () => {
   console.log('toggle modal')
 }
-
 </script>

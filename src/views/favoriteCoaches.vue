@@ -14,7 +14,7 @@
           @deleteOffer="deleteOffer" />
       <emptyState v-if="connectionList.length === 0" />
     </div>
-    <div class="text-center dark:border-neutral-70 hover:bg-gray-50">
+    <div v-if="connectionList.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex  items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
          @click="viewAllProjects">
         {{ showAllOffers ? 'Show less' : 'Show all' }}
@@ -65,26 +65,9 @@ const viewAllProjects = () => {
   showAllOffers.value = !showAllOffers.value;
 };
 
-const fetchOffers = async () => {
-  if (!store.docId) {
-    console.log('docId is not set', store.docId);
-    return;
-  }
-
-  const offersRef = collection(db, "coaches", store.docId, "Offers");
-  const querySnapshot = await getDocs(offersRef);
-
-  if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map(doc => doc.data());
-    offers.value = data;
-  } else {
-    console.log('No such document!');
-  }
-};
 
 
 onMounted(async () => {
-  fetchOffers();
   fetchFavoriteCoaches();
 });
 
