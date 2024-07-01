@@ -95,6 +95,9 @@
                     <h2 class="text-sm leading-5 mb-3 font-semibold text-gray-800"> Schedule </h2>
                     <ul class="space-y-2">
                       <li>
+                        <div v-if="!user.schedule" class="text-gray-800 text-sm leading-5 gap-x-3 inline-flex items-center dark:text-neutral-200">No schedule available</div>
+                      </li>
+                      <li>
                         <div v-for="(value, key) in user.schedule" :key="value.index" class="text-gray-800 text-sm leading-5 flex justify-between items-center dark:text-neutral-200">
                           <span>{{ capitalaizefirstLetter(key) }}</span>
                           <span>{{ value.startTime }} - {{ value.endTime }}</span>

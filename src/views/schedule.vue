@@ -62,7 +62,7 @@
                   <form @submit.prevent="submitSchedule" class="flex flex-col items-center">
                     <div class="flex flex-col mb-6 md:grid-cols-2">
                       <div class="flex justify-between items-center mt-3" v-for="(day, index) in days" :key="index">
-                        <h3 class="mt-7">{{ day.name }}</h3>
+                        <h3 class="mt-7">{{ capitalaizefirstLetter(day.name) }}</h3>
                         <timePickerRange :day="day.name.toLowerCase()" v-model:startTime="day.startTime" v-model:endTime="day.endTime" />
                       </div>
                     </div>
@@ -111,6 +111,10 @@
   description: '',
 });
 const days = ref([]);
+
+const  capitalaizefirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
 
 const submitSchedule = async () => {
   const coachRef = doc(db, 'coaches', userId.value);
