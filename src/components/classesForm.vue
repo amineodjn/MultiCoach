@@ -1,9 +1,7 @@
 <template>
   <toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
-
-    <section class="bg-white dark:bg-gray-900">
-      <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-          <form @submit.prevent="updateOffer">
+  <section class="bg-white dark:bg-gray-900">
+    <form @submit.prevent="updateOffer">
       <div class="grid gap-6 mb-6 md:grid-cols-2">
         <inputValidation :Modelval="className" 
         title="Class name" 
@@ -37,6 +35,7 @@
         ></inputValidation>
         <datePicker  v-model="date" />
         <timePicker v-model="time" />
+        <counterInput v-model="counter" label="Choose number of guests" title="Guests" />
       </div>
       <div>
         <textArea
@@ -62,10 +61,8 @@
       </div>
       <button type="submit" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Add</button>
       </form>
-    </div>
   </section>
-  
-  </template>
+</template>
   
   <script setup>
   import { ref, computed, onMounted, reactive  } from 'vue';
@@ -81,6 +78,7 @@
   import textArea from '../components/textarea.vue';
   import datePicker from './datePicker.vue';
   import timePicker from '../components/timePicker.vue';
+  import counterInput from '../components/counterInput.vue';
   
   
   
@@ -91,6 +89,7 @@
   const imageEvent = ref(null);
   const date = ref('mm/dd/yyyy');
   const time = ref('00:00');
+  const counter = ref(1);
   
   const className = ref('');
   const classDescription  = ref('');
@@ -148,6 +147,7 @@ function splitCamelCase(str) {
     gym: gym.value,
     time: time.value,
     date: date.value,
+    counter: counter.value,
   }
 
   // Reset showError
@@ -184,6 +184,7 @@ function splitCamelCase(str) {
     imageEvent.value = null;
     time.value = '';
     date.value = '';
+    counter.value = 1;
   } 
 
   if (hasErrors) {
@@ -194,6 +195,7 @@ function splitCamelCase(str) {
       }
     });
   }
+  fetchclasses();
 }
   
   // Fetch user data from Firestore
@@ -212,6 +214,7 @@ function splitCamelCase(str) {
       gym.value = docSnap.data().gym;
       time.value = docSnap.data().time;
       date.value = docSnap.data().date;
+      counter.value = docSnap.data().counter;
   
     } else {
       console.log('No such document!');

@@ -36,7 +36,7 @@
         </svg>
       </a>          
     </div>
-    <div id="classesFormDiv" v-show="showForm" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+    <div id="classesFormDiv" v-show="showForm" class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 bg-black bg-opacity-50 h-[calc(100%-1rem)] max-h-full">
       <div class="bg-white p-6 rounded-lg shadow-lg">
         <div class="flex justify-between items-center">
           <h2 class="text-2xl font-bold">Add Classes</h2>

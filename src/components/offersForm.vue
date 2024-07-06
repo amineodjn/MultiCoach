@@ -1,9 +1,7 @@
 <template>
   <toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
-
-    <section class="bg-white dark:bg-gray-900">
-      <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-          <form @submit.prevent="updateOffer">
+  <section class="bg-white dark:bg-gray-900">
+    <form @submit.prevent="updateOffer">
       <div class="grid gap-6 mb-6 md:grid-cols-2">
         <inputValidation :Modelval="offerName" 
         title="Offer name" 
@@ -60,7 +58,6 @@
       </div>
       <button type="submit" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Add</button>
       </form>
-    </div>
   </section>
   
   </template>
@@ -184,6 +181,8 @@ function splitCamelCase(str) {
       }
     });
   }
+
+  fetchOffers();
 }
   
   // Fetch user data from Firestore
