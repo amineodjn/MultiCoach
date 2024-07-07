@@ -116,9 +116,10 @@ const fetchFavoriteCoaches = async () => {
   }
 }
 
-const  isFavorite = (user) => {
-  return favoriteCoaches.value.some((c) => c.uid === user.uid);
+const isFavorite = (user) => {
+  return favoriteCoaches.value?.some((c) => c.uid === user.uid);
 }
+
 const toggleFavorite = async (coach) => {  
   isFavorite(coach);
   const isAlreadyConnected = favoriteCoaches.value.find(c => c.uid === coach.uid);
@@ -130,14 +131,15 @@ const toggleFavorite = async (coach) => {
   const userRef = store.user.coach ? store.userDoc('coaches') :  store.userDoc('users');
   await updateDoc(userRef, { favoriteCoaches: favoriteCoaches.value }, { merge: true });
   store.favoriteCoaches = favoriteCoaches.value;
-  
 };
+
 const filterCities = (city) => {
   if(city.length > 0 ) {
     selectedCity.value = city;
     filteredUsers.value = usersData.value.filter((user) => user.city === city)
   }
 }
+
 const clearFilter = () => {
   selectedCity.value = '';
   if(selectedExperiences.value.length === 0) {
@@ -225,11 +227,19 @@ const confirmBooking = async () => {
   
         // Save the booking to Firestore
         const userRef =  store.user.coach ? doc(db, 'coaches', auth.currentUser.uid) : doc(db, 'users', auth.currentUser.uid);
+        const coachRef =  doc(db, 'coaches', bookedCoach);
+
         if (date && auth.currentUser.uid) {
           const newEvent = { bookedOffer: bookedOffer, offerName: bookedOfferName, bookingTime: date, bookedCoach: bookedCoach };
+          const newBooking = { bookedOffer: bookedOffer, offerName: bookedOfferName, bookingTime: date, user: auth.currentUser.uid };
           await updateDoc(userRef, { 
             bookedEvents: arrayUnion(newEvent) 
           });
+
+          await updateDoc(coachRef, { 
+            bookings: arrayUnion(newBooking) 
+          });
+
           localStorage.removeItem('selectedDateandTime');
           localStorage.removeItem('bookedOffer');
           localStorage.removeItem('bookedOfferName');
@@ -264,7 +274,6 @@ onBeforeUpdate(() => {
 })
 </script>
 <style scoped> 
-
 body > div {
   background-color: #f8f9fa;
 }
