@@ -97,6 +97,12 @@ const router = createRouter({
       props: true,
       component: () => import('../views/profile.vue'),
     },
+    {
+      path: '/bookings',
+      name: 'bookings',
+      props: true,
+      component: () => import('../views/bookings.vue'),
+    },
   ],
 });
 
