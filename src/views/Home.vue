@@ -127,10 +127,10 @@ const toggleFavorite = async (coach) => {
     favoriteCoaches.value.push(coach);
   } else {
     favoriteCoaches.value = favoriteCoaches.value.filter(c => c.uid !== coach.uid);
+    const userRef = store.user.coach ? store.userDoc('coaches') :  store.userDoc('users');
+    await updateDoc(userRef, { favoriteCoaches: favoriteCoaches.value }, { merge: true });
+    store.favoriteCoaches = favoriteCoaches.value;
   }
-  const userRef = store.user.coach ? store.userDoc('coaches') :  store.userDoc('users');
-  await updateDoc(userRef, { favoriteCoaches: favoriteCoaches.value }, { merge: true });
-  store.favoriteCoaches = favoriteCoaches.value;
 };
 
 const filterCities = (city) => {
@@ -270,7 +270,9 @@ onMounted(async () => {
     .map(user => user.profession))];
 });
 onBeforeUpdate(() => {
-  fetchFavoriteCoaches();
+  if(store.user) {
+    fetchFavoriteCoaches();
+  }
 })
 </script>
 <style scoped> 

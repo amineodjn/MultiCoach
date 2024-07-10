@@ -7,6 +7,8 @@ import { createPinia } from 'pinia';
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -31,10 +33,14 @@ const db = getFirestore(firebaseApp);
 // Initialize Firebase Storage
 const storage = getStorage(firebaseApp);
 
-const app = createApp(App)
-app.use(router)
+// Initialize Firebase Authentication
+const auth = getAuth(firebaseApp);
+
+const app = createApp(App);
+
+app.use(router);
 app.use(createPinia());
 
 app.mount('#app')
 
-export { db, storage };
+export { db, storage, auth };

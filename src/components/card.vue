@@ -54,13 +54,6 @@
 </template>
 
 <script setup>
-import { useStore } from '../store/store';
-const store = useStore(); 
-
-const favoriteCoaches = store.user.favoriteCoaches;
-
-
-
 const props = defineProps({
   user: {
     type:Object,

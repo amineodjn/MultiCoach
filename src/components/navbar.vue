@@ -14,7 +14,6 @@
         aria-label="Toggle navigation"
         @click="collapse"
         >
-        
         <svg class="hs-collapse-open:hidden flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
           <svg class="hs-collapse-open:block hidden flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
@@ -26,10 +25,10 @@
     :class="{ 'hidden' : !navbarCollapse}"
     >
       <div class="flex flex-col gap-y-4 gap-x-0 mt-5 md:flex-row md:items-center md:justify-end md:gap-y-0 md:gap-x-7 md:mt-0 md:ps-7">
-        <router-link to="/" class="font-medium text-indigo-600 md:py-6 dark:text-indigo-500" href="#" aria-current="page">Home</router-link>
-        <router-link to="/myProfile"  class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Profile</router-link>
-        <a class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Work</a>
-        <a class="font-medium text-gray-500 hover:text-gray-400 md:py-6 dark:text-gray-400 dark:hover:text-gray-500" href="#">Blog</a>
+        <router-link to="/" class="font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400" aria-current="page">Home</router-link>
+        <router-link to="/myProfile"  class="font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400">Profile</router-link>
+        <a class="font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400">Work</a>
+        <a class="font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400">Blog</a>
         <router-link to="/register-user"  
         href="#"
         v-if="!isLoggedIn"
@@ -103,10 +102,7 @@ const store = useStore();
 const router = useRouter();
 const navbarCollapse = ref(false);
 const open = ref(false);
-
-const route = ref('');
 const isLoggedIn = ref(false);
-const isCoach = ref(false)
 
 let auth;
 
@@ -114,12 +110,19 @@ const HandleLogout = () => {
   localStorage.clear();
   signOut(auth).then(() => {
     isLoggedIn.value = false;
-    localStorage.clear();
+    // Assuming store is a global state management object, reset its properties
     store.docId = null;
     store.user = null;
     store.coach = null;
-    store.route = 'home';
+    store.route = '/';
+    // Navigate to the root route
     router.push('/');
+
+    console.log("User signed out successfully");
+
+  }).catch((error) => {
+    console.error("Error during sign out:", error);
+    // Handle logout error (e.g., show a notification to the user)
   });
 }
 
