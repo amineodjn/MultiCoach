@@ -120,17 +120,18 @@ const isFavorite = (user) => {
   return favoriteCoaches.value?.some((c) => c.uid === user.uid);
 }
 
-const toggleFavorite = async (coach) => {  
-  isFavorite(coach);
-  const isAlreadyConnected = favoriteCoaches.value.find(c => c.uid === coach.uid);
-  if (!isAlreadyConnected) {
-    favoriteCoaches.value.push(coach);
-  } else {
-    favoriteCoaches.value = favoriteCoaches.value.filter(c => c.uid !== coach.uid);
-    const userRef = store.user.coach ? store.userDoc('coaches') :  store.userDoc('users');
-    await updateDoc(userRef, { favoriteCoaches: favoriteCoaches.value }, { merge: true });
-    store.favoriteCoaches = favoriteCoaches.value;
-  }
+const toggleFavorite = async (coach) => {
+  favoriteCoaches.value = favoriteCoaches.value || [];
+
+  const isAlreadyFavorite = isFavorite(coach);
+  favoriteCoaches.value = isAlreadyFavorite
+    ? favoriteCoaches.value.filter(c => c.uid !== coach.uid)
+    : [...favoriteCoaches.value, coach];
+
+  const userType = store.user.coach ? 'coaches' : 'users';
+  const userRef = store.userDoc(userType);
+  await updateDoc(userRef, { favoriteCoaches: favoriteCoaches.value }, { merge: true });
+  store.favoriteCoaches = favoriteCoaches.value;
 };
 
 const filterCities = (city) => {
@@ -268,12 +269,12 @@ onMounted(async () => {
   experiences.value = [...new Set(usersData.value
     .filter(user => user.profession && user.profession !== '')
     .map(user => user.profession))];
+
+    if(store.user) {
+        fetchFavoriteCoaches();
+      }
 });
-onBeforeUpdate(() => {
-  if(store.user) {
-    fetchFavoriteCoaches();
-  }
-})
+
 </script>
 <style scoped> 
 body > div {
