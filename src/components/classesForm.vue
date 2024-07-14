@@ -2,7 +2,7 @@
   <toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
   <section class="bg-white dark:bg-gray-900">
     <form @submit.prevent="updateOffer">
-      <div class="grid gap-6 mb-6 md:grid-cols-2">
+      <div class="grid gap-6 mb-4 md:grid-cols-2">
         <inputValidation :Modelval="className" 
         title="Class name" 
         :error-message="classNameError" 
@@ -33,8 +33,8 @@
           @input="gym = $event.target.value"
           :showError="showError.gym"
         ></inputValidation>
-        <datePicker  v-model="date" />
-        <timePicker v-model="time" />
+        <datePicker :showError="showError.date" :error-message="dateError" v-model="date" />
+        <timePicker :showError="showError.time" :error-message="timeError" v-model="time" />
         <counterInput v-model="counter" label="Choose number of guests" title="Guests" />
       </div>
       <div>
@@ -87,7 +87,7 @@
   const docRef = doc(db, "coaches", userId.value);
   const classId = ref('');
   const imageEvent = ref(null);
-  const date = ref('mm/dd/yyyy');
+  const date = ref('yyyy-MM-dd');
   const time = ref('00:00');
   const counter = ref(1);
   
@@ -125,6 +125,8 @@ const classDescriptionError = createErrorComputed(classDescription, 'classDescri
 const priceError = createErrorComputed(price, 'price');
 const locationError = createErrorComputed(location, 'location');
 const gymError = createErrorComputed(gym, 'gym');
+const timeError = createErrorComputed(time, 'time');
+const dateError = createErrorComputed(date, 'date');
 
 const showError = reactive({
   className: false,
@@ -132,6 +134,8 @@ const showError = reactive({
   price: false,
   location: false,
   gym: false,
+  time: false,
+  date: false,
 });
 
 function splitCamelCase(str) {

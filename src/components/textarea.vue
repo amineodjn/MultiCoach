@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-6">
+  <div class="mb-4">
     <label :for="Modelval" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ title }}</label>
     <textarea 
     :value="Modelval"

@@ -39,7 +39,7 @@
     <div id="classesFormDiv" v-show="showForm" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
       <div class="bg-white p-6 rounded-lg shadow-lg">
         <div class="flex justify-between items-center">
-          <h2 class="text-2xl font-bold">Add Classes</h2>
+          <h2 class="text-2xl font-bold">Add classes</h2>
           <button 
                 type="button" 
                 class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" 
