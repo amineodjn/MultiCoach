@@ -29,7 +29,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import { collection, getDoc,getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { getDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../main'; 
 import { useStore } from '../store/store';
 import emptyState from '../components/emptyState.vue';
@@ -37,7 +37,6 @@ import favoritesCard from '../components/favoritesCard.vue';
 
 
 const store = useStore();
-const showForm = ref(false);
 const showAllOffers = ref(false);
 const favoriteCoaches = ref([]);
 

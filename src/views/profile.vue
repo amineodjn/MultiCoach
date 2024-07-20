@@ -73,7 +73,7 @@
                     <h2 class="text-sm leading-5 mb-3 font-semibold text-gray-800"> Connections </h2>
                     <ul class="space-y-2">
                       <li v-if="!user.favoriteCoaches" class="text-gray-800 text-sm leading-5 gap-x-3 inline-flex items-center dark:text-neutral-200">No connections available</li>
-                      <li v-else v-for="connection in user.favoriteCoaches" :key="connection.uid">
+                      <li v-else v-for="connection in userConnection" :key="connection.uid">
                         <div class="flex items-center gap-x-3">
                           <img v-if="connection.profilePicture" class="flex flex-shrink-0 justify-center items-center rounded-full w-9 h-9" :src="connection.profilePicture" alt="Connection image">  
                           <span v-else class="flex flex-shrink-0 justify-center items-center w-9 h-9 bg-white text-gray-700 text-opacity-100 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 border border-gray-200 border-opacity-100 rounded-full uppercase font-medium text-xs leading-4">  
@@ -120,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useStore } from '../store/store';
 import userOffer from './userOffer.vue';
 import classOffer from './classOffer.vue';
@@ -131,6 +131,7 @@ const route = useRoute();
 const uid = ref(route.params.uid);
 const store = useStore();
 const user = ref({});
+const userConnection = computed(() => user.value.favoriteCoaches.slice(0, 5));
 
 function getInitials(firstName, lastName) {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`;

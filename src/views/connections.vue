@@ -1,5 +1,4 @@
 <template>
-  <toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
       <sidebar v-if="false" />
       <main id="content" class="content-container">
         <div class="mx-auto">
@@ -69,167 +68,25 @@
   </template>
   
   <script setup>
-  import { ref, computed, onMounted, reactive  } from 'vue';
-  import { db } from '../main.js';
-  import { doc, updateDoc, getDoc } from 'firebase/firestore';
+  import { ref, computed, onMounted } from 'vue';
   import { useStore } from '../store/store.js';
-  import { storage } from '../main.js';
-  import { getAuth } from 'firebase/auth';
-  import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
-  import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
   import favoriteCoaches from '../views/favoriteCoaches.vue';
 
   const store = useStore();
   const userId = computed(() => store.docId);
-  const docRef = doc(db, "users", userId.value);
   const profileLink = store.route
   const firstName = ref(store.user.firstName);
   const lastName = ref(store.user.lastName);
   const profilePicture = ref(store.user.profilePicture);
-  const email = ref(store.user.email);
-  const password = ref(store.user.password);
-  const description = ref(store.user.description);
   const userName = ref(store.user.userName);
-  const success = ref(false);
-  const hasEmptyFields = ref(false);
   const isCoach = store.user.coach;
-
-  const errorMessages = reactive({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userName: '',
-  description: '',
-});
-
-// Function to create computed properties for error messages
-function createErrorComputed(field, key) {
-  return computed(() => {
-    if (field.value === '' || showError[key]) {
-      return errorMessages[key];
-    }
-    return '';
-  });
-}
-// Error messages 
-const firstNameError = createErrorComputed(firstName, 'firstName');
-const lastNameError = createErrorComputed(lastName, 'lastName');
-const emailError = createErrorComputed(email, 'email');
-const passwordError = createErrorComputed(password, 'password');
-const descriptionError = createErrorComputed(description, 'description');
-const userNameError = createErrorComputed(userName, 'userName');
-
-const showError = reactive({
-  firstName: false,
-  lastName: false,
-  email: false,
-  password: false,
-  userName: false,
-  description: false,
-});
-
-function splitCamelCase(str) {
-  return str.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
-}
-  // Function to update user data in Firestore
-  async function updateUser() {
-  const dataObj = {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    email: email.value,
-    password: password.value,
-    userName: userName.value,
-    description: description.value,  
-  }
-  // Reset showError
-  Object.keys(showError).forEach(key => {
-    showError[key] = false;
-  });
-
-  // Check for empty fields
-  Object.entries(dataObj).forEach(([key, value]) => {
-    if (value === undefined || value === '') {
-      showError[key] = true;
-    }
-  });
-
-  // Check if there are any errors
-  const hasErrors = Object.values(showError).some(value => value === true);
-  if (!hasErrors) {
-    await updateDoc(docRef, dataObj);
-    success.value = true;
-  } 
-
-  if (hasErrors) {
-    Object.entries(showError).forEach(([key, value]) => {
-      if (value === true) {
-        showError[key] = true;
-        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`; // Update the error message
-      }
-    });
-  }
-    // Update the fields based on your reactive properties
-}
-  
   
   onMounted(() => {
     if(!userId.value) {
       console.log('docId is not set', userId.value);
     }
   });
-  const selectedFile = ref(null);
-  const imageUrl = ref('');
-  const imageName = ref('');
-  
-  const uploadImage = async (event) => {
-    selectedFile.value = event.target.files[0];
-    imageName.value = selectedFile.value.name;
-  
-    if (!selectedFile.value) {
-      console.log('No file selected');
-      return;
-    }
-  
-    const auth = getAuth();
-    const user = auth.currentUser;
-  
-    if (user) {
-      // Create a storage reference with the user's uid
-      const storageReference = storageRef(storage, `profilePictures/${user.uid}`);
-  
-      // Upload the file
-      const uploadTask = uploadBytesResumable(storageReference, selectedFile.value);
-  
-      // Listen for state changes, errors, and completion of the upload.
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        }, 
-        (error) => {
-          console.log(error);
-        }, 
-        () => {
-          // Upload completed successfully, now we can get the download URL
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            imageUrl.value = downloadURL;
-            // Update user document with the download URL
-            const docRef = doc(db, 'users', user.uid);
-            updateDoc(docRef, { profilePicture: downloadURL });
-          });
-        }
-      );
-    }
-  };
-  
-  //Toast 
-  const resetSuccess = (event) => {
-    if (event.animationName.includes('slideOutRight')) {
-      success.value = false;
-    }
-  };
   </script>
   <style scoped>
   @media (min-width: 1024px) {

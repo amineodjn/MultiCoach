@@ -228,7 +228,7 @@ const confirmBooking = async () => {
   
         // Save the booking to Firestore
         const userRef =  store.user.coach ? doc(db, 'coaches', auth.currentUser.uid) : doc(db, 'users', auth.currentUser.uid);
-        const coachRef =  doc(db, 'coaches', bookedCoach);
+        const coachRef = doc(db, 'coaches', bookedCoach);
 
         if (date && auth.currentUser.uid) {
           const newEvent = { bookedOffer: bookedOffer, offerName: bookedOfferName, bookingTime: date, bookedCoach: bookedCoach };

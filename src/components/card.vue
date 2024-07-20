@@ -1,7 +1,7 @@
 <template>
  
   <div class="flex justify-between mx-4 px-6 py-2 transition-colors duration-300 transform border cursor-pointer rounded-xl hover:shadow-lg dark:border-gray-700 dark:hover:border-transparent">
-    <RouterLink :to="`/profile/${user.uid}`">
+    <RouterLink @click="setBookedCoach(user.uid)" :to="`/profile/${user.uid}`">
       <div class="flex flex-col sm:-mx-4 sm:flex-row">
         <div class="flex items-center">
           <img class="flex-shrink-0 object-cover w-20 h-20 rounded-full sm:mx-4 ring-4 ring-gray-300 hover:ring-indigo-300" :src="user.profilePicture" alt="">
@@ -54,6 +54,12 @@
 </template>
 
 <script setup>
+import { useStore } from '../store/store';
+
+const setBookedCoach = (uid) => {
+  const store = useStore();
+  store.setBookedCoach(uid);
+}
 const props = defineProps({
   user: {
     type:Object,

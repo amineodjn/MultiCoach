@@ -14,11 +14,11 @@
     <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm">
       <classesCard 
           v-for="Class in displayedClasses" :key="Class.uid"
-          :Class="Class" 
+          :trainingClass="Class" 
           :customWidth="'w-1/2'"
           :coachAccess="false"
-          @book="toggleModal"
-          @deleteOffer="deleteOffer" />
+          @book="bookClass"
+          @deleteClass="deleteClass" />
       <emptyState v-if="displayedClasses.length === 0" />
     </div>
     <div v-if="displayedClasses.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
@@ -36,12 +36,11 @@
 <script setup>
 
 import { onMounted, ref, computed, watch } from 'vue';
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc, arrayUnion, updateDoc } from 'firebase/firestore';
 import { db } from '../main'; 
 import { useStore } from '../store/store';
 import emptyState from '../components/emptyState.vue';
 import classesCard from '../components/classesCard.vue';
-import classesForm from '../components/classesForm.vue';
 
 const store = useStore();
 const classes = ref([]);
@@ -105,11 +104,17 @@ watch(() => props.uid, (newUid, oldUid) => {
   }
 });
 
-const toggleModal = () => {
-  console.log('toggle modal')
+const bookClass = async (trainingClass) => {
+  const userRef =  store.user.coach ? doc(db, 'coaches', store.docId) : doc(db, 'users', store.docId);
+  if (store.docId) {
+    const newClass = trainingClass;
+    await updateDoc(userRef, { 
+      bookedClasses: arrayUnion(newClass) 
+    });
+  }
 }
 
-const deleteOffer = async (uid) => {
+const deleteClass = async (uid) => {
   const classRef = doc(db, "coaches", uid.vlaue, "classes", uid);
 
   try {

@@ -60,7 +60,7 @@
               </div>
             </div>
             <div class="container mx-auto py-6" >
-
+            <bookingCard />
             </div>
         </div> 
       </div> 
@@ -77,6 +77,7 @@
   import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
   import toast from '../components/toast.vue';
   import sidebar from '../components/sidebar.vue';
+  import bookingCard from '../components/bookingCard.vue';
 
   
   

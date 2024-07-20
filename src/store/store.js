@@ -9,11 +9,15 @@ export const useStore = defineStore({
     user: {},
     favoriteCoaches: [],
     route: null,
+    bookedCoach: null,
   }),
   actions: {
     setDocId(id) {
       this.docId = id;
       localStorage.setItem('uid', id);
+    },
+    setBookedCoach(uid) {
+      this.bookedCoach = uid;
     },
     async fetchUser(userType) {
       if (!this.docId) {
