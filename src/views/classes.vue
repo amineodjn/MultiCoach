@@ -20,7 +20,7 @@
     <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm">
       <classesCard 
           v-for="Class in displayedClasses" :key="Class.uid"
-          :Class="Class" 
+          :trainingClass="Class" 
           :customWidth="'w-1/2'"
           :coachAccess="true"
           @book="toggleModal"

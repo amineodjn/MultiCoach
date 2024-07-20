@@ -14,9 +14,10 @@
     <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm">
       <classesCard 
           v-for="(Class, index) in displayedClasses" :key="index"
-          :Class="Class" 
+          :trainingClass="Class" 
           :customWidth="'w-1/2'"
-          :coachAccess="true"
+          :coachAccess="false"
+          :read-only="true"
           @book="toggleModal"
           @deleteClass="deleteClass" />
       <emptyState v-if="displayedClasses.length === 0" />
@@ -71,32 +72,17 @@ const fetchClasses = async () => {
   if (!store.docId) {
     return;
   }
+  const docRef = store.user.coach ? store.userDoc("coaches") : store.userDoc("users");
 
-  const bookingsRef = doc(db, "users", store.docId);
-  console.log(bookingsRef, 'bookingsRef');
-  const querySnapshot = await getDocs(bookingsRef);
+  const docSnap = await getDoc(docRef);
 
-  if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map(doc => doc.data());
-    classes.value = data;
-    console.log('classes: ', classes.value);
+  if (docSnap.exists()) {
+    const user = docSnap.data();
+    classes.value = user.bookedClasses;
+  } else {
+    console.log("No such document!");
   }
 };
-
-// const fetchClasses = async () => {
-//   const docRef = store.user.coach ? store.userDoc("coaches") : store.userDoc("users");
-
-//   const docSnap = await getDoc(docRef);
-
-//   if (docSnap.exists()) {
-//     const user = docSnap.data();
-//     classes.value = user.bookings;
-//     console.log( classes.value, 'user.bookings');
-//   } else {
-//     console.log("No such document!");
-//   }
-// }
-
 
 onMounted(async () => {
   fetchClasses();
