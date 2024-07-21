@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
-    <div class="flex justify-between items-center py-4 px-5">
+    <div class="flex flex-col border-gray-300 mt-5 p-5 rounded-lg bg-white shadow-sm">
+      <div class="flex justify-between items-center py-4 px-5">
       <h2 class="text-2xl font-bold">Classes</h2>
       <div class="flex items-center md:justify-end space-x-2">
         <div class="relative">
@@ -11,26 +11,15 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm">
-      <classesCard 
-          v-for="(Class, index) in displayedClasses" :key="index"
-          :trainingClass="Class" 
-          :customWidth="'w-1/2'"
-          :coachAccess="false"
-          :read-only="true" />
-      <emptyState v-if="displayedClasses.length === 0" />
+    <div class="grid grid-cols-4 gap-3">
+      <classCard 
+            v-for="(Class, index) in displayedClasses" :key="index"
+            :trainingClass="Class" 
+            @book="console.log('Booked class:', $event)" />
+        <emptyState v-if="displayedClasses.length === 0" />
+      </div>
     </div>
-    <div v-if="displayedClasses.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
-      <a class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
-         @click="viewAllClasses">
-        {{ showAllClasses ? 'Show less' : 'Show all' }}
-        <svg class="flex-shrink-0  w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m9 18 6-6-6-6"></path>
-        </svg>
-      </a>          
-    </div>
-  </div>
-  <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
+    <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
     <div class="flex justify-between items-center py-4 px-5">
       <h2 class="text-2xl font-bold">Offers</h2>
       <div class="flex items-center md:justify-end space-x-2">
@@ -72,6 +61,7 @@ import { useStore } from '../store/store';
 import emptyState from '../components/emptyState.vue';
 import classesCard from '../components/classesCard.vue';
 import offersCard from '../components/offersCard.vue';
+import classCard from '../components/classCard.vue';
 
 const store = useStore();
 const classes = ref([]);

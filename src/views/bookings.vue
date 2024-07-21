@@ -59,7 +59,7 @@
                 </div>
               </div>
             </div>
-            <div class="container mx-auto py-6" >
+            <div class="container py-6" >
             <bookingCard />
             </div>
         </div> 

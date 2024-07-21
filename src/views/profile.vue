@@ -108,7 +108,7 @@
                  </div>
                 </div>
                 <!--End sidebar-->
-                <div class="xl:pl-5 flex-grow space-y-2">
+                <div class="xl:pl-5 flex-1 space-y-2">
                  <userOffer :uid="uid" /> 
                  <classOffer :uid="uid" />
                 </div>

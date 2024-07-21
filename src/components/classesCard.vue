@@ -48,7 +48,6 @@
             </svg>
             <p>{{ trainingClass.counter }}</p>
           </a>
-
         </div>
       </div>
     </div>
