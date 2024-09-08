@@ -7,7 +7,9 @@ import { createPinia } from 'pinia';
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useStore } from './store/store';
+import ro from 'flowbite-datepicker/locales/ro';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -40,6 +42,27 @@ const app = createApp(App);
 
 app.use(router);
 app.use(createPinia());
+
+const store = useStore();
+
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    store.setDocId(user.uid);
+    store.getUserType(user.uid);
+    store.fetchUser('users');
+    store.fetchUser('coaches');
+    localStorage.setItem('uid', user.uid);
+    console.log('Page reloaded, user is logged in');
+
+  } else {
+    // Handle the case where the user is not logged in
+    localStorage.removeItem('uid');
+    router.push('/sign-in');
+    console.log('User is not logged in');
+    
+  }
+});
 
 app.mount('#app')
 
