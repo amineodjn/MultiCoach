@@ -97,7 +97,6 @@
 
   const store = useStore();
   const userId = computed(() => store.docId);
-  const docRef = doc(db, "users", userId.value);
   const profileLink = store.route
   const firstName = ref(store.user.firstName);
   const lastName = ref(store.user.lastName);
@@ -107,7 +106,6 @@
   const description = ref(store.user.description);
   const userName = ref(store.user.userName);
   const success = ref(false);
-  const hasEmptyFields = ref(false);
   const errorMessages = reactive({
   firstName: '',
   lastName: '',
@@ -129,6 +127,7 @@ const submitSchedule = async () => {
     return acc;
   }, {});
   await setDoc(coachRef, { schedule }, { merge: true });
+  success.value = true;
 };
 
 // Function to create computed properties for error messages
@@ -157,49 +156,6 @@ const showError = reactive({
   description: false,
 });
 
-function splitCamelCase(str) {
-  return str.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
-}
-  // Function to update user data in Firestore
-  async function updateUser() {
-  const dataObj = {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    email: email.value,
-    password: password.value,
-    userName: userName.value,
-    description: description.value,  
-  }
-  // Reset showError
-  Object.keys(showError).forEach(key => {
-    showError[key] = false;
-  });
-
-  // Check for empty fields
-  Object.entries(dataObj).forEach(([key, value]) => {
-    if (value === undefined || value === '') {
-      showError[key] = true;
-    }
-  });
-
-  // Check if there are any errors
-  const hasErrors = Object.values(showError).some(value => value === true);
-  if (!hasErrors) {
-    await updateDoc(docRef, dataObj);
-    success.value = true;
-  } 
-
-  if (hasErrors) {
-    Object.entries(showError).forEach(([key, value]) => {
-      if (value === true) {
-        showError[key] = true;
-        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`; // Update the error message
-      }
-    });
-  }
-    // Update the fields based on your reactive properties
-}
-
   onMounted(async () => {
   const coachRef = doc(db, 'coaches', userId.value);
   const docSnap = await getDoc(coachRef);
@@ -225,7 +181,6 @@ function splitCamelCase(str) {
     { name: 'Saturday', startTime: '09:00', endTime: '18:00' },
     { name: 'Sunday', startTime: '09:00', endTime: '18:00' }
   ];
-    console.log("No such document!");
   }
 })
   const selectedFile = ref(null);

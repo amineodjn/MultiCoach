@@ -49,7 +49,7 @@
               </button>
         </div>
         <div class="flex flex-col justify-center items-center mt-2 m-2 rounded-lg">
-          <classesForm />
+          <classesForm @formSubmitted="fetchClasses"/>
         </div>
       </div>
     </div>

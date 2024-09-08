@@ -142,6 +142,8 @@ function splitCamelCase(str) {
   return str.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
 }
   // Function to update user data in Firestore
+  const emit = defineEmits(['formSubmitted']);
+
   async function updateOffer() {
   const dataObj = {
     className: className.value,
@@ -189,6 +191,9 @@ function splitCamelCase(str) {
     time.value = '';
     date.value = '';
     counter.value = 1;
+
+    emit('formSubmitted', { classId: classId.value });
+
   } 
 
   if (hasErrors) {
@@ -199,37 +204,14 @@ function splitCamelCase(str) {
       }
     });
   }
-  fetchclasses();
 }
   
   // Fetch user data from Firestore
-  const fetchclasses = async () => {
-    if (!userId.value) {
-      return;
-    }
-  
-    const docRef = doc(db, "coaches", userId.value);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      className.value = docSnap.data().className;
-      classDescription.value = docSnap.data().classDescription;
-      price.value = docSnap.data().price;
-      location.value = docSnap.data().location;
-      gym.value = docSnap.data().gym;
-      time.value = docSnap.data().time;
-      date.value = docSnap.data().date;
-      counter.value = docSnap.data().counter;
-  
-    } else {
-      console.log('No such document!');
-    }
-  };
-  
+ 
   onMounted(() => {
     if(!userId.value) {
       console.log('docId is not set', userId.value);
     }
-    fetchclasses();
   });
   const selectedFile = ref(null);
   const imageUrl = ref('');

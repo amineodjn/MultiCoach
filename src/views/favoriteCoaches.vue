@@ -12,9 +12,9 @@
           :coachAccess="false"
           @book="toggleModal"
           @deleteOffer="deleteOffer" />
-      <emptyState v-if="connectionList.length === 0" />
+      <emptyState v-if="isEmptyArray" />
     </div>
-    <div v-if="connectionList.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
+    <div v-if="Array.isArray(connectionList) && connectionList.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex  items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
          @click="viewAllProjects">
         {{ showAllOffers ? 'Show less' : 'Show all' }}
@@ -54,7 +54,7 @@ const fetchFavoriteCoaches = async () => {
 }
 
 const connectionList = computed(() => {
-  if(!showAllOffers.value) {
+  if(!showAllOffers.value && Array.isArray(favoriteCoaches.value) && favoriteCoaches.value.length > 3) {
     return favoriteCoaches.value.slice(0, 3);
   }
   return favoriteCoaches.value;
@@ -63,6 +63,7 @@ const connectionList = computed(() => {
 const viewAllProjects = () => {
   showAllOffers.value = !showAllOffers.value;
 };
+const isEmptyArray = computed(() => !Array.isArray(favoriteCoaches.value) || favoriteCoaches.value.length === 0);
 
 
 

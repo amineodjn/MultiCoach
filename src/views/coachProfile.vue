@@ -300,7 +300,10 @@ async function updateUser() {
   // Check if there are any errors
   const hasErrors = Object.values(showError).some(value => value === true);
   if (!hasErrors) {
+    console.log(dataObj, 'dataObj');
+    
     await updateDoc(docRef, dataObj);
+    await fetchUser();
     success.value = true;
   }
   else {

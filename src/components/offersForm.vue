@@ -181,35 +181,12 @@ function splitCamelCase(str) {
       }
     });
   }
-
-  fetchOffers();
 }
-  
-  // Fetch user data from Firestore
-  const fetchOffers = async () => {
-    if (!userId.value) {
-      return;
-    }
-  
-    const docRef = doc(db, "coaches", userId.value);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      offerName.value = docSnap.data().offerName;
-      offerDescription.value = docSnap.data().offerDescription;
-      price.value = docSnap.data().price;
-      location.value = docSnap.data().location;
-      gym.value = docSnap.data().gym;
-  
-    } else {
-      console.log('No such document!');
-    }
-  };
   
   onMounted(() => {
     if(!userId.value) {
       console.log('docId is not set', userId.value);
     }
-    fetchOffers();
   });
   const selectedFile = ref(null);
   const imageUrl = ref('');

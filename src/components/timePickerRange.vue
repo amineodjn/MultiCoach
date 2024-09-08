@@ -3,13 +3,13 @@
     <div>
       <label :for="`${day}-start-time`" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start time:</label>
       <div class="relative">
-        <input type="time" :id="`${day}-start-time`" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="startTime" />
+        <input type="time" :id="`${day}-start-time`" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:border-indigo-500" v-model="startTime" />
       </div>
     </div>
     <div>
       <label :for="`${day}-end-time`" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End time:</label>
       <div class="relative">
-        <input type="time" :id="`${day}-end-time`" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="endTime" />
+        <input type="time" :id="`${day}-end-time`" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:border-indigo-500" v-model="endTime" />
       </div>
     </div>
   </div>
