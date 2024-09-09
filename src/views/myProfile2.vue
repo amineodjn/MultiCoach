@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center mb-4"> 
       <h2 class="text-2xl font-bold">Projects</h2> 
       <div class="relative"> 
-        <input type="text" v-model="searchQuery" placeholder="Search" class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" /> 
+        <input type="text" v-model="searchQuery" placeholder="Search" class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 hover:border-indigo-500" /> 
         <svg class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4a8 8 0 1016 16m-2-2l4-4"/> 
         </svg> 
       </div> 
