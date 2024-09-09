@@ -26,7 +26,7 @@
                     </svg>
                     My Profile
                   </router-link>
-                  <router-link class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm font-medium whitespace-nowrap text-gray-500 focus:outline-none focus:text-indigo-800 dark:text-indigo-500" to="/connections">
+                  <router-link class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm font-medium whitespace-nowrap text-gray-500 focus:outline-none focus:text-indigo-800 dark:text-indigo-500 hover:text-indigo-600" to="/connections">
                     <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
                       <circle cx="12" cy="10" r="3"></circle>
