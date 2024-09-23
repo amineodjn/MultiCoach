@@ -135,7 +135,7 @@
   </div>
   </template>
   <script setup>
-  import { ref, defineEmits, onMounted, watch, nextTick } from 'vue';
+  import { ref, onMounted, watch, nextTick } from 'vue';
   import { useRouter } from 'vue-router';
   import { useStore } from '../store/store';
   import { db } from '../main.js';

@@ -61,7 +61,6 @@ class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex ju
 </template>
 
 <script setup>
-import { defineEmits } from 'vue'
 import { useRouter } from 'vue-router';
 
 const router = useRouter();

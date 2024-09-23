@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineEmits, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 const emits = defineEmits(['citySelected', 'cityRemoved'])
 
 const toggled = ref(false)
