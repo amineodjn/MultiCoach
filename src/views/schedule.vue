@@ -1,6 +1,6 @@
 <template>
   <toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
-  <headerCard>
+  <headerCard page="schedule">
     <template v-slot:content>
       <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
         <div class="flex justify-between items-center py-4 px-5">

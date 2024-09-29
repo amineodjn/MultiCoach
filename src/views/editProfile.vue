@@ -1,5 +1,5 @@
 <template>
-  <headerCard>
+  <headerCard page="edit">
     <template v-slot:content>
       <profileForm /> 
     </template>

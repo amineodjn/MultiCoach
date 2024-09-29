@@ -1,5 +1,5 @@
 <template>
-  <headerCard>
+  <headerCard page="connections">
     <template v-slot:content>
       <favoriteCoaches />
     </template>

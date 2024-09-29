@@ -1,5 +1,5 @@
 <template>
-  <headerCard>
+  <headerCard page="bookings">
     <template v-slot:content>
       <bookingCard />
     </template>

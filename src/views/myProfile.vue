@@ -1,5 +1,5 @@
 <template>
-  <headerCard>
+  <headerCard page="my-profile">
     <template v-slot:content>
       <classes />
       <offers />
