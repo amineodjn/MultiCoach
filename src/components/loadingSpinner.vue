@@ -6,12 +6,3 @@
     </div>
  </div>
 </template>
-
-<script setup>
-
-console.log('running backward')
-</script>
-
-<style scoped>
-/* Add any additional styles here */
-</style>

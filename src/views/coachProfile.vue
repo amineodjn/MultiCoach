@@ -1,187 +1,135 @@
-<template v-show="success">
-<toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
-      <sidebar v-if="false" />
-      <main id="content" class="content-container">
-        <div class="mx-auto">
-          <div class="md:pt-5 sm:pt-0 sm:pb-0 sm:p-5 p-2">
-            <div class="w-full pb-0 p-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-neutral-800 dark:border-neutral-700 ">
-              <figure>
-                <svg class="w-full" preserveAspectRatio="none" width="1113" height="161" viewBox="0 0 1113 161" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_666_220723)"><rect x="0.5" width="1112" height="161" rx="12" fill="white"></rect><rect x="1" width="1112" height="348" fill="#D9DEEA"></rect><path d="M512.694 359.31C547.444 172.086 469.835 34.2204 426.688 -11.3096H1144.27V359.31H512.694Z" fill="#C0CBDD"></path><path d="M818.885 185.745C703.515 143.985 709.036 24.7949 726.218 -29.5801H1118.31V331.905C1024.49 260.565 963.098 237.945 818.885 185.745Z" fill="#8192B0"></path><defs><clipPath id="clip0_666_220723"><rect x="0.5" width="1112" height="161" rx="12" fill="white"></rect></clipPath></defs></g></svg>
-              </figure>
-              <div class="-mt-24">
-                <div class="relative flex border-4 mx-auto rounded-full flex-col items-center dark:border-neutral-800" style="width: 120px; height: 120px;">
-                  <img class="object-cover w-full h-full rounded-full shadow-lg" :src="profilePicture" alt="profile picutre"/>
-                </div>
-                <div class="flex flex-col items-center mt-3">
-                  <h1 class="text-xl font-medium text-gray-900 dark:text-white">{{firstName + ' ' + lastName}}</h1>
-                  <p class="text-sm text-gray-500 dark:text-neutral-500">{{userName}}</p>
-                </div>
+<template>
+  <headerCard>
+    <template v-slot:content>
+      <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+        <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit your profile</h2>
+        <form @submit.prevent="updateUser">
+          <div class="grid gap-6 mb-6 md:grid-cols-2">
+            <inputValidation :Modelval="firstName" 
+            title="First name" 
+            :error-message="firstNameError" 
+            placeholder="John"
+            @input="firstName = $event.target.value"
+            :showError="showError.firstName"
+            ></inputValidation>
+            <inputValidation 
+              :Modelval="lastName" 
+              title="Last name" 
+              :error-message="lastNameError" 
+              placeholder="Doe"
+              @input="lastName = $event.target.value"
+              :showError="showError.lastName"
+            ></inputValidation>
+      
+            <inputValidation 
+              :Modelval="userName" 
+              title="Username" 
+              :error-message="userNameError" 
+              placeholder="coach_10"
+              @input="userName = $event.target.value"
+              :showError="showError.userName"
+            ></inputValidation>
+      
+            <inputValidation 
+              :Modelval="email" 
+              title="Your email" 
+              :error-message="emailError" 
+              placeholder="Enter your email"
+              @input="email = $event.target.value"
+              :showError="showError.email"
+            ></inputValidation>
+      
+            <inputValidation 
+              :Modelval="password" 
+              title="Password" 
+              :error-message="passwordError" 
+              placeholder="Password"
+              @input="password = $event.target.value"
+              :showError="showError.password"
+            ></inputValidation>
+      
+            <inputValidation 
+              :Modelval="profession" 
+              title="Profession" 
+              :error-message="professionError" 
+              placeholder="Personal Trainer"
+              @input="profession = $event.target.value"
+              :showError="showError.profession"
+            ></inputValidation>
+      
+            <locationInput
+              :Modelval="city" 
+              title="City" 
+              :error-message="cityError" 
+              placeholder="Poznań"
+              @input="city = $event"
+              ></locationInput>
+      
+            <inputValidation 
+              :Modelval="websiteUrl" 
+              title="Website url (optional)" 
+              :error-message="websiteUrlError" 
+              placeholder="Multicoach.com"
+              @input="websiteUrl = $event.target.value"
+              :showError="showError.websiteUrl"
+            ></inputValidation>
+      
+            <inputValidation 
+              :Modelval="phoneNumber" 
+              title="Phone number" 
+              :error-message="phoneNumberError" 
+              placeholder="xxx-xxx-xxx"
+              @input="phoneNumber = $event.target.value"
+              :showError="showError.phoneNumber"
+            ></inputValidation>
+      
+            <inputValidation 
+              :Modelval="gym" 
+              title="Gym" 
+              :error-message="gymError" 
+              placeholder="Gym world, can be?"
+              @input="gym = $event.target.value"
+              :showError="showError.gym"
+            ></inputValidation>
+          </div>
+          <div>
+            <textArea
+              :Modelval="description"
+              title="Description" 
+              :error-message="descriptionError" 
+              placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"
+              @input="description = $event.target.value"
+              :showError="showError.description"
+            ></textArea>
+          </div>
+          <div class="flex items-center justify-center w-full mb-6">
+            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                </svg>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
               </div>
-              <div class="pt-0.5 pb-0.5 whitespace-nowrap overflow-y-hidden overflow-x-auto gap-2 justify-between items-center flex-row flex mt-7 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
-                <nav class="flex space-x-6">
-                  <router-link class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-indigo-600 focus:outline-none focus:text-indigo-600 dark:text-neutral-500 dark:hover:text-indigo-500" to="/myProfile">
-                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                    My Profile
-                  </router-link>
-                  <router-link class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 focus:outline-none focus:text-indigo-800 dark:text-indigo-500 hover:text-indigo-600" to="/connections">
-                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <circle cx="12" cy="10" r="3"></circle>
-                      <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
-                    </svg>
-                    Connections
-                  </router-link>
-                  <router-link class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-indigo-500 text-sm whitespace-nowrap text-indigo-600 hover:text-indigo-600 focus:outline-none focus:text-indigo-600 dark:text-neutral-500 dark:hover:text-indigo-500" to="/editProfile">
-                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                    Edit Profile
-                  </router-link>
-                  <router-link class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-indigo-600 focus:outline-none focus:text-indigo-600 dark:text-neutral-500 dark:hover:text-indigo-500" to="/schedule">
-                    <svg class="flex-shrink-0 size-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                    </svg>
-                    Schedule
-                  </router-link>
-                </nav>
-                <div>
-                  <button type="button" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">Edit</button>
-                </div>
-              </div>
+              <input id="dropzone-file" type="file" @change="uploadImage" class="hidden" />
+            </label>
+          </div> 
+          <div v-if="selectedFile" class="flex items-start mb-6">
+            <div class="flex items-center h-5">
+              <svg class="w-6 h-5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"></path></svg>
             </div>
-            <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-              <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit your profile</h2>
-              <form @submit.prevent="updateUser">
-                <div class="grid gap-6 mb-6 md:grid-cols-2">
-                  <inputValidation :Modelval="firstName" 
-                  title="First name" 
-                  :error-message="firstNameError" 
-                  placeholder="John"
-                  @input="firstName = $event.target.value"
-                  :showError="showError.firstName"
-                  ></inputValidation>
-                  <inputValidation 
-                    :Modelval="lastName" 
-                    title="Last name" 
-                    :error-message="lastNameError" 
-                    placeholder="Doe"
-                    @input="lastName = $event.target.value"
-                    :showError="showError.lastName"
-                  ></inputValidation>
-          
-                  <inputValidation 
-                    :Modelval="userName" 
-                    title="Username" 
-                    :error-message="userNameError" 
-                    placeholder="coach_10"
-                    @input="userName = $event.target.value"
-                    :showError="showError.userName"
-                  ></inputValidation>
-
-                  <inputValidation 
-                    :Modelval="email" 
-                    title="Your email" 
-                    :error-message="emailError" 
-                    placeholder="Enter your email"
-                    @input="email = $event.target.value"
-                    :showError="showError.email"
-                  ></inputValidation>
-          
-                  <inputValidation 
-                    :Modelval="password" 
-                    title="Password" 
-                    :error-message="passwordError" 
-                    placeholder="Password"
-                    @input="password = $event.target.value"
-                    :showError="showError.password"
-                  ></inputValidation>
-          
-                  <inputValidation 
-                    :Modelval="profession" 
-                    title="Profession" 
-                    :error-message="professionError" 
-                    placeholder="Personal Trainer"
-                    @input="profession = $event.target.value"
-                    :showError="showError.profession"
-                  ></inputValidation>
-
-                  <locationInput
-                    :Modelval="city" 
-                    title="City" 
-                    :error-message="cityError" 
-                    placeholder="Poznań"
-                    @input="city = $event"
-                    ></locationInput>
-          
-                  <inputValidation 
-                    :Modelval="websiteUrl" 
-                    title="Website url (optional)" 
-                    :error-message="websiteUrlError" 
-                    placeholder="Multicoach.com"
-                    @input="websiteUrl = $event.target.value"
-                    :showError="showError.websiteUrl"
-                  ></inputValidation>
-          
-                  <inputValidation 
-                    :Modelval="phoneNumber" 
-                    title="Phone number" 
-                    :error-message="phoneNumberError" 
-                    placeholder="xxx-xxx-xxx"
-                    @input="phoneNumber = $event.target.value"
-                    :showError="showError.phoneNumber"
-                  ></inputValidation>
-          
-                  <inputValidation 
-                    :Modelval="gym" 
-                    title="Gym" 
-                    :error-message="gymError" 
-                    placeholder="Gym world, can be?"
-                    @input="gym = $event.target.value"
-                    :showError="showError.gym"
-                  ></inputValidation>
-                </div>
-                <div>
-                  <textArea
-                    :Modelval="description"
-                    title="Description" 
-                    :error-message="descriptionError" 
-                    placeholder="👋 Hello, my name is [Your Name]. I am a certified personal trainer 💪 with [Number of Years] years of experience. I specialize in [Your Specialization] and have worked with [Types of Clients You've Worked With]. I frequently collaborate with gyms such as [Names of the Gyms] 🏋️‍♀️. My certifications include [Your Certifications] 🎓. I am passionate about helping others achieve their fitness goals and look forward to working with you. 😊"
-                    @input="description = $event.target.value"
-                    :showError="showError.description"
-                  ></textArea>
-                </div>
-                <div class="flex items-center justify-center w-full mb-6">
-                  <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                      </svg>
-                      <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                      <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-                    </div>
-                    <input id="dropzone-file" type="file" @change="uploadImage" class="hidden" />
-                  </label>
-                </div> 
-                <div v-if="selectedFile" class="flex items-start mb-6">
-                  <div class="flex items-center h-5">
-                    <svg class="w-6 h-5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"></path></svg>
-                  </div>
-                  <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"><a :href="imageUrl" class="text-indigo-600 hover:underline dark:text-indigo-500">{{ imageName }}</a>.</label>
-                </div>
-                <button type="submit" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Submit</button>
-              </form>
-            </div>
-        </div> 
-      </div> 
-    </main>    
+            <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"><a :href="imageUrl" class="text-indigo-600 hover:underline dark:text-indigo-500">{{ imageName }}</a>.</label>
+          </div>
+          <button type="submit" class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">Submit</button>
+        </form>
+      </div>
+    </template>
+  </headerCard>    
 </template>
 
 <script setup>
+import headerCard from '../components/headerCard.vue'
 import { ref, computed, onMounted, reactive } from 'vue';
 import { db } from '../main.js';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
