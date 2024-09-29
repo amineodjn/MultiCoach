@@ -73,7 +73,7 @@ const register =   () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
   .then(async (data) => {
     store.setDocId(auth.currentUser.uid);
-    store.getUserType(auth.currentUser.uid);
+    store.setRoute(auth.currentUser.uid);
     store.fetchUser('users');
     store.fetchUser('coaches');
     localStorage.setItem('uid', auth.currentUser.uid); // Store uid in localStorage

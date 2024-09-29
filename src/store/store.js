@@ -82,18 +82,18 @@ export const useStore = defineStore({
       }
       return user;
     },
-    async getUserType() {
+    async setRoute() {
       const userDoc = await getDoc(doc(db, 'users', this.docId));
       const coachDoc = await getDoc(doc(db, 'coaches', this.docId));
 
       if (userDoc.exists()) {
-        this.route = '/user-profile/' + this.docId;
+        this.route = '/edit/' + this.docId;
         return this.route;
       } else if (coachDoc.exists()) {
-        this.route = '/coach-profile/' + this.docId
+        this.route = '/edit/' + this.docId
         return this.route;
       } else {
-        return null;
+        return '/';
       }
     },
     userDoc(type) {

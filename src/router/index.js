@@ -40,17 +40,9 @@ const router = createRouter({
       component: () => import('../views/ResetPwd.vue'),
     },
     {
-      path: '/coach-profile/:uid',
-      name: 'coachProfile',
-      component: () => import('../views/userProfile.vue'),
-      meta: {
-        requiresAuth: true,
-      }
-    },
-    {
-      path: '/user-profile/:uid',
-      name: 'userProfile',
-      component: () => import('../views/userProfile.vue'),
+      path: '/edit/:uid',
+      name: 'edit',
+      component: () => import('../views/editProfile.vue'),
       meta: {
         requiresAuth: true,
       }
@@ -80,14 +72,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/editProfile',
-      name: 'editProfile',
-      component: () => import('../views/editProfile.vue'),
-      meta: {
-        requiresAuth: true,
-      }
-    },
-    {
       path: '/offers/:uid',
       name: 'offers',
       component: () => import('../views/offers.vue'),
@@ -96,7 +80,7 @@ const router = createRouter({
       path: '/profile/:uid',
       name: 'profile',
       props: true,
-      component: () => import('../views/profile.vue'),
+      component: () => import('../views/user.vue'),
     },
     {
       path: '/bookings',

@@ -49,7 +49,7 @@ const store = useStore();
 onAuthStateChanged(auth, (user) => {
   if (user) {
     store.setDocId(user.uid);
-    store.getUserType(user.uid);
+    store.setRoute(user.uid);    
     store.fetchUser('users');
     store.fetchUser('coaches');
     localStorage.setItem('uid', user.uid);
