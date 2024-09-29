@@ -42,7 +42,7 @@ const router = createRouter({
     {
       path: '/coach-profile/:uid',
       name: 'coachProfile',
-      component: () => import('../views/coachProfile.vue'),
+      component: () => import('../views/userProfile.vue'),
       meta: {
         requiresAuth: true,
       }
