@@ -1,6 +1,6 @@
 <template>
   <headerCard page="my-profile">
-    <template v-slot:content>
+    <template #content>
       <classes />
       <offers />
     </template>

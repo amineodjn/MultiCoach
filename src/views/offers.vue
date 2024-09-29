@@ -25,7 +25,8 @@
           :coachAccess="true"
           @book="toggleModal"
           @deleteOffer="deleteOffer" />
-      <emptyState v-if="displayedOffers.length === 0" />
+      <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />    
+      <emptyState v-else-if="displayedOffers.length === 0" />
     </div>
     <div v-if="displayedOffers.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
@@ -64,13 +65,14 @@ import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../main'; 
 import { useStore } from '../store/store';
 import emptyState from '../components/emptyState.vue';
-
+import loadingSpinner from '../components/loadingSpinner.vue';
 
 const store = useStore();
 const offers = ref([]);
 const showForm = ref(false);
 const showAllOffers = ref(false);
 const searchTerm = ref('');
+const isLoading = ref(false);
 
 const displayedOffers = computed(() => {
   let filteredOffers = offers.value;
@@ -93,6 +95,7 @@ const viewAllProjects = () => {
 };
 
 const fetchOffers = async () => {
+  isLoading.value = true;
   if (!store.docId) {
     return;
   }
@@ -104,6 +107,7 @@ const fetchOffers = async () => {
     const data = querySnapshot.docs.map(doc => doc.data());
     offers.value = data;
   }
+  isLoading.value = false;
 };
 
 const addOffer = () => {

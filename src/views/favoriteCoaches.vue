@@ -12,7 +12,8 @@
           :coachAccess="false"
           @book="toggleModal"
           @deleteOffer="deleteOffer" />
-      <emptyState v-if="isEmptyArray" />
+      <emptyState v-if="isEmptyArray && !isLoading" />
+      <loadingSpinner v-if="isLoading && isEmptyArray" />
     </div>
     <div v-if="Array.isArray(connectionList) && connectionList.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex  items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
@@ -34,13 +35,16 @@ import { db } from '../main';
 import { useStore } from '../store/store';
 import emptyState from '../components/emptyState.vue';
 import favoritesCard from '../components/favoritesCard.vue';
+import loadingSpinner from '../components/loadingSpinner.vue';
 
 
 const store = useStore();
 const showAllOffers = ref(false);
 const favoriteCoaches = ref([]);
+const isLoading = ref(false);
 
 const fetchFavoriteCoaches = async () => {
+  isLoading.value = true;
   const docRef = store.user.coach ? store.userDoc("coaches") : store.userDoc("users");
 
   const docSnap = await getDoc(docRef);
@@ -51,6 +55,7 @@ const fetchFavoriteCoaches = async () => {
   } else {
     console.log("No such document!");
   }
+  isLoading.value = false;
 }
 
 const connectionList = computed(() => {

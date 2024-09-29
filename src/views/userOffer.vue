@@ -19,7 +19,8 @@
           :coachAccess="false"
           @book="toggleModal"
       />
-      <emptyState v-if="displayedOffers.length === 0" />
+      <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
+      <emptyState v-else-if="displayedOffers.length === 0" />
     </div>
     <div v-if="displayedOffers.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex  items-center text-blue-600 font-medium text-sm leading-5 pt-4 rounded-b-md space-x-1 justify-center  dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
@@ -39,11 +40,12 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../main'; 
 import emptyState from '../components/emptyState.vue';
-
+import loadingSpinner from '../components/loadingSpinner.vue';
 
 const offers = ref([]);
 const showAllOffers = ref(false);
 const searchTerm = ref('');
+const isLoading = ref(false);
 
 const props = defineProps({
   uid: {
@@ -75,6 +77,7 @@ const viewAllProjects = () => {
 };
 
 const fetchOffers = async () => {
+  isLoading.value = true;
   if (!uid.value) {
     return;
   }
@@ -89,6 +92,7 @@ const fetchOffers = async () => {
   else {
     offers.value = [];
   }
+  isLoading.value = false;
 };
 
 onMounted(async () => {

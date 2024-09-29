@@ -1,6 +1,6 @@
 <template>
   <headerCard page="connections">
-    <template v-slot:content>
+    <template #content>
       <favoriteCoaches />
     </template>
   </headerCard>    

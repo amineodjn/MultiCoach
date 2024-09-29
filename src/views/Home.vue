@@ -43,10 +43,12 @@
             @favorite="toggleFavorite(user)"
             />
         </div>
-        <emptyState v-if="filteredUsers.length === 0" class="mx-4" />
+        <loadingSpinner v-if="isLoading" />
+        <emptyState v-else-if="!isLoading && filteredUsers.length === 0" class="mx-4" />
       </div>
-      <div class="w-full md:w-1/2 h-screen">
-        <GoogleMap api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
+      <div class="flex md:w-1/2 h-screen">
+        <loadingSpinner v-if="isLoading" />
+        <GoogleMap v-else api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
       </div>
       <bookingModal :open="open" @update="open =!open" :startHour="6" :endHour="21" @confirmBooking="confirmBooking" @selectedDate="selectedDate" :bookedCoach="bookedCoach" />
       <successModal :open="openModal" @update="openModal =!openModal" />
@@ -75,6 +77,7 @@ import popUpModal from '../components/popUpModal.vue';
 import bookingModal from '../components/BookingModal.vue'
 import successModal from '../components/successModal.vue';
 import { useRouter } from 'vue-router';
+import loadingSpinner from '../components/loadingSpinner.vue';
 
 const router = useRouter();
 const store = useStore();
@@ -90,12 +93,19 @@ const open = ref(false)
 const openModal = ref(false)
 const bookedCoach = ref('')
 const offerName = ref(localStorage.getItem('bookedOfferName'));
+const isLoading = ref(false);
 
 
 const getUsers = async () => {
+  isLoading.value = true;
   const usersCollection = collection(db, 'coaches');
   const userSnapshot = await getDocs(usersCollection);
-  const userList = userSnapshot.docs.map(doc => doc.data());
+  let userList = [];
+
+  if (userSnapshot) {
+    userList = userSnapshot.docs.map(doc => doc.data());
+  }
+  isLoading.value = false;
   return userList;
 };
 
@@ -272,7 +282,7 @@ onMounted(async () => {
 
     if(store.user) {
         fetchFavoriteCoaches();
-      }
+    }
 });
 
 </script>

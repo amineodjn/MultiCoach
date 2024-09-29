@@ -2,7 +2,8 @@
   <toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
   <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit your profile</h2>
-    <form @submit.prevent="updateUser">
+    <loadingSpinner v-if="isLoading" />
+    <form v-else @submit.prevent="updateUser">
       <div class="grid gap-6 mb-6 md:grid-cols-2">
         <inputValidation :Modelval="firstName" 
         title="First name" 
@@ -142,6 +143,7 @@
   import inputValidation from '../components/inputValidation.vue';
   import textArea from '../components/textarea.vue';
   import locationInput from '../components/locationInput.vue';
+  import loadingSpinner from '../components/loadingSpinner.vue';
   
   
   const store = useStore();
@@ -161,7 +163,7 @@
   const phoneNumber = ref(store.user.phoneNumber);
   const gym = ref(store.user.gym);
   const success = ref(false);
-  const hasEmptyFields = ref(false);
+  const isLoading = ref(false);
   const isCoach = ref(store.user.coach);
   
   const errorMessages = reactive({
@@ -266,6 +268,7 @@
   
   // Fetch user data from Firestore
   const fetchUser = async () => {
+    isLoading.value = true;
     if (!userId.value) {
       console.log('docId is not set', userId.value);
       return;
@@ -289,6 +292,7 @@
       success.value = false;
       console.log('No such document!');
     }
+    isLoading.value = false;
   };
   
   onMounted(() => {

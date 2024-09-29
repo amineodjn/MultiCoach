@@ -1,6 +1,6 @@
 <template>
   <headerCard page="bookings">
-    <template v-slot:content>
+    <template #content>
       <bookingCard />
     </template>
   </headerCard>    

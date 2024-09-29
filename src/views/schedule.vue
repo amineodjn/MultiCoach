@@ -1,13 +1,14 @@
 <template>
   <toast v-if="success" @animation-end="resetSuccess" @close="success = false" :success="success"></toast>
   <headerCard page="schedule">
-    <template v-slot:content>
+    <template #content>
       <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
         <div class="flex justify-between items-center py-4 px-5">
           <h2 class="text-2xl font-bold">Your schedule</h2>
         </div>
         <div class="border-gray-300 mt-5 rounded-lg bg-white shadow-sm">
-          <form @submit.prevent="submitSchedule" class="flex flex-col items-center">
+          <loadingSpinner v-if="isLoading" />
+          <form v-else @submit.prevent="submitSchedule" class="flex flex-col items-center">
             <div class="flex flex-col mb-6 md:grid-cols-2">
               <div class="flex justify-between items-center mt-3" v-for="(day, index) in days" :key="index">
                 <h3 class="mt-7">{{ capitalaizefirstLetter(day.name) }}</h3>
@@ -30,11 +31,13 @@ import { db } from '../main.js';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import timePickerRange from '../components/timePickerRange.vue';
 import { useStore } from '../store/store.js';
+import loadingSpinner from '../components/loadingSpinner.vue';
 
 const store = useStore();
 const userId = computed(() => store.docId);
 const days = ref([]);
 const success = ref(false);
+const isLoading = ref(false);
 
 const capitalaizefirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -57,6 +60,7 @@ const resetSuccess = (event) => {
 };
 
 onMounted(async () => {
+  isLoading.value = true;
   const coachRef = doc(db, 'coaches', userId.value);
   const docSnap = await getDoc(coachRef);
 
@@ -78,5 +82,6 @@ onMounted(async () => {
       { name: 'Sunday', startTime: '09:00', endTime: '18:00' }
     ];
   }
+  isLoading.value = false;
 });
 </script>

@@ -1,6 +1,6 @@
 <template>
   <headerCard page="edit">
-    <template v-slot:content>
+    <template #content>
       <profileForm /> 
     </template>
   </headerCard>    
