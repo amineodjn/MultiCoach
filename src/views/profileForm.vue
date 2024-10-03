@@ -353,11 +353,6 @@
   };
   </script>
   <style scoped>
-  @media (min-width: 1024px) {
-    .content-container {
-        padding-inline-start: 260px;
-    }
-  }
   .content-container-padding {
     padding-top: 59px;
   }

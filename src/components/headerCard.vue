@@ -103,9 +103,9 @@ const props = defineProps({
 
 </script>
 <style scoped>
-@media (min-width: 1024px) {
+/* @media (min-width: 1024px) {
   .content-container {
       padding-inline-start: 260px;
   }
-}
+} */
 </style>
