@@ -20,8 +20,8 @@
       </div>
     </div>
     <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
-    <div class="flex justify-between items-center py-4 px-5">
-      <h2 class="text-2xl font-bold">Offers</h2>
+    <div class="flex justify-between items-center px-0 py-4 lg:px-5">
+      <h2 class="text-2xl font-bold pr-2">Offers</h2>
       <div class="flex items-center md:justify-end space-x-2">
         <div class="relative">
           <input v-model="searchTerm" type="text" placeholder="Search" class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-indigo-800 hover:border-indigo-500">

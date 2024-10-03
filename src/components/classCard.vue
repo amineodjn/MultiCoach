@@ -1,7 +1,7 @@
 <template>
       <div class="bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70">
-        <img class="w-full h-auto rounded-t-xl" :src="trainingClass.classImage" alt="Image Description">
-        <div class="p-4 md:p-5">
+        <img class="w-full h-auto rounded-t-xl min-h-40" :src="trainingClass.classImage" alt="Image Description">
+        <div class="p-4 md:p-3">
           <h3 class="text-lg font-bold text-gray-800 dark:text-white">
             {{ trainingClass.className }}
           </h3>
