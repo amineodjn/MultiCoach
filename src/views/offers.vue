@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
-    <div class="flex justify-between items-center py-4 px-5">
-      <h2 class="text-2xl font-bold">Your Offers</h2>
+    <div class="lex justify-between flex-col md:flex-row items-start md:items-center py-4 px-5">
+      <h2 class="text-2xl font-bold mb-4 lg:m-0">Your Offers</h2>
       <div class="flex items-center md:justify-end space-x-2">
         <div class="relative">
           <input v-model="searchTerm" type="text" placeholder="Search" class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-indigo-800 hover:border-indigo-500">
@@ -13,7 +13,6 @@
           <svg class="w-6 h-6 text-white-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
           </svg>
-          Add offer
         </button>
       </div>
     </div>
