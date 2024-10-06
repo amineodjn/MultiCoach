@@ -1,9 +1,9 @@
 <template>
   <body>
     <div class="flex flex-col md:flex-row items-start justify-center md:m-10 m-2 rounded-lg" >
-      <div class="flex flex-col h-screen md:w-1/2">
+      <div class="flex flex-col h-screen lg:w-1/2">
         <div class="w-full flex md:flex-row items-start justify-between">
-          <searchBox :selectedExperiences="selectedExperiences" @citySelected="filterCities" @cityRemoved="clearFilter" class="w-2/3"></searchBox>
+          <searchBox :selectedExperiences="selectedExperiences" @citySelected="filterCities" @cityRemoved="clearFilter" class="w-2/3 mx-2"></searchBox>
           <div class="flex flex-col md:items-end mt-6 mr-2">
             <button id="filterDropdownButton"
               @click="dropdownToggle"
@@ -46,7 +46,7 @@
         <loadingSpinner v-if="isLoading" />
         <emptyState v-else-if="!isLoading && filteredUsers.length === 0" class="mx-4" />
       </div>
-      <div class="flex md:w-1/2 h-screen">
+      <div class="flex lg:w-1/2 h-screen">
         <loadingSpinner v-if="isLoading" />
         <GoogleMap v-else api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0" :zoom="7" :center="center" class="w-full h-full rounded-lg"/>
       </div>
