@@ -3,11 +3,10 @@
     <template #content>
       <bookingCard />
     </template>
-  </headerCard>    
+  </headerCard>
 </template>
 
 <script setup>
-import headerCard from '../components/headerCard.vue';
-import bookingCard from '../components/bookingCard.vue';
-</script>  
-  
+import headerCard from "../components/headerCard.vue";
+import bookingCard from "../components/bookingCard.vue";
+</script>

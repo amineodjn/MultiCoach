@@ -3,10 +3,10 @@
     <template #content>
       <favoriteCoaches />
     </template>
-  </headerCard>    
+  </headerCard>
 </template>
-  
-  <script setup>
-  import favoriteCoaches from '../views/favoriteCoaches.vue';
-  import headerCard from '../components/headerCard.vue';
-  </script>
+
+<script setup>
+import favoriteCoaches from "../views/favoriteCoaches.vue";
+import headerCard from "../components/headerCard.vue";
+</script>

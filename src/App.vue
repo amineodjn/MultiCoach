@@ -1,9 +1,8 @@
 <template>
-<navbar></navbar>  
-<router-view />
+  <navbar></navbar>
+  <router-view />
 </template>
 
 <script setup>
-import navbar from './components/navbar.vue'
-
+import navbar from "./components/navbar.vue";
 </script>

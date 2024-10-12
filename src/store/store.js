@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia';
-import { getDoc, doc } from 'firebase/firestore'; // import these from Firebase
-import { db } from '../main.js'
+import { defineStore } from "pinia";
+import { getDoc, doc } from "firebase/firestore"; // import these from Firebase
+import { db } from "../main.js";
 
 export const useStore = defineStore({
-  id: 'main',
+  id: "main",
   state: () => ({
-    docId: '',
+    docId: "",
     user: {},
     favoriteCoaches: [],
     route: null,
@@ -14,17 +14,17 @@ export const useStore = defineStore({
   actions: {
     setDocId(id) {
       this.docId = id;
-      localStorage.setItem('uid', id);
+      localStorage.setItem("uid", id);
     },
     setBookedCoach(uid) {
       this.bookedCoach = uid;
     },
     async fetchUser(userType) {
       if (!this.docId) {
-        console.log('docId is not set', this.docId);
+        console.log("docId is not set", this.docId);
         return;
       }
-  
+
       const docRef = doc(db, userType, this.docId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -43,18 +43,18 @@ export const useStore = defineStore({
           websiteUrl: docSnap.data().websiteUrl,
           coach: docSnap.data().coach,
           favoriteCoaches: docSnap.data().favoriteCoaches,
-          schedule: docSnap.data().schedule
+          schedule: docSnap.data().schedule,
         };
       } else {
-        console.log('No such document!');
+        console.log("No such document!");
       }
     },
     async fetchCoach(userType, uid) {
       if (!uid) {
-        console.log('docId is not set', uid);
+        console.log("docId is not set", uid);
         return;
       }
-  
+
       const docRef = doc(db, userType, uid);
       const docSnap = await getDoc(docRef);
       let user = {};
@@ -75,29 +75,29 @@ export const useStore = defineStore({
           websiteUrl: docSnap.data().websiteUrl,
           coach: docSnap.data().coach,
           favoriteCoaches: docSnap.data().favoriteCoaches,
-          schedule: docSnap.data().schedule
+          schedule: docSnap.data().schedule,
         };
       } else {
-        console.log('No such document!');
+        console.log("No such document!");
       }
       return user;
     },
     async setRoute() {
-      const userDoc = await getDoc(doc(db, 'users', this.docId));
-      const coachDoc = await getDoc(doc(db, 'coaches', this.docId));
+      const userDoc = await getDoc(doc(db, "users", this.docId));
+      const coachDoc = await getDoc(doc(db, "coaches", this.docId));
 
       if (userDoc.exists()) {
-        this.route = '/edit/' + this.docId;
+        this.route = "/edit/" + this.docId;
         return this.route;
       } else if (coachDoc.exists()) {
-        this.route = '/edit/' + this.docId
+        this.route = "/edit/" + this.docId;
         return this.route;
       } else {
-        return '/';
+        return "/";
       }
     },
     userDoc(type) {
       return doc(db, type, this.docId);
-    }
-  }
+    },
+  },
 });

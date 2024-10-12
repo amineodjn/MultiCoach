@@ -1,12 +1,12 @@
 <template>
   <headerCard page="edit">
     <template #content>
-      <profileForm /> 
+      <profileForm />
     </template>
-  </headerCard>    
+  </headerCard>
 </template>
 
 <script setup>
-import headerCard from '../components/headerCard.vue'
-import profileForm from '../views/profileForm.vue'
+import headerCard from "../components/headerCard.vue";
+import profileForm from "../views/profileForm.vue";
 </script>
