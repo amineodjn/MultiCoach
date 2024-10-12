@@ -99,9 +99,9 @@
     <div
       id="offersFormDiv"
       v-show="showForm"
-      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50"
+      class="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 flex justify-center items-center p-4 z-50"
     >
-      <div class="bg-white p-6 rounded-lg shadow-lg">
+      <div class="bg-white p-6 rounded-lg shadow-lg max-h-full overflow-y-auto">
         <div class="flex justify-between items-center">
           <h2 class="text-2xl font-bold">Add Offers</h2>
           <button

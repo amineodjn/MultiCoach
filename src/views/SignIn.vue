@@ -111,8 +111,6 @@ import {
 } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { useStore } from "../store/store.js";
-import { db } from "../main.js";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 const store = useStore();
 
@@ -120,7 +118,6 @@ const email = ref("");
 const password = ref("");
 const router = useRouter();
 const errMsg = ref("");
-const emit = defineEmits(["selectedTime"]);
 
 const register = () => {
   const auth = getAuth();
