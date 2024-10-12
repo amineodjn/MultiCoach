@@ -50,7 +50,7 @@
       <div class="flex items-center md:justify-end space-x-2">
         <div class="relative">
           <input
-            v-model="searchTerm"
+            v-model="offersSearchTerm"
             type="text"
             placeholder="Search"
             class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-indigo-800 hover:border-indigo-500"
@@ -130,6 +130,7 @@ const store = useStore();
 const classes = ref([]);
 const showAllClasses = ref(false);
 const searchTerm = ref("");
+const offersSearchTerm = ref("");
 const uid = ref(store.docId);
 const isLoading = ref(false);
 const offersLoading = ref(false);
@@ -185,9 +186,9 @@ const showAllOffers = ref(false);
 const displayedOffers = computed(() => {
   let filteredOffers = offers.value;
 
-  if (searchTerm.value) {
+  if (offersSearchTerm.value) {
     filteredOffers = filteredOffers.filter((offer) =>
-      offer.offerName.toLowerCase().includes(searchTerm.value.toLowerCase()),
+      offer.offerName.toLowerCase().includes(offersSearchTerm.value.toLowerCase()),
     );
   }
 
