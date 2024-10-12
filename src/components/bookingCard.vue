@@ -16,7 +16,8 @@
             v-for="(Class, index) in displayedClasses" :key="index"
             :trainingClass="Class" 
             @book="console.log('Booked class:', $event)" />
-        <emptyState v-if="displayedClasses.length === 0" />
+      <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
+      <emptyState v-else-if="displayedClasses.length === 0" />
       </div>
     </div>
     <div class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4">
@@ -38,7 +39,8 @@
           :customWidth="'w-1/2'"
           :coachAccess="false"
           :read-only="true" />
-      <emptyState v-if="displayedOffers.length === 0" />
+      <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
+      <emptyState v-else-if="displayedOffers.length === 0" />
     </div>
     <div v-if="displayedOffers.length > 2" class="text-center dark:border-neutral-70 hover:bg-gray-50">
       <a class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
@@ -59,15 +61,17 @@ import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../main'; 
 import { useStore } from '../store/store';
 import emptyState from '../components/emptyState.vue';
-import classesCard from '../components/classesCard.vue';
 import offersCard from '../components/offersCard.vue';
 import classCard from '../components/classCard.vue';
+import loadingSpinner from './loadingSpinner.vue';
 
 const store = useStore();
 const classes = ref([]);
 const showAllClasses = ref(false);
 const searchTerm = ref('');
 const uid = ref(store.docId);
+const isLoading = ref(false);
+const offersLoading = ref(false);
 //Classes
 const displayedClasses = computed(() => {
   let filteredClasses = classes.value;
@@ -93,6 +97,7 @@ const fetchClasses = async () => {
   if (!uid) {
     return;
   }
+  isLoading.value = true;
   const docRef = store.user.coach ? store.userDoc("coaches") : store.userDoc("users");
 
   const docSnap = await getDoc(docRef);
@@ -103,6 +108,7 @@ const fetchClasses = async () => {
   } else {
     console.log("No such document!");
   }
+  isLoading.value = false;
 };
 
 onMounted(async () => {
@@ -162,6 +168,7 @@ const fetchOfferDetails = async (db, bookedEvents) => {
 }
 
 const getUserBookedOfferDetails = async (db, uid) => {
+  offersLoading.value = true;
   const bookedEvents = await fetchUserBookedEvents(db, uid);
   const offerDetails = await fetchOfferDetails(db, bookedEvents);
 
@@ -179,5 +186,6 @@ onMounted(async () => {
   .catch(error => {
     console.error("Error fetching offer details:", error);
   });
+  offersLoading.value = false;
 });
 </script>
