@@ -11,7 +11,7 @@
       />
       <div class="sm:mx-4 sm:mt-0">
         <h1
-          class="text-xl font-medium text-gray-700 capitalize dark:text-white"
+          class="text-xl sm:mt-0 mt-2 font-medium text-gray-700 capitalize dark:text-white"
         >
           {{ trainingClass.className }}
         </h1>
