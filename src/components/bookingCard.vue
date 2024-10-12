@@ -94,7 +94,7 @@ const viewAllClasses = () => {
 };
 
 const fetchClasses = async () => {
-  if (!uid) {
+  if (!uid.value) {
     return;
   }
   isLoading.value = true;
