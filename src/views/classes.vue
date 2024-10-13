@@ -66,7 +66,7 @@
         :customWidth="'w-1/2'"
         :coachAccess="true"
         @book="toggleModal"
-        @deleteClass="deleteClass"
+        @deleteClass="ToOpenPopUp"
       />
       <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
       <emptyState v-else-if="displayedClasses.length === 0" />
@@ -133,6 +133,12 @@
         </div>
       </div>
     </div>
+    <popUpModal
+      :open="openPopUp"
+      :text="deletePopUpText"
+      @confirm="deleteClass(classUid)"
+      @cancel="cancel"
+    />
   </div>
 </template>
 
@@ -145,6 +151,7 @@ import emptyState from "../components/emptyState.vue";
 import classesCard from "../components/classesCard.vue";
 import classesForm from "../components/classesForm.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
+import popUpModal from "../components/popUpModal.vue";
 
 const store = useStore();
 const classes = ref([]);
@@ -152,7 +159,19 @@ const showForm = ref(false);
 const showAllClasses = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);
+const openPopUp = ref(false);
+const deletePopUpText = ref("");
+const classUid = ref("");
 
+const ToOpenPopUp = (uid) => {
+  classUid.value = uid;
+  openPopUp.value = true;
+  deletePopUpText.value = "Are you sure you want to delete this class?";
+};
+
+const cancel = () => {
+  openPopUp.value = false;
+};
 const displayedClasses = computed(() => {
   let filteredClasses = classes.value;
 
@@ -174,6 +193,7 @@ const viewAllProjects = () => {
 };
 
 const fetchClasses = async () => {
+  showForm.value = false;
   isLoading.value = true;
   if (!store.docId) {
     return;
@@ -205,6 +225,7 @@ const toggleModal = () => {
 };
 
 const deleteClass = async (uid) => {
+  openPopUp.value = false;
   const classRef = doc(db, "coaches", store.docId, "classes", uid);
 
   try {
