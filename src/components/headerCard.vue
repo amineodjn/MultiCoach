@@ -230,18 +230,18 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed } from "vue";
 import { useStore } from "../store/store.js";
 import { RouterLink } from "vue-router";
 
 const store = useStore();
 
-const profileLink = ref(store.route);
-const firstName = ref(store.user.firstName);
-const lastName = ref(store.user.lastName);
-const userName = ref(store.user.userName);
-const isCoach = ref(store.user.coach);
-const profilePicture = ref(store.user.profilePicture);
+const profileLink = computed(() => `/edit/${store.docId}`);
+const firstName = computed(() => store.user.firstName);
+const lastName = computed(() => store.user.lastName);
+const userName = computed(() => store.user.userName);
+const isCoach = computed(() => store.user.coach);
+const profilePicture = computed(() => store.user.profilePicture);
 
 const props = defineProps({
   page: {

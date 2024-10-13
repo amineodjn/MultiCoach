@@ -68,11 +68,13 @@
             to="/"
             class="font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400"
             aria-current="page"
+            @click="collapse"
             >Home</router-link
           >
           <router-link
             to="/my-profile"
             class="font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400"
+            @click="collapse"
             >Profile</router-link
           >
           <a
@@ -191,7 +193,7 @@
   </header>
 </template>
 <script setup>
-import { onBeforeMount, onMounted, ref, computed, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import modal from "../components/modal.vue";
@@ -203,7 +205,7 @@ const navbarCollapse = ref(false);
 const open = ref(false);
 const isLoggedIn = ref(false);
 
-let auth;
+const auth = getAuth();
 
 const HandleLogout = () => {
   localStorage.clear();
@@ -235,7 +237,6 @@ const toggleModal = () => {
 };
 
 onMounted(async () => {
-  auth = getAuth();
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       isLoggedIn.value = true;
