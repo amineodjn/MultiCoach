@@ -51,6 +51,7 @@
             :key="offer.uid"
             :offer="offer"
             :customWidth="'w-auto'"
+            :disabled="offer.uid != bookedOffer"
             class="mt-2"
             @book="selectDateAndTime"
             @favorite="selectOffer"

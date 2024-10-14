@@ -178,13 +178,15 @@ const docId = computed(() => {
   return store.docId;
 });
 const date = computed(() => {
-  return props.selectedTime.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-  });
+  return props.selectedTime
+    ? props.selectedTime.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      })
+    : "";
 });
 const isLoggedIn = computed(() => {
   return !firstName.value || !lastName.value;
