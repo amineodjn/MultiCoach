@@ -192,10 +192,10 @@
 
 <script setup>
 import { ref, computed, onMounted, reactive } from "vue";
-import { db } from "../main.js";
+import { db } from "../firebase.js";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { useStore } from "../store/store.js";
-import { storage } from "../main.js";
+import { storage } from "../firebase.js";
 import { getAuth } from "firebase/auth";
 import {
   ref as storageRef,

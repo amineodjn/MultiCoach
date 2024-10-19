@@ -119,7 +119,7 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { getDoc, doc } from "firebase/firestore";
-import { db } from "../main";
+import { db } from "../firebase";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import offersCard from "../components/offersCard.vue";

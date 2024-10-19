@@ -50,7 +50,7 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { getDoc, doc, deleteDoc } from "firebase/firestore";
-import { db } from "../main";
+import { db } from "../firebase";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import favoritesCard from "../components/favoritesCard.vue";

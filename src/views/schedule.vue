@@ -51,7 +51,7 @@
 import headerCard from "../components/headerCard.vue";
 import toast from "../components/toast.vue";
 import { ref, computed, onMounted } from "vue";
-import { db } from "../main.js";
+import { db } from "../firebase.js";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import timePickerRange from "../components/timePickerRange.vue";
 import { useStore } from "../store/store.js";

@@ -166,7 +166,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "../store/store";
-import { db } from "../main.js";
+import { db } from "../firebase.js";
 import { getDoc, doc } from "firebase/firestore";
 import { useRouter } from "vue-router";
 

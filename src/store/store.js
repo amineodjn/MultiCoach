@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { getDoc, doc } from "firebase/firestore"; // import these from Firebase
-import { db } from "../main.js";
+import { db } from "../firebase.js";
 
 export const useStore = defineStore({
   id: "main",

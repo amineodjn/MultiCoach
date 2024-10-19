@@ -500,7 +500,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { db } from "../main.js";
+import { db } from "../firebase.js";
 import { doc, getDoc } from "firebase/firestore";
 import { useStore } from "../store/store.js";
 

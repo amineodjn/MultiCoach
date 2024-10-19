@@ -141,7 +141,7 @@ import offersCard from "../components/offersCard.vue";
 import offersForm from "../components/offersForm.vue";
 import { onMounted, ref, computed } from "vue";
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
-import { db } from "../main";
+import { db } from "../firebase";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";

@@ -298,7 +298,7 @@
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "../store/store";
-import { db } from "../main.js";
+import { db } from "../firebase.js";
 import { collection, getDocs } from "firebase/firestore";
 import Datepicker from "flowbite-datepicker/Datepicker";
 import offersCard from "../components/offersCard.vue";

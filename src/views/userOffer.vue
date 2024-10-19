@@ -77,7 +77,7 @@
 import offersCard from "../components/offersCard.vue";
 import { onMounted, ref, computed, watch } from "vue";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../main";
+import { db } from "../firebase";
 import emptyState from "../components/emptyState.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
 

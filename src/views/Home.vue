@@ -131,7 +131,7 @@
 <script setup>
 import searchBox from "../components/searchbox.vue";
 import { ref, onMounted, computed, onBeforeUpdate } from "vue";
-import { db } from "../main.js";
+import { db } from "../firebase.js";
 import {
   doc,
   collection,

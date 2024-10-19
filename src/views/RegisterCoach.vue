@@ -161,7 +161,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { db } from "../main.js";
+import { db } from "../firebase.js";
 import { setDoc, doc } from "firebase/firestore";
 import { useStore } from "../store/store.js";
 import { useRouter } from "vue-router";
