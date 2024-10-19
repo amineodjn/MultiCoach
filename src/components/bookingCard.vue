@@ -144,10 +144,12 @@ const displayedClasses = computed(() => {
     );
   }
 
-  if (showAllClasses.value) {
+  if (showAllClasses.value && filteredClasses.length > 3) {
     return filteredClasses;
-  } else {
+  } else if (filteredClasses) {
     return filteredClasses.slice(0, 3);
+  } else {
+    return [];
   }
 });
 

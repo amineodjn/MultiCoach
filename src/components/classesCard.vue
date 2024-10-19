@@ -6,7 +6,7 @@
     <div class="flex flex-col sm:-mx-4 sm:flex-row">
       <img
         class="flex-shrink-0 object-cover w-20 h-20 rounded-full sm:mx-4 ring-4 ring-gray-300 hover:ring-indigo-300"
-        :src="trainingClass.classImage"
+        :src="image"
         alt=""
       />
       <div class="sm:mx-4 sm:mt-0">
@@ -261,9 +261,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { format, parseISO } from "date-fns";
 
+const image = computed(() => {
+  return props.trainingClass.classImage
+    ? props.trainingClass.classImage
+    : "../../public/images/class.png";
+});
 const props = defineProps({
   trainingClass: {
     type: Object,

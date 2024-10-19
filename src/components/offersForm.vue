@@ -178,6 +178,9 @@ const showError = reactive({
 function splitCamelCase(str) {
   return str.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
 }
+
+const emit = defineEmits(["formSubmitted"]);
+
 // Function to update user data in Firestore
 async function updateOffer() {
   const dataObj = {
@@ -221,6 +224,8 @@ async function updateOffer() {
     gym.value = "";
     imageEvent.value = null;
   }
+
+  emit("formSubmitted", { offerId: offerId.value });
 
   if (hasErrors) {
     Object.entries(showError).forEach(([key, value]) => {

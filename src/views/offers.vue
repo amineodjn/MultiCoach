@@ -129,7 +129,7 @@
         <div
           class="flex flex-col justify-center items-center mt-2 m-2 rounded-lg"
         >
-          <offersForm />
+          <offersForm @formSubmitted="fetchOffers" />
         </div>
       </div>
     </div>
@@ -174,6 +174,7 @@ const viewAllProjects = () => {
 };
 
 const fetchOffers = async () => {
+  showForm.value = false;
   isLoading.value = true;
   if (!store.docId) {
     return;
