@@ -241,7 +241,11 @@ const firstName = computed(() => store.user.firstName);
 const lastName = computed(() => store.user.lastName);
 const userName = computed(() => store.user.userName);
 const isCoach = computed(() => store.user.coach);
-const profilePicture = computed(() => store.user.profilePicture);
+const profilePicture = computed(() =>
+  store.user.profilePicture
+    ? store.user.profilePicture
+    : "../../public/images/avatar.jpg",
+);
 
 const props = defineProps({
   page: {

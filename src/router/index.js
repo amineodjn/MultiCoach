@@ -26,14 +26,6 @@ const router = createRouter({
       component: () => import("../views/SignIn.vue"),
     },
     {
-      path: "/feed",
-      name: "feed",
-      component: () => import("../views/Feed.vue"),
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
       path: "/reset-password",
       name: "resetPassword",
       component: () => import("../views/ResetPwd.vue"),
