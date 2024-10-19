@@ -1,7 +1,8 @@
 <template>
   <div
-    class="bg-white flex flex-col lg:flex-row lg:items-center justify-between px-5 py-4 w-full border-b"
+    class="bg-white flex flex-col lg:flex-row lg:items-center justify-between px-5 py-4 w-full border-b hover:shadow-lg hover:border-indigo-600 cursor-pointer"
     :class="customWidth"
+    @click="$emit('handleClick', favoriteCoach.uid)"
   >
     <div class="flex flex-col sm:-mx-4 sm:flex-row">
       <img

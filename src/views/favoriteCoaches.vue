@@ -14,8 +14,7 @@
         :favoriteCoach="coach"
         :customWidth="'w-1/2'"
         :coachAccess="false"
-        @book="toggleModal"
-        @deleteOffer="deleteOffer"
+        @handleClick="handleClick"
       />
       <emptyState v-if="isEmptyArray && !isLoading" />
       <loadingSpinner v-if="isLoading && isEmptyArray" />
@@ -25,7 +24,7 @@
       class="text-center dark:border-neutral-70 hover:bg-gray-50"
     >
       <a
-        class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
+        class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700 cursor-pointer"
         @click="viewAllProjects"
       >
         {{ showAllOffers ? "Show less" : "Show all" }}
@@ -56,6 +55,12 @@ import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import favoritesCard from "../components/favoritesCard.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const handleClick = (uid) => {
+  router.push(`/profile/${uid}`);
+};
 
 const store = useStore();
 const showAllOffers = ref(false);

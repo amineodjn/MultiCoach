@@ -39,10 +39,11 @@ const auth = getAuth(firebaseApp);
 
 const app = createApp(App);
 
-app.use(router);
 app.use(createPinia());
 
 const store = useStore();
+app.use(router);
+
 
 onAuthStateChanged(auth, (user) => {
   if (user) {

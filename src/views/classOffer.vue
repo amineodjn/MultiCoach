@@ -51,7 +51,7 @@
       class="text-center dark:border-neutral-70 hover:bg-gray-50"
     >
       <a
-        class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700"
+        class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700 cursor-pointer"
         @click="viewAllProjects"
       >
         {{ showAllClasses ? "Show less" : "Show all" }}
