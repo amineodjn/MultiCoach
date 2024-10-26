@@ -44,6 +44,15 @@
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
       <emptyState v-else-if="displayedOffers.length === 0" />
+      <bookingModal
+        :open="open"
+        @update="open = !open"
+        :startHour="startHour"
+        :endHour="endHour"
+        @confirmBooking="confirmBooking"
+        @selectedDate="selectedDate"
+        :bookedCoach="bookedOffer"
+      />
     </div>
     <div
       v-if="displayedOffers.length > 2"
@@ -80,11 +89,18 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import emptyState from "../components/emptyState.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
+import bookingModal from "../components/BookingModal.vue";
 
 const offers = ref([]);
 const showAllOffers = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);
+
+const open = ref(false);
+const startHour = ref(null);
+const endHour = ref(null);
+const bookedOffer = ref("");
+const selectedDate = ref(null);
 
 const props = defineProps({
   uid: {
@@ -146,7 +162,13 @@ watch(
   },
 );
 
-const toggleModal = () => {
-  console.log("toggle modal");
+const toggleModal = (uid) => {
+  bookedOffer.value = uid;
+  open.value = !open.value;
+};
+
+const confirmBooking = (bookingDetails) => {
+  // Handle booking confirmation logic here
+  console.log("Booking confirmed:", bookingDetails);
 };
 </script>

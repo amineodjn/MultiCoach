@@ -112,8 +112,8 @@
       <bookingModal
         :open="open"
         @update="open = !open"
-        :startHour="6"
-        :endHour="21"
+        :startHour="startHour"
+        :endHour="endHour"
         @confirmBooking="confirmBooking"
         @selectedDate="selectedDate"
         :bookedCoach="bookedCoach"
@@ -167,7 +167,8 @@ const openModal = ref(false);
 const bookedCoach = ref("");
 const offerName = ref(localStorage.getItem("bookedOfferName"));
 const isLoading = ref(false);
-
+const startHour = 6;
+const endHour = 21;
 const getUsers = async () => {
   isLoading.value = true;
   const usersCollection = collection(db, "coaches");
