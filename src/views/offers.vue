@@ -66,7 +66,7 @@
         :customWidth="'w-1/2'"
         :coachAccess="true"
         @book="toggleModal"
-        @deleteOffer="deleteOffer"
+        @deleteOffer="ToOpenPopUp"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
       <emptyState v-else-if="displayedOffers.length === 0" />
@@ -133,28 +133,45 @@
         </div>
       </div>
     </div>
+    <popUpModal
+      :open="openPopUp"
+      :text="deletePopUpText"
+      @confirm="deleteOffer(offerUid)"
+      @cancel="cancel"
+    />
   </div>
 </template>
 
 <script setup>
+import { onMounted, ref, computed } from "vue";
+import { useStore } from "../store/store";
 import offersCard from "../components/offersCard.vue";
 import offersForm from "../components/offersForm.vue";
-import { onMounted, ref, computed } from "vue";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebase";
-import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
+import popUpModal from "../components/popUpModal.vue";
 
 const store = useStore();
-const offers = ref([]);
 const showForm = ref(false);
 const showAllOffers = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);
+const openPopUp = ref(false);
+const deletePopUpText = ref("");
+const offerUid = ref("");
+
+const ToOpenPopUp = (uid) => {
+  offerUid.value = uid;
+  openPopUp.value = true;
+  deletePopUpText.value = "Are you sure you want to delete this offer?";
+};
+
+const cancel = () => {
+  openPopUp.value = false;
+};
 
 const displayedOffers = computed(() => {
-  let filteredOffers = offers.value;
+  let filteredOffers = store.offers;
 
   if (searchTerm.value) {
     filteredOffers = filteredOffers.filter((offer) =>
@@ -176,17 +193,7 @@ const viewAllProjects = () => {
 const fetchOffers = async () => {
   showForm.value = false;
   isLoading.value = true;
-  if (!store.docId) {
-    return;
-  }
-
-  const offersRef = collection(db, "coaches", store.docId, "Offers");
-  const querySnapshot = await getDocs(offersRef);
-
-  if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map((doc) => doc.data());
-    offers.value = data;
-  }
+  await store.fetchOffers();
   isLoading.value = false;
 };
 
@@ -206,13 +213,7 @@ const toggleModal = () => {
 };
 
 const deleteOffer = async (uid) => {
-  const offerRef = doc(db, "coaches", store.docId, "Offers", uid);
-
-  try {
-    await deleteDoc(offerRef);
-    fetchOffers();
-  } catch (error) {
-    console.error("Error deleting offer: ", error);
-  }
+  openPopUp.value = false;
+  await store.deleteOffer(uid);
 };
 </script>

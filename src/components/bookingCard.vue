@@ -118,8 +118,6 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { getDoc, doc } from "firebase/firestore";
-import { db } from "../firebase";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import offersCard from "../components/offersCard.vue";
@@ -127,16 +125,16 @@ import classCard from "../components/classCard.vue";
 import loadingSpinner from "./loadingSpinner.vue";
 
 const store = useStore();
-const classes = ref([]);
-const showAllClasses = ref(false);
 const searchTerm = ref("");
 const offersSearchTerm = ref("");
-const uid = ref(store.docId);
 const isLoading = ref(false);
 const offersLoading = ref(false);
-//Classes
+const showAllClasses = ref(false);
+const showAllOffers = ref(false);
+
+// Classes
 const displayedClasses = computed(() => {
-  let filteredClasses = classes.value;
+  let filteredClasses = store.classes;
 
   if (searchTerm.value) {
     filteredClasses = filteredClasses.filter((Class) =>
@@ -157,40 +155,21 @@ const viewAllClasses = () => {
   showAllClasses.value = !showAllClasses.value;
 };
 
-const fetchClasses = async () => {
-  if (!uid.value) {
-    return;
-  }
-  isLoading.value = true;
-  const docRef = store.user.coach
-    ? store.userDoc("coaches")
-    : store.userDoc("users");
-
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    const user = docSnap.data();
-    classes.value = user.bookedClasses;
-  } else {
-    console.log("No such document!");
-  }
-  isLoading.value = false;
-};
-
 onMounted(async () => {
-  fetchClasses();
+  isLoading.value = true;
+  await store.fetchClasses();
+  isLoading.value = false;
 });
 
-//Offers
-const offers = ref([]);
-const showAllOffers = ref(false);
-
+// Offers
 const displayedOffers = computed(() => {
-  let filteredOffers = offers.value;
+  let filteredOffers = store.offers;
 
   if (offersSearchTerm.value) {
     filteredOffers = filteredOffers.filter((offer) =>
-      offer.offerName.toLowerCase().includes(offersSearchTerm.value.toLowerCase()),
+      offer.offerName
+        .toLowerCase()
+        .includes(offersSearchTerm.value.toLowerCase()),
     );
   }
 
@@ -205,51 +184,11 @@ const viewAllOffers = () => {
   showAllOffers.value = !showAllOffers.value;
 };
 
-const fetchUserBookedEvents = async (db, uid) => {
-  const userRef = doc(db, "users", uid);
-  const userSnap = await getDoc(userRef);
-
-  if (userSnap.exists()) {
-    return userSnap.data().bookedEvents || [];
-  } else {
-    console.log("No such user!");
-    return [];
-  }
-};
-
-const fetchOfferDetails = async (db, bookedEvents) => {
-  const offerDetailsPromises = bookedEvents.map(async (event) => {
-    const { bookedOffer, bookedCoach } = event;
-    const offerRef = doc(db, "coaches", bookedCoach, "Offers", bookedOffer);
-    const offerSnap = await getDoc(offerRef);
-    if (offerSnap.exists()) {
-      return { ...offerSnap.data(), bookedEvent: event };
-    } else {
-      console.log(`No such offer: ${bookedOffer} for coach: ${bookedCoach}`);
-      return null;
-    }
-  });
-
-  return Promise.all(offerDetailsPromises);
-};
-
-const getUserBookedOfferDetails = async (db, uid) => {
-  offersLoading.value = true;
-  const bookedEvents = await fetchUserBookedEvents(db, uid);
-  const offerDetails = await fetchOfferDetails(db, bookedEvents);
-
-  return offerDetails.filter((details) => details !== null); // Filter out any null results
-};
-
 onMounted(async () => {
-  // fetchOffers();
-  getUserBookedOfferDetails(db, uid.value)
-    .then((details) => {
-      offers.value = details;
-    })
-    .catch((error) => {
-      console.error("Error fetching offer details:", error);
-    });
+  offersLoading.value = true;
+  await store.fetchOffers();
+  const offerDetails = await store.getUserBookedOfferDetails();
+  store.offers = offerDetails;
   offersLoading.value = false;
 });
 </script>

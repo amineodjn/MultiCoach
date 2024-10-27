@@ -316,7 +316,6 @@ import userOffer from "./userOffer.vue";
 import classOffer from "./classOffer.vue";
 import { useRoute } from "vue-router";
 
-const props = defineProps();
 const route = useRoute();
 const uid = ref(route.params.uid);
 const store = useStore();
@@ -332,7 +331,7 @@ function capitalaizefirstLetter(string) {
 }
 
 async function fetchCoachData() {
-  user.value = await store.fetchCoach("coaches", uid.value);
+  user.value = await store.fetchUser("coaches");
 }
 
 onMounted(fetchCoachData);

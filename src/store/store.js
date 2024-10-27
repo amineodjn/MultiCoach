@@ -1,5 +1,11 @@
+// src/store/store.js
 import { defineStore } from "pinia";
-import { getDoc, doc } from "firebase/firestore"; // import these from Firebase
+import {
+  fetchDocument,
+  fetchCollection,
+  deleteDocument,
+} from "../utils/useFirebase.js";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
 
 export const useStore = defineStore({
@@ -10,6 +16,8 @@ export const useStore = defineStore({
     favoriteCoaches: [],
     route: null,
     bookedCoach: null,
+    offers: [],
+    classes: [],
   }),
   actions: {
     setDocId(id) {
@@ -24,64 +32,79 @@ export const useStore = defineStore({
         console.log("docId is not set", this.docId);
         return;
       }
-
-      const docRef = doc(db, userType, this.docId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        this.user = {
-          firstName: docSnap.data().firstName,
-          lastName: docSnap.data().lastName,
-          email: docSnap.data().email,
-          password: docSnap.data().password,
-          userName: docSnap.data().userName,
-          description: docSnap.data().description,
-          gym: docSnap.data().gym,
-          city: docSnap.data().city,
-          phoneNumber: docSnap.data().phoneNumber,
-          profession: docSnap.data().profession,
-          profilePicture: docSnap.data().profilePicture,
-          websiteUrl: docSnap.data().websiteUrl,
-          coach: docSnap.data().coach,
-          favoriteCoaches: docSnap.data().favoriteCoaches,
-          schedule: docSnap.data().schedule,
-        };
-      } else {
-        console.log("No such document!");
+      const userData = await fetchDocument(userType, this.docId);
+      if (userData) {
+        this.user = userData;
       }
     },
-    async fetchCoach(userType, uid) {
-      if (!uid) {
-        console.log("docId is not set", uid);
+    async fetchClasses() {
+      if (!this.docId) {
+        console.log("docId is not set", this.docId);
         return;
       }
-
-      const docRef = doc(db, userType, uid);
-      const docSnap = await getDoc(docRef);
-      let user = {};
-
-      if (docSnap.exists()) {
-        user = {
-          firstName: docSnap.data().firstName,
-          lastName: docSnap.data().lastName,
-          email: docSnap.data().email,
-          password: docSnap.data().password,
-          userName: docSnap.data().userName,
-          description: docSnap.data().description,
-          gym: docSnap.data().gym,
-          city: docSnap.data().city,
-          phoneNumber: docSnap.data().phoneNumber,
-          profession: docSnap.data().profession,
-          profilePicture: docSnap.data().profilePicture,
-          websiteUrl: docSnap.data().websiteUrl,
-          coach: docSnap.data().coach,
-          favoriteCoaches: docSnap.data().favoriteCoaches,
-          schedule: docSnap.data().schedule,
-        };
-      } else {
-        console.log("No such document!");
+      const userType = this.user.coach ? "coaches" : "users";
+      const userData = await fetchDocument(userType, this.docId);
+      if (userData) {
+        const classesData = await fetchCollection(
+          `coaches/${this.docId}/classes`,
+        );
+        this.classes = classesData;
       }
-      return user;
     },
+    async deleteClass(uid) {
+      if (!this.docId) {
+        console.log("docId is not set", this.docId);
+        return;
+      }
+      await deleteDocument("coaches", this.docId, "classes", uid);
+      await this.fetchClasses();
+    },
+    async fetchOffers() {
+      if (!this.docId) {
+        console.log("docId is not set", this.docId);
+        return;
+      }
+      const offersData = await fetchCollection(`coaches/${this.docId}/Offers`);
+      this.offers = offersData;
+    },
+    async deleteOffer(uid) {
+      if (!this.docId) {
+        console.log("docId is not set", this.docId);
+        return;
+      }
+      await deleteDocument("coaches", this.docId, "Offers", uid);
+      await this.fetchOffers();
+    },
+    async fetchUserBookedEvents() {
+      if (!this.docId) {
+        console.log("docId is not set", this.docId);
+        return [];
+      }
+      const userData = await fetchDocument("users", this.docId);
+      return userData.bookedEvents || [];
+    },
+    async fetchOfferDetails(bookedEvents) {
+      const offerDetailsPromises = bookedEvents.map(async (event) => {
+        const { bookedOffer, bookedCoach } = event;
+        const offerData = await fetchDocument(
+          `coaches/${bookedCoach}/Offers`,
+          bookedOffer,
+        );
+        if (offerData) {
+          return { ...offerData, bookedEvent: event };
+        } else {
+          return null;
+        }
+      });
+      const offerDetails = await Promise.all(offerDetailsPromises);
+      return offerDetails.filter((details) => details !== null);
+    },
+    async getUserBookedOfferDetails() {
+      const bookedEvents = await this.fetchUserBookedEvents();
+      const offerDetails = await this.fetchOfferDetails(bookedEvents);
+      return offerDetails;
+    },
+
     async setRoute() {
       const userDoc = await getDoc(doc(db, "users", this.docId));
       const coachDoc = await getDoc(doc(db, "coaches", this.docId));
@@ -96,6 +119,7 @@ export const useStore = defineStore({
         return "/";
       }
     },
+
     userDoc(type) {
       return doc(db, type, this.docId);
     },

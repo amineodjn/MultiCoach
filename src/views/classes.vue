@@ -144,8 +144,6 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebase";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import classesCard from "../components/classesCard.vue";
@@ -154,7 +152,6 @@ import loadingSpinner from "../components/loadingSpinner.vue";
 import popUpModal from "../components/popUpModal.vue";
 
 const store = useStore();
-const classes = ref([]);
 const showForm = ref(false);
 const showAllClasses = ref(false);
 const searchTerm = ref("");
@@ -172,8 +169,9 @@ const ToOpenPopUp = (uid) => {
 const cancel = () => {
   openPopUp.value = false;
 };
+
 const displayedClasses = computed(() => {
-  let filteredClasses = classes.value;
+  let filteredClasses = store.classes;
 
   if (searchTerm.value) {
     filteredClasses = filteredClasses.filter((Class) =>
@@ -195,17 +193,7 @@ const viewAllProjects = () => {
 const fetchClasses = async () => {
   showForm.value = false;
   isLoading.value = true;
-  if (!store.docId) {
-    return;
-  }
-
-  const classesRef = collection(db, "coaches", store.docId, "classes");
-  const querySnapshot = await getDocs(classesRef);
-
-  if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map((doc) => doc.data());
-    classes.value = data;
-  }
+  await store.fetchClasses();
   isLoading.value = false;
 };
 
@@ -226,13 +214,6 @@ const toggleModal = () => {
 
 const deleteClass = async (uid) => {
   openPopUp.value = false;
-  const classRef = doc(db, "coaches", store.docId, "classes", uid);
-
-  try {
-    await deleteDoc(classRef);
-    fetchClasses();
-  } catch (error) {
-    console.error("Error deleting class: ", error);
-  }
+  await store.deleteClass(uid);
 };
 </script>
