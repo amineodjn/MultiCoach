@@ -4,8 +4,10 @@ import {
   getDocs,
   collection,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 /**
  * Fetches a document from a specified collection in Firestore.
@@ -58,6 +60,26 @@ export const fetchCollection = async (collectionPath) => {
   }
 };
 
+/**
+ * Fetches all users from the "coaches" collection in Firestore.
+ * @returns {Promise<Array<Object>>} - An array of user data.
+ */
+export const fetchUsers = async () => {
+  try {
+    const usersCollection = collection(db, "coaches");
+    const userSnapshot = await getDocs(usersCollection);
+    if (!userSnapshot.empty) {
+      return userSnapshot.docs.map((doc) => doc.data());
+    } else {
+      console.warn("No users found in the 'coaches' collection");
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching users from 'coaches' collection:", error);
+    throw error;
+  }
+};
+
 export const deleteDocument = async (
   collectionName,
   docId,
@@ -74,4 +96,45 @@ export const deleteDocument = async (
     );
     throw error;
   }
+};
+
+/**
+ * Updates a document in a specified collection in Firestore.
+ * @param {string} collectionName - The name of the collection.
+ * @param {string} docId - The ID of the document.
+ * @param {Object} data - The data to update.
+ * @returns {Promise<void>}
+ */
+export const updateDocument = async (collectionName, docId, data) => {
+  try {
+    const documentReference = doc(db, collectionName, docId);
+    await updateDoc(documentReference, data);
+  } catch (error) {
+    console.error(
+      `Error updating document in collection '${collectionName}' with ID '${docId}':`,
+      error,
+    );
+    throw error;
+  }
+};
+
+/**
+ * Returns a promise that resolves with the authenticated user.
+ * @returns {Promise<Object|null>} - The authenticated user or null if not authenticated.
+ */
+export const onAuthStateChangedPromise = () => {
+  return new Promise((resolve, reject) => {
+    const auth = getAuth();
+    onAuthStateChanged(
+      auth,
+      (user) => {
+        if (user) {
+          resolve(user);
+        } else {
+          resolve(null);
+        }
+      },
+      reject,
+    );
+  });
 };

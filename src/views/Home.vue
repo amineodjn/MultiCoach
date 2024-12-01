@@ -130,18 +130,13 @@
 </template>
 <script setup>
 import searchBox from "../components/searchbox.vue";
-import { ref, onMounted, computed, onBeforeUpdate } from "vue";
-import { db } from "../firebase.js";
+import { ref, onMounted, computed, watch } from "vue";
+import { arrayUnion } from "firebase/firestore";
 import {
-  doc,
-  collection,
-  getDocs,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  setDoc,
-} from "firebase/firestore";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
+  onAuthStateChangedPromise,
+  fetchUsers,
+  updateDocument,
+} from "../utils/useFirebase.js";
 import { GoogleMap } from "vue3-google-map";
 import { useStore } from "../store/store";
 import card from "../components/card.vue";
@@ -171,13 +166,7 @@ const startHour = 6;
 const endHour = 21;
 const getUsers = async () => {
   isLoading.value = true;
-  const usersCollection = collection(db, "coaches");
-  const userSnapshot = await getDocs(usersCollection);
-  let userList = [];
-
-  if (userSnapshot) {
-    userList = userSnapshot.docs.map((doc) => doc.data());
-  }
+  const userList = await fetchUsers();
   isLoading.value = false;
   return userList;
 };
@@ -186,41 +175,20 @@ const dropdownToggle = () => {
   toggled.value = !toggled.value;
 };
 
-let favoriteCoaches = ref([]);
-
-const fetchFavoriteCoaches = async () => {
-  const docRef = store.user.coach
-    ? store.userDoc("coaches")
-    : store.userDoc("users");
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    const user = docSnap.data();
-    favoriteCoaches.value = user.favoriteCoaches;
-  } else {
-    console.log("No such document!");
-  }
-};
-
 const isFavorite = (user) => {
-  return favoriteCoaches.value?.some((c) => c.uid === user.uid);
+  return store.favoriteCoaches?.some((c) => c.uid === user.uid);
 };
 
 const toggleFavorite = async (coach) => {
-  favoriteCoaches.value = favoriteCoaches.value || [];
-
   const isAlreadyFavorite = isFavorite(coach);
-  favoriteCoaches.value = isAlreadyFavorite
-    ? favoriteCoaches.value.filter((c) => c.uid !== coach.uid)
-    : [...favoriteCoaches.value, coach];
+  store.favoriteCoaches = isAlreadyFavorite
+    ? store.favoriteCoaches.filter((c) => c.uid !== coach.uid)
+    : [...store.favoriteCoaches, coach];
 
   const userType = store.user.coach ? "coaches" : "users";
-  const userRef = store.userDoc(userType);
-  await updateDoc(
-    userRef,
-    { favoriteCoaches: favoriteCoaches.value },
-    { merge: true },
-  );
-  store.favoriteCoaches = favoriteCoaches.value;
+  await updateDocument(userType, store.docId, {
+    favoriteCoaches: store.favoriteCoaches,
+  });
 };
 
 const filterCities = (city) => {
@@ -291,13 +259,11 @@ const selectedDate = (date) => {
 ///Confirmation Modal
 const openPopUp = ref(false);
 const selectedDateandTime = computed(() => {
-  const selectedDate = localStorage.getItem("selectedDateandTime");
-  if (!selectedDate) {
-    openPopUp.value = false;
-  } else {
-    openPopUp.value = true;
-  }
-  return selectedDate;
+  return localStorage.getItem("selectedDateandTime");
+});
+
+watch(selectedDateandTime, (newValue) => {
+  openPopUp.value = !!newValue;
 });
 
 const toLocaleStringTimeOrDate = (date) => {
@@ -320,52 +286,47 @@ const confirmBooking = async () => {
   const bookedOfferName = localStorage.getItem("bookedOfferName");
   const bookedCoach = localStorage.getItem("bookedCoach");
 
-  const auth = getAuth();
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      // User is signed in, proceed with booking
-      const date = new Date(localStorage.getItem("selectedDateandTime"));
+  const user = await onAuthStateChangedPromise();
+  if (user) {
+    // User is signed in, proceed with booking
+    const date = new Date(localStorage.getItem("selectedDateandTime"));
 
-      // Save the booking to Firestore
-      const userRef = store.user.coach
-        ? doc(db, "coaches", auth.currentUser.uid)
-        : doc(db, "users", auth.currentUser.uid);
-      const coachRef = doc(db, "coaches", bookedCoach);
+    // Save the booking to Firestore
+    const userType = store.user.coach ? "coaches" : "users";
 
-      if (date && auth.currentUser.uid) {
-        const newEvent = {
-          bookedOffer: bookedOffer,
-          offerName: bookedOfferName,
-          bookingTime: date,
-          bookedCoach: bookedCoach,
-        };
-        const newBooking = {
-          bookedOffer: bookedOffer,
-          offerName: bookedOfferName,
-          bookingTime: date,
-          user: auth.currentUser.uid,
-        };
-        await updateDoc(userRef, {
-          bookedEvents: arrayUnion(newEvent),
-        });
+    if (date && user.uid) {
+      const newEvent = {
+        bookedOffer: bookedOffer,
+        offerName: bookedOfferName,
+        bookingTime: date,
+        bookedCoach: bookedCoach,
+      };
+      const newBooking = {
+        bookedOffer: bookedOffer,
+        offerName: bookedOfferName,
+        bookingTime: date,
+        user: user.uid,
+      };
+      await updateDocument(userType, user.uid, {
+        bookedEvents: arrayUnion(newEvent),
+      });
 
-        await updateDoc(coachRef, {
-          bookings: arrayUnion(newBooking),
-        });
+      await updateDocument("coaches", bookedCoach, {
+        bookings: arrayUnion(newBooking),
+      });
 
-        localStorage.removeItem("selectedDateandTime");
-        localStorage.removeItem("bookedOffer");
-        localStorage.removeItem("bookedOfferName");
-        localStorage.removeItem("bookedCoach");
-        openModal.value = true;
-        open.value = false;
-        openPopUp.value = false;
-      }
-    } else {
-      // No user is signed in, handle accordingly
-      router.push("/sign-in");
+      localStorage.removeItem("selectedDateandTime");
+      localStorage.removeItem("bookedOffer");
+      localStorage.removeItem("bookedOfferName");
+      localStorage.removeItem("bookedCoach");
+      openModal.value = true;
+      open.value = false;
+      openPopUp.value = false;
     }
-  });
+  } else {
+    // No user is signed in, handle accordingly
+    router.push("/sign-in");
+  }
 };
 
 const cancel = () => {
@@ -387,7 +348,7 @@ onMounted(async () => {
   ];
 
   if (store.user) {
-    fetchFavoriteCoaches();
+    await store.fetchFavoriteCoaches();
   }
 });
 </script>

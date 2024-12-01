@@ -120,6 +120,18 @@ export const useStore = defineStore({
       }
     },
 
+    async fetchFavoriteCoaches() {
+      if (!this.docId) {
+        console.log("docId is not set", this.docId);
+        return;
+      }
+      const userType = this.user.coach ? "coaches" : "users";
+      const userData = await fetchDocument(userType, this.docId);
+      if (userData) {
+        this.favoriteCoaches = userData.favoriteCoaches || [];
+      }
+    },
+
     userDoc(type) {
       return doc(db, type, this.docId);
     },

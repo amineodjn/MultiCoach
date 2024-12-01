@@ -3,7 +3,8 @@ import "./style.css";
 import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";
-import { auth, onAuthStateChanged } from "./firebase"
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { useStore } from "./store/store";
 
 const app = createApp(App);
@@ -30,5 +31,3 @@ onAuthStateChanged(auth, (user) => {
 });
 
 app.mount("#app");
-
-// export { db, storage, auth };
