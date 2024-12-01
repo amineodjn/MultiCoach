@@ -111,11 +111,7 @@
           {{ offer.price + " PLN" }}
         </span>
       </button>
-      <div
-        class="ml-3"
-        v-if="coachAccess"
-        @click="$emit('deleteOffer', offer.uid)"
-      >
+      <div class="ml-3" v-if="coachAccess" @click="emitDeleteOffer">
         <svg
           class="w-6 h-6 text-gray-800 dark:text-white"
           aria-hidden="true"
@@ -226,8 +222,11 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["favorite"]);
+const emit = defineEmits(["favorite", "deleteOffer"]);
 
+const emitDeleteOffer = () => {
+  return emit("deleteOffer", props.offer.uid);
+};
 const emitFavorite = () => {
   isSelected.value = !isSelected.value;
   return emit("favorite", props.offer.uid, props.offer.offerName);

@@ -66,7 +66,7 @@
         :customWidth="'w-1/2'"
         :coachAccess="true"
         @book="toggleModal"
-        @deleteOffer="ToOpenPopUp"
+        @deleteOffer="handleOpenPopup"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
       <emptyState v-else-if="displayedOffers.length === 0" />
@@ -137,7 +137,7 @@
       :open="openPopUp"
       :text="deletePopUpText"
       @confirm="deleteOffer(offerUid)"
-      @cancel="cancel"
+      @cancel="closePopup"
     />
   </div>
 </template>
@@ -157,16 +157,19 @@ const showAllOffers = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);
 const openPopUp = ref(false);
-const deletePopUpText = ref("");
+const deletePopUpText = ref("Are you sure you want to delete this offer?");
 const offerUid = ref("");
 
-const ToOpenPopUp = (uid) => {
+const handleOpenPopup = (uid) => {
   offerUid.value = uid;
-  openPopUp.value = true;
-  deletePopUpText.value = "Are you sure you want to delete this offer?";
+  togglePopup();
 };
 
-const cancel = () => {
+const togglePopup = () => {
+  openPopUp.value = !openPopUp.value;
+};
+
+const closePopup = () => {
   openPopUp.value = false;
 };
 
@@ -191,10 +194,17 @@ const viewAllProjects = () => {
 };
 
 const fetchOffers = async () => {
-  showForm.value = false;
-  isLoading.value = true;
-  await store.fetchOffers();
-  isLoading.value = false;
+  try {
+    isLoading.value = true;
+    await store.fetchOffers();
+  } catch (error) {
+    console.error("Failed to fetch offers:", error);
+    showForm.value = true;
+    // Optionally, you can set an error message to display to the user
+    // errorMessage.value = "Failed to fetch offers. Please try again later.";
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const addOffer = () => {
@@ -213,7 +223,7 @@ const toggleModal = () => {
 };
 
 const deleteOffer = async (uid) => {
-  openPopUp.value = false;
+  closePopup();
   await store.deleteOffer(uid);
 };
 </script>

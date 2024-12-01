@@ -1,10 +1,4 @@
 <template>
-  <toast
-    v-if="success"
-    @animation-end="resetSuccess"
-    @close="success = false"
-    :success="success"
-  ></toast>
   <section class="bg-white dark:bg-gray-900">
     <form @submit.prevent="updateOffer">
       <div class="grid gap-6 mb-4 md:grid-cols-2">
@@ -126,7 +120,7 @@
 <script setup>
 import { ref, computed, onMounted, reactive } from "vue";
 import { db } from "../firebase.js";
-import { doc, updateDoc, getDoc, collection, addDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { useStore } from "../store/store.js";
 import { storage } from "../firebase.js";
 import { getAuth } from "firebase/auth";
@@ -135,7 +129,6 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import toast from "../components/toast.vue";
 import inputValidation from "../components/inputValidation.vue";
 import locationInput from "../components/locationInput.vue";
 import textArea from "../components/textarea.vue";
@@ -157,7 +150,6 @@ const classDescription = ref("");
 const price = ref("");
 const location = ref("");
 const gym = ref("");
-const success = ref(false);
 const hasEmptyFields = ref(false);
 
 const errorMessages = reactive({
@@ -242,8 +234,6 @@ async function updateOffer() {
     classId.value = classDocRef.id;
     await updateDoc(classDocRef, { uid: classId.value });
     uploadImage(imageEvent.value);
-    success.value = true;
-
     // Clear the form values
     className.value = "";
     classDescription.value = "";
@@ -280,46 +270,47 @@ const imageUrl = ref("");
 const imageName = ref("");
 
 const uploadImage = async (event) => {
-  selectedFile.value = event.target.files[0];
-  imageName.value = selectedFile.value.name;
+  try {
+    if (event && event.target && event.target.files) {
+      selectedFile.value = event.target.files[0];
+    } else {
+      selectedFile.value = event;
+    }
 
-  if (!selectedFile.value) {
-    console.log("No file selected");
-    return;
-  }
+    if (!selectedFile.value) {
+      console.log("No image selected");
+      return;
+    }
 
-  const auth = getAuth();
-  const user = auth.currentUser;
+    imageName.value = selectedFile.value.name;
 
-  if (user) {
-    // Create a storage reference with the user's uid and the image name
-    const storageReference = storageRef(
-      storage,
-      `classImages/${user.uid}/${selectedFile.value.name}`,
-    );
+    const auth = getAuth();
+    const user = auth.currentUser;
 
-    // Upload the file
-    const uploadTask = uploadBytesResumable(
-      storageReference,
-      selectedFile.value,
-    );
+    if (user) {
+      const storageReference = storageRef(
+        storage,
+        `classImages/${user.uid}/${selectedFile.value.name}`,
+      );
 
-    // Listen for state changes, errors, and completion of the upload.
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      },
-      (error) => {
-        console.log(error);
-      },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+      const uploadTask = uploadBytesResumable(
+        storageReference,
+        selectedFile.value,
+      );
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${progress}% done`);
+        },
+        (error) => {
+          console.error("Upload failed", error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
           imageUrl.value = downloadURL;
-          // Update user document with the download URL
           const classRef = doc(
             db,
             "coaches",
@@ -327,17 +318,14 @@ const uploadImage = async (event) => {
             "classes",
             classId.value,
           );
-          updateDoc(classRef, { classImage: downloadURL });
-        });
-      },
-    );
-  }
-};
-
-//Toast
-const resetSuccess = (event) => {
-  if (event.animationName.includes("slideOutRight")) {
-    success.value = false;
+          await updateDoc(classRef, { classImage: downloadURL });
+        },
+      );
+    } else {
+      console.error("User not authenticated");
+    }
+  } catch (error) {
+    console.error("Error uploading image", error);
   }
 };
 </script>

@@ -372,7 +372,7 @@ const uploadImage = async (event) => {
   imageName.value = selectedFile.value.name;
 
   if (!selectedFile.value) {
-    console.log("No file selected");
+    console.log("No image selected");
     return;
   }
 

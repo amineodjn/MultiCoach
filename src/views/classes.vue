@@ -1,4 +1,10 @@
 <template>
+  <toast
+    v-if="success"
+    @animation-end="resetSuccess"
+    @close="success = false"
+    :success="success"
+  ></toast>
   <div
     class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4"
   >
@@ -66,7 +72,7 @@
         :customWidth="'w-1/2'"
         :coachAccess="true"
         @book="toggleModal"
-        @deleteClass="ToOpenPopUp"
+        @deleteClass="handleOpenPopup"
       />
       <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
       <emptyState v-else-if="displayedClasses.length === 0" />
@@ -129,7 +135,7 @@
         <div
           class="flex flex-col justify-center items-center mt-2 m-2 rounded-lg"
         >
-          <classesForm @formSubmitted="fetchClasses" />
+          <classesForm @formSubmitted="handleFormSubmission" />
         </div>
       </div>
     </div>
@@ -137,7 +143,7 @@
       :open="openPopUp"
       :text="deletePopUpText"
       @confirm="deleteClass(classUid)"
-      @cancel="cancel"
+      @cancel="closePopup"
     />
   </div>
 </template>
@@ -150,6 +156,7 @@ import classesCard from "../components/classesCard.vue";
 import classesForm from "../components/classesForm.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
 import popUpModal from "../components/popUpModal.vue";
+import toast from "../components/toast.vue";
 
 const store = useStore();
 const showForm = ref(false);
@@ -157,16 +164,19 @@ const showAllClasses = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);
 const openPopUp = ref(false);
-const deletePopUpText = ref("");
+const deletePopUpText = ref("Are you sure you want to delete this class?");
 const classUid = ref("");
+const success = ref(false);
 
-const ToOpenPopUp = (uid) => {
+const handleOpenPopup = (uid) => {
   classUid.value = uid;
-  openPopUp.value = true;
-  deletePopUpText.value = "Are you sure you want to delete this class?";
+  togglePopup();
 };
 
-const cancel = () => {
+const togglePopup = () => {
+  openPopUp.value = !openPopUp.value;
+};
+const closePopup = () => {
   openPopUp.value = false;
 };
 
@@ -190,15 +200,25 @@ const viewAllProjects = () => {
   showAllClasses.value = !showAllClasses.value;
 };
 
-const fetchClasses = async () => {
-  showForm.value = false;
+const toggleForm = () => {
+  showForm.value = !showForm.value;
+};
+
+const handleFormSubmission = async () => {
+  toggleForm();
+  success.value = true;
   isLoading.value = true;
   await store.fetchClasses();
   isLoading.value = false;
+  success.value = true;
+};
+
+const fetchClasses = async () => {
+  await store.fetchClasses();
 };
 
 const addClass = () => {
-  showForm.value = !showForm.value;
+  toggleForm();
   if (showForm.value) {
     window.location.hash = "#classesFormDiv";
   }
@@ -213,7 +233,14 @@ const toggleModal = () => {
 };
 
 const deleteClass = async (uid) => {
-  openPopUp.value = false;
+  closePopup();
   await store.deleteClass(uid);
+};
+
+//Toast
+const resetSuccess = (event) => {
+  if (event.animationName.includes("slideOutRight")) {
+    success.value = false;
+  }
 };
 </script>
