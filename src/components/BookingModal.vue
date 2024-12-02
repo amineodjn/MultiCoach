@@ -46,6 +46,7 @@
           </button>
         </div>
         <div class="p-4 offers-container">
+          <loadingSpinner v-if="isLoading && offers.length === 0" />
           <offersCard
             v-for="offer in offers"
             :key="offer.uid"
@@ -56,7 +57,7 @@
             @book="selectDateAndTime"
             @favorite="selectOffer"
           />
-          <emptyState v-if="offers.length === 0" />
+          <emptyState v-if="!isLoading && offers.length === 0" />
         </div>
         <div class="flex items-center justify-end p-4">
           <button
@@ -295,44 +296,28 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, watch, nextTick } from "vue";
-import { useRouter } from "vue-router";
+import { ref, watch, nextTick } from "vue";
 import { useStore } from "../store/store";
-import { db } from "../firebase.js";
-import { collection, getDocs } from "firebase/firestore";
+import { fetchOffers } from "../utils/useFirebase.js";
 import Datepicker from "flowbite-datepicker/Datepicker";
 import offersCard from "../components/offersCard.vue";
 import timeline from "../components/timeline.vue";
 import emptyState from "./emptyState.vue";
+import loadingSpinner from "./loadingSpinner.vue";
 
 const store = useStore();
 const offers = ref([]);
-const user = ref(null);
 const date = ref(null);
 const docId = store.docId;
-
-const fetchOffers = async () => {
-  if (!props.bookedCoach) {
-    return;
-  }
-
-  const offersRef = collection(db, "coaches", props.bookedCoach, "Offers");
-  const querySnapshot = await getDocs(offersRef);
-
-  if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map((doc) => doc.data());
-    offers.value = data;
-  } else {
-    offers.value = [];
-  }
-};
-
-onMounted(async () => {
-  fetchOffers();
-});
-
+const showError = ref(false);
 const selectedTime = ref(null);
 const selectedDate = ref(null);
+const isLoading = ref(false);
+const times = ref([]);
+const showTimeLine = ref(false);
+const bookedOffer = ref(null);
+const bookedOfferName = ref(null);
+
 const props = defineProps({
   open: {
     type: Boolean,
@@ -352,9 +337,31 @@ const props = defineProps({
   },
 });
 
-watch(() => props.bookedCoach, fetchOffers, { immediate: true });
+const loadOffers = async (coachId) => {
+  if (!coachId) {
+    offers.value = [];
+    return;
+  }
 
-const times = ref([]);
+  isLoading.value = true;
+  try {
+    offers.value = await fetchOffers(coachId);
+  } catch (error) {
+    console.error("Failed to fetch offers:", error);
+    offers.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+watch(
+  () => props.bookedCoach,
+  (newCoach) => {
+    loadOffers(newCoach);
+  },
+  { immediate: true },
+);
+
 for (let i = props.startHour; i <= props.endHour; i++) {
   let hour = i;
   let period = "AM";
@@ -374,7 +381,6 @@ const closeModal = () => {
   showSecondModal.value = false;
   showTimeLine.value = false;
 };
-const showTimeLine = ref(false);
 const showTimeline = () => {
   showTimeLine.value = !showTimeLine.value;
   showSecondModal.value = false;
@@ -417,9 +423,6 @@ watch(
   { immediate: true },
 );
 
-const bookedOffer = ref(null);
-const bookedOfferName = ref(null);
-
 const selectOffer = (uid, offerName) => {
   bookedOffer.value = uid;
   bookedOfferName.value = offerName;
@@ -431,9 +434,6 @@ const selectOffer = (uid, offerName) => {
 const selectDateAndTime = () => {
   showSecondModal.value = !showSecondModal.value;
 };
-
-const showError = ref(false);
-const router = useRouter();
 
 const confirmBooking = () => {
   emit("confirmBooking");

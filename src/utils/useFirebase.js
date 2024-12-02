@@ -80,6 +80,31 @@ export const fetchUsers = async () => {
   }
 };
 
+/**
+ * Fetches offers for a specific coach from Firestore.
+ * @param {string} bookedCoach - The ID of the booked coach.
+ * @returns {Promise<Array>} - A promise that resolves with the offers data.
+ */
+export const fetchOffers = async (bookedCoach) => {
+  if (!bookedCoach) {
+    return [];
+  }
+
+  try {
+    const offersRef = collection(db, "coaches", bookedCoach, "Offers");
+    const querySnapshot = await getDocs(offersRef);
+
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs.map((doc) => doc.data());
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error(`Error fetching offers for coach '${bookedCoach}':`, error);
+    throw error;
+  }
+};
+
 export const deleteDocument = async (
   collectionName,
   docId,
