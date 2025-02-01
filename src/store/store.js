@@ -27,15 +27,17 @@ export const useStore = defineStore({
     setBookedCoach(uid) {
       this.bookedCoach = uid;
     },
-    async fetchUser(userType) {
-      if (!this.docId) {
-        console.log("docId is not set", this.docId);
+    async fetchUser(userType, uid) {
+      if (!uid) {
+        console.log("docId is not set", uid);
         return;
       }
-      const userData = await fetchDocument(userType, this.docId);
+      const userData = await fetchDocument(userType, uid);
+
       if (userData) {
         this.user = userData;
       }
+      return userData;
     },
     async fetchClasses() {
       if (!this.docId) {

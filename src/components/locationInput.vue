@@ -18,6 +18,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
+import { GOOGLE_API_SRC } from "../basic/const.js";
 
 const selectedLocation = ref("");
 
@@ -26,7 +27,7 @@ watch(selectedLocation, (newVal) => {
   emit("input", newVal);
 });
 
-const props = defineProps({
+defineProps({
   Modelval: String,
   title: String,
   placeholder: String,
@@ -36,10 +37,8 @@ const props = defineProps({
 
 const locationRef = ref(null);
 
-onMounted(async () => {
-  const src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0&libraries=places`;
-
-  await new Promise((resolve, reject) => {
+const loadGoogleMapsScript = async (src) => {
+  return new Promise((resolve, reject) => {
     let script = document.querySelector(`script[src="${src}"]`);
 
     if (!script) {
@@ -55,8 +54,10 @@ onMounted(async () => {
       resolve();
     }
   });
+};
 
-  await new Promise((resolve) => {
+const waitForGoogleMaps = async () => {
+  return new Promise((resolve) => {
     const interval = setInterval(() => {
       if (window.google) {
         clearInterval(interval);
@@ -64,14 +65,26 @@ onMounted(async () => {
       }
     }, 100);
   });
+};
 
+const initializeAutocomplete = () => {
   const autoComplete = new google.maps.places.Autocomplete(locationRef.value, {
-    types: ["(cities)"],
+    types: ["geocode"],
     componentRestrictions: { country: "PL" },
   });
 
   google.maps.event.addListener(autoComplete, "place_changed", () => {
     selectedLocation.value = autoComplete.getPlace().formatted_address;
   });
+};
+
+onMounted(async () => {
+  try {
+    await loadGoogleMapsScript(GOOGLE_API_SRC);
+    await waitForGoogleMaps();
+    initializeAutocomplete();
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>

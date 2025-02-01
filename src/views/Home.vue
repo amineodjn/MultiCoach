@@ -103,7 +103,7 @@
         <loadingSpinner v-if="isLoading" />
         <GoogleMap
           v-else
-          api-key="AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0"
+          :api-key="API_KEY"
           :zoom="7"
           :center="center"
           class="w-full h-full rounded-lg"
@@ -146,6 +146,7 @@ import bookingModal from "../components/BookingModal.vue";
 import successModal from "../components/successModal.vue";
 import { useRouter } from "vue-router";
 import loadingSpinner from "../components/loadingSpinner.vue";
+import { API_KEY } from "../basic/const.js";
 
 const router = useRouter();
 const store = useStore();

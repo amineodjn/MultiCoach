@@ -122,11 +122,11 @@ const errMsg = ref("");
 const register = () => {
   const auth = getAuth();
   signInWithEmailAndPassword(auth, email.value, password.value)
-    .then(async (data) => {
+    .then(async () => {
       store.setDocId(auth.currentUser.uid);
       store.setRoute(auth.currentUser.uid);
-      store.fetchUser("users");
-      store.fetchUser("coaches");
+      store.fetchUser("users", auth.currentUser.uid);
+      store.fetchUser("coaches", auth.currentUser.uid);
       localStorage.setItem("uid", auth.currentUser.uid); // Store uid in localStorage
       router.push("/");
     })
@@ -153,7 +153,7 @@ const register = () => {
 const SignInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(getAuth(), provider)
-    .then((result) => {
+    .then(() => {
       router.push("/home");
     })
     .catch((error) => {

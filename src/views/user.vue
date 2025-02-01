@@ -331,7 +331,7 @@ function capitalaizefirstLetter(string) {
 }
 
 async function fetchCoachData() {
-  user.value = await store.fetchUser("coaches");
+  user.value = await store.fetchUser("coaches", uid.value);
 }
 
 onMounted(fetchCoachData);

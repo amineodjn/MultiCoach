@@ -6,8 +6,15 @@ import {
   deleteDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../firebase.js";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { db, auth, storage } from "../firebase.js";
+import { onAuthStateChanged } from "firebase/auth";
+import {
+  ref as storageRef,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { computed } from "vue";
+import { useStore } from "../store/store";
 
 /**
  * Fetches a document from a specified collection in Firestore.
@@ -149,7 +156,6 @@ export const updateDocument = async (collectionName, docId, data) => {
  */
 export const onAuthStateChangedPromise = () => {
   return new Promise((resolve, reject) => {
-    const auth = getAuth();
     onAuthStateChanged(
       auth,
       (user) => {
@@ -160,6 +166,43 @@ export const onAuthStateChangedPromise = () => {
         }
       },
       reject,
+    );
+  });
+};
+
+/**
+ * Uploads an image to Firebase Storage and returns the download URL.
+ * @param {Event} event - The file input change event.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<string>} - The download URL of the uploaded image.
+ */
+export const uploadImage = async (event, userId) => {
+  const selectedFile = event.target.files[0];
+  if (!selectedFile) {
+    console.log("No image selected");
+    return;
+  }
+
+  const storageReference = storageRef(storage, `profilePictures/${userId}`);
+  const uploadTask = uploadBytesResumable(storageReference, selectedFile);
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      },
+      (error) => {
+        console.log(error);
+        reject(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          resolve(downloadURL);
+        });
+      },
     );
   });
 };

@@ -18,8 +18,8 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     store.setDocId(user.uid);
     store.setRoute(user.uid);
-    store.fetchUser("users");
-    store.fetchUser("coaches");
+    store.fetchUser("users", user.uid);
+    store.fetchUser("coaches", user.uid);
     localStorage.setItem("uid", user.uid);
     console.log("Page reloaded, user is logged in");
   } else {

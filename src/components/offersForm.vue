@@ -111,7 +111,7 @@
 <script setup>
 import { ref, computed, onMounted, reactive } from "vue";
 import { db } from "../firebase.js";
-import { doc, updateDoc, getDoc, collection, addDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { useStore } from "../store/store.js";
 import { storage } from "../firebase.js";
 import { getAuth } from "firebase/auth";
@@ -121,7 +121,6 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import toast from "../components/toast.vue";
-import sidebar from "../components/sidebar.vue";
 import inputValidation from "../components/inputValidation.vue";
 import locationInput from "../components/locationInput.vue";
 import textArea from "../components/textarea.vue";
@@ -138,7 +137,6 @@ const price = ref("");
 const location = ref("");
 const gym = ref("");
 const success = ref(false);
-const hasEmptyFields = ref(false);
 
 const errorMessages = reactive({
   offerName: "",
@@ -267,16 +265,22 @@ const uploadImage = async (event) => {
     if (user) {
       const storageReference = storageRef(
         storage,
-        `classImages/${user.uid}/${selectedFile.value.name}`
+        `classImages/${user.uid}/${selectedFile.value.name}`,
       );
 
-      const uploadTask = uploadBytesResumable(storageReference, selectedFile.value);
+      const uploadTask = uploadBytesResumable(
+        storageReference,
+        selectedFile.value,
+      );
 
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
+          console.log(store.classesData.value.id, 'store.classesData.value.id');
+          
         },
         (error) => {
           console.error("Upload failed", error);
@@ -284,9 +288,15 @@ const uploadImage = async (event) => {
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
           imageUrl.value = downloadURL;
-          const classRef = doc(db, "coaches", user.uid, "classes", classId.value);
+          const classRef = doc(
+            db,
+            "coaches",
+            user.uid,
+            "classes",
+            store.classesData.value.id,
+          );
           await updateDoc(classRef, { classImage: downloadURL });
-        }
+        },
       );
     } else {
       console.error("User not authenticated");
