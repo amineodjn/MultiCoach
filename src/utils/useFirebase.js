@@ -13,8 +13,6 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { computed } from "vue";
-import { useStore } from "../store/store";
 
 /**
  * Fetches a document from a specified collection in Firestore.
@@ -29,9 +27,6 @@ export const fetchDocument = async (collectionName, docId) => {
     if (documentSnapshot.exists()) {
       return documentSnapshot.data();
     } else {
-      console.warn(
-        `No document found in collection '${collectionName}' with ID '${docId}'`,
-      );
       return null;
     }
   } catch (error) {
