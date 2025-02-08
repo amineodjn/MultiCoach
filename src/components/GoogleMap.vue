@@ -16,23 +16,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { GoogleMap, Marker } from "vue3-google-map";
 import { API_KEY } from "../basic/const.js";
 
 defineProps({
-  zoom: Number,
-  center: Object,
-  markers: Array,
+  zoom: {
+    type: Number,
+    required: true,
+  },
+  center: {
+    type: Object,
+    required: true,
+  },
+  markers: {
+    type: Array,
+    required: true,
+  },
 });
 
 const mapRef = ref(null);
-
-onMounted(() => {
-  // Additional logic if needed
-});
 </script>
-
-<style scoped>
-/* Add any styles specific to the GoogleMapComponent here */
-</style>
