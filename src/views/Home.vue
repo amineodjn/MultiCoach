@@ -100,13 +100,14 @@
         />
       </div>
       <div class="flex lg:w-1/2 h-screen">
-        <loadingSpinner v-if="isLoading" />
-        <GoogleMap
+        <loadingSpinner v-if="isLoading || userMarkers.length === 0" />
+        <GoogleMapComponent
           v-else
-          :api-key="API_KEY"
           :zoom="7"
           :center="center"
           class="w-full h-full rounded-lg"
+          ref="mapRef"
+          :markers="userMarkers"
         />
       </div>
       <bookingModal
@@ -137,7 +138,6 @@ import {
   fetchUsers,
   updateDocument,
 } from "../utils/useFirebase.js";
-import { GoogleMap } from "vue3-google-map";
 import { useStore } from "../store/store";
 import card from "../components/card.vue";
 import emptyState from "../components/emptyState.vue";
@@ -146,7 +146,8 @@ import bookingModal from "../components/BookingModal.vue";
 import successModal from "../components/successModal.vue";
 import { useRouter } from "vue-router";
 import loadingSpinner from "../components/loadingSpinner.vue";
-import { API_KEY } from "../basic/const.js";
+import GoogleMapComponent from "../components/GoogleMapComponent.vue";
+import { getUserCoordinates } from "../utils/getUserCoordinates.js";
 
 const router = useRouter();
 const store = useStore();
@@ -165,6 +166,8 @@ const offerName = ref(localStorage.getItem("bookedOfferName"));
 const isLoading = ref(false);
 const startHour = 6;
 const endHour = 21;
+const userMarkers = ref([]);
+
 const getUsers = async () => {
   isLoading.value = true;
   const userList = await fetchUsers();
@@ -267,6 +270,12 @@ watch(selectedDateandTime, (newValue) => {
   openPopUp.value = !!newValue;
 });
 
+watch(userMarkers, (newValue) => {
+  if (newValue.length > 0) {
+    console.log(userMarkers.value.length, "userMarkers");
+  }
+});
+
 const toLocaleStringTimeOrDate = (date) => {
   const formattedDate = new Date(date);
   const options = {
@@ -337,6 +346,9 @@ const cancel = () => {
   localStorage.removeItem("bookedOfferName");
   localStorage.removeItem("bookedCoach");
 };
+
+const mapRef = ref(null);
+
 onMounted(async () => {
   usersData.value = await getUsers();
   filteredUsers.value = usersData.value;
@@ -351,6 +363,8 @@ onMounted(async () => {
   if (store.user) {
     await store.fetchFavoriteCoaches();
   }
+
+  userMarkers.value = await getUserCoordinates(usersData.value);
 });
 </script>
 <style scoped>
