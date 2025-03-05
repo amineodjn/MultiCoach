@@ -20,7 +20,7 @@
       <loadingSpinner v-if="isLoading && isEmptyArray" />
     </div>
     <div
-      v-if="Array.isArray(connectionList) && connectionList.length > 2"
+      v-if="Array.isArray(connectionList) && connectionList.length > 3"
       class="text-center dark:border-neutral-70 hover:bg-gray-50"
     >
       <a

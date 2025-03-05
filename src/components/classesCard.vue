@@ -118,7 +118,7 @@
             </svg>
             <p>{{ trainingClass.time }}</p>
           </a>
-          <a
+          <!-- <a
             class="flex lg:ml-2 mx-0 text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-300"
             aria-label="Github"
           >
@@ -138,7 +138,7 @@
               />
             </svg>
             <p>{{ trainingClass.reviews }} (5)</p>
-          </a>
+          </a> -->
           <a
             class="flex lg:ml-2 mx-0 text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-300"
             aria-label="Github"

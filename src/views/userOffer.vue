@@ -40,6 +40,7 @@
         :offer="offer"
         :customWidth="'w-1/2'"
         :coachAccess="false"
+        :readOnly="true"
         @book="toggleModal"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
@@ -55,7 +56,7 @@
       />
     </div>
     <div
-      v-if="displayedOffers.length > 2"
+      v-if="offers.length > 3"
       class="text-center dark:border-neutral-70 hover:bg-gray-50"
     >
       <a

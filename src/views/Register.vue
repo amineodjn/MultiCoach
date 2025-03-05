@@ -1,11 +1,6 @@
 <template>
   <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <img
-        class="mx-auto h-10 w-auto"
-        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-        alt="Your Company"
-      />
       <h2
         class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
       >
@@ -27,6 +22,7 @@
               id="first-name"
               autocomplete="given-name"
               v-model="firstName"
+              required
               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -45,6 +41,7 @@
               id="last-name"
               autocomplete="given-name"
               v-model="lastName"
+              required
               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -125,7 +122,7 @@
             Sign up
           </button>
         </div>
-        <div class="flex items-center justify-center">
+        <!-- <div class="flex items-center justify-center">
           <button
             @click="SignInWithGoogle"
             class="border border-slate-200 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:text-slate-300 dark:text-slate-200 duration-150 flex gap-2 hover:border-slate-400 hover:shadow hover:text-slate-900 px-4 py-2 rounded-lg text-slate-700 transition"
@@ -138,17 +135,8 @@
             />
             <span class="text-gray-500">Register with Google</span>
           </button>
-        </div>
+        </div> -->
       </form>
-
-      <p class="mt-10 text-center text-sm text-gray-500">
-        Not a member?
-        <a
-          href="#"
-          class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-          >Start a 14 day free trial</a
-        >
-      </p>
     </div>
   </div>
 </template>
@@ -175,7 +163,7 @@ const wrongPwd = ref(false);
 const router = useRouter();
 const store = useStore();
 
-const createUser = async (uid) => {
+const createUser = async uid => {
   // Get a document reference with the user's uid
   const docRef = doc(db, "users", uid);
 
@@ -201,11 +189,11 @@ const register = () => {
   }
   const auth = getAuth();
   createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then((data) => {
+    .then(data => {
       createUser(auth.currentUser.uid);
       router.push("/");
     })
-    .catch((error) => {
+    .catch(error => {
       console.log(error.code);
     });
 };
@@ -213,10 +201,10 @@ const register = () => {
 const SignInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(getAuth(), provider)
-    .then((result) => {
+    .then(result => {
       router.push("/");
     })
-    .catch((error) => {
+    .catch(error => {
       console.log(error.message);
       console.log(error.code);
     });

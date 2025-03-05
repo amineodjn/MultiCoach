@@ -78,7 +78,7 @@
       <emptyState v-else-if="displayedClasses.length === 0" />
     </div>
     <div
-      v-if="displayedClasses.length > 2"
+      v-if="store.classes.length > 3"
       class="text-center dark:border-neutral-70 hover:bg-gray-50"
     >
       <a

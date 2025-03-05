@@ -40,6 +40,7 @@
         :trainingClass="Class"
         :customWidth="'w-1/2'"
         :coachAccess="false"
+        :readOnly="true"
         @book="bookClass"
         @deleteClass="deleteClass"
       />
@@ -47,7 +48,7 @@
       <emptyState v-else-if="displayedClasses.length === 0" />
     </div>
     <div
-      v-if="displayedClasses.length > 2"
+      v-if="classes.length > 3"
       class="text-center dark:border-neutral-70 hover:bg-gray-50"
     >
       <a
@@ -92,7 +93,6 @@ import loadingSpinner from "../components/loadingSpinner.vue";
 
 const store = useStore();
 const classes = ref([]);
-const showForm = ref(false);
 const showAllClasses = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);

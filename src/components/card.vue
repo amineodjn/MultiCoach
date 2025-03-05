@@ -74,7 +74,7 @@
               </svg>
               <p>{{ user.city }}</p>
             </a>
-            <a
+            <!-- <a
               class="flex mr-2 text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-300"
               aria-label="Github"
             >
@@ -94,7 +94,7 @@
                 />
               </svg>
               <p>{{ user.reviews }} (100)</p>
-            </a>
+            </a> -->
           </div>
         </div>
       </div>
@@ -164,7 +164,7 @@
 <script setup>
 import { useStore } from "../store/store";
 
-const setBookedCoach = (uid) => {
+const setBookedCoach = uid => {
   const store = useStore();
   store.setBookedCoach(uid);
 };
