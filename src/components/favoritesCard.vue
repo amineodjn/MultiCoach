@@ -101,7 +101,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   favoriteCoach: {
     type: Object,
     required: true,

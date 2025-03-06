@@ -23,21 +23,36 @@ import { GOOGLE_API_SRC } from "../basic/const.js";
 const selectedLocation = ref("");
 
 const emit = defineEmits(["input"]);
-watch(selectedLocation, (newVal) => {
+watch(selectedLocation, newVal => {
   emit("input", newVal);
 });
 
 defineProps({
-  Modelval: String,
-  title: String,
-  placeholder: String,
-  showError: Boolean,
-  errorMessage: String,
+  Modelval: {
+    type: String,
+    default: ''
+  },
+  title: {
+    type: String,
+    default: ''
+  },
+  placeholder: {
+    type: String,
+    default: ''
+  },
+  showError: {
+    type: Boolean,
+    default: false
+  },
+  errorMessage: {
+    type: String,
+    default: ''
+  }
 });
 
 const locationRef = ref(null);
 
-const loadGoogleMapsScript = async (src) => {
+const loadGoogleMapsScript = async src => {
   return new Promise((resolve, reject) => {
     let script = document.querySelector(`script[src="${src}"]`);
 
@@ -57,7 +72,7 @@ const loadGoogleMapsScript = async (src) => {
 };
 
 const waitForGoogleMaps = async () => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const interval = setInterval(() => {
       if (window.google) {
         clearInterval(interval);

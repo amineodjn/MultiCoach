@@ -65,7 +65,6 @@
         :offer="offer"
         :customWidth="'w-1/2'"
         :coachAccess="true"
-        @book="toggleModal"
         @deleteOffer="handleOpenPopup"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
@@ -160,7 +159,7 @@ const openPopUp = ref(false);
 const deletePopUpText = ref("Are you sure you want to delete this offer?");
 const offerUid = ref("");
 
-const handleOpenPopup = (uid) => {
+const handleOpenPopup = uid => {
   offerUid.value = uid;
   togglePopup();
 };
@@ -177,7 +176,7 @@ const displayedOffers = computed(() => {
   let filteredOffers = store.offers;
 
   if (searchTerm.value) {
-    filteredOffers = filteredOffers.filter((offer) =>
+    filteredOffers = filteredOffers.filter(offer =>
       offer.offerName.toLowerCase().includes(searchTerm.value.toLowerCase()),
     );
   }
@@ -200,8 +199,6 @@ const fetchOffers = async () => {
   } catch (error) {
     console.error("Failed to fetch offers:", error);
     showForm.value = true;
-    // Optionally, you can set an error message to display to the user
-    // errorMessage.value = "Failed to fetch offers. Please try again later.";
   } finally {
     isLoading.value = false;
   }
@@ -217,12 +214,7 @@ const addOffer = () => {
 onMounted(async () => {
   fetchOffers();
 });
-
-const toggleModal = () => {
-  console.log("toggle modal");
-};
-
-const deleteOffer = async (uid) => {
+const deleteOffer = async uid => {
   closePopup();
   await store.deleteOffer(uid);
 };

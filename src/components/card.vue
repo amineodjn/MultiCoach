@@ -168,7 +168,8 @@ const setBookedCoach = uid => {
   const store = useStore();
   store.setBookedCoach(uid);
 };
-const props = defineProps({
+
+defineProps({
   user: {
     type: Object,
     required: true,

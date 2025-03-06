@@ -146,7 +146,6 @@ const errorMessages = reactive({
   gym: "",
 });
 
-// Function to create computed properties for error messages
 function createErrorComputed(field, key) {
   return computed(() => {
     if (field.value === "" || showError[key]) {
@@ -155,7 +154,6 @@ function createErrorComputed(field, key) {
     return "";
   });
 }
-// Error messages
 const offerNameError = createErrorComputed(offerName, "offerName");
 const offerDescriptionError = createErrorComputed(
   offerDescription,
@@ -179,7 +177,6 @@ function splitCamelCase(str) {
 
 const emit = defineEmits(["formSubmitted"]);
 
-// Function to update user data in Firestore
 async function updateOffer() {
   const dataObj = {
     offerName: offerName.value,
@@ -189,32 +186,26 @@ async function updateOffer() {
     gym: gym.value,
   };
 
-  // Reset showError
-  Object.keys(showError).forEach((key) => {
+  Object.keys(showError).forEach(key => {
     showError[key] = false;
   });
 
-  // Check for empty fields
   Object.entries(dataObj).forEach(([key, value]) => {
     if (value === undefined || value === "") {
       showError[key] = true;
     }
   });
 
-  // Check if there are any errors
-  const hasErrors = Object.values(showError).some((value) => value === true);
+  const hasErrors = Object.values(showError).some(value => value === true);
   if (!hasErrors) {
-    // Create a reference to the Offers subcollection
     const offersRef = collection(docRef, "Offers");
 
-    // Add the offer to the Offers subcollection
     const offerDocRef = await addDoc(offersRef, dataObj);
     offerId.value = offerDocRef.id;
     await updateDoc(offerDocRef, { uid: offerId.value });
     uploadImage(imageEvent.value);
     success.value = true;
 
-    // Clear the form values
     offerName.value = "";
     offerDescription.value = "";
     price.value = "";
@@ -229,7 +220,7 @@ async function updateOffer() {
     Object.entries(showError).forEach(([key, value]) => {
       if (value === true) {
         showError[key] = true;
-        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`; // Update the error message
+        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`; 
       }
     });
   }
@@ -244,7 +235,7 @@ const selectedFile = ref(null);
 const imageUrl = ref("");
 const imageName = ref("");
 
-const uploadImage = async (event) => {
+const uploadImage = async event => {
   try {
     if (event && event.target && event.target.files) {
       selectedFile.value = event.target.files[0];
@@ -275,14 +266,14 @@ const uploadImage = async (event) => {
 
       uploadTask.on(
         "state_changed",
-        (snapshot) => {
+        snapshot => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
           console.log(store.classesData.value.id, 'store.classesData.value.id');
           
         },
-        (error) => {
+        error => {
           console.error("Upload failed", error);
         },
         async () => {
@@ -306,8 +297,7 @@ const uploadImage = async (event) => {
   }
 };
 
-//Toast
-const resetSuccess = (event) => {
+const resetSuccess = event => {
   if (event.animationName.includes("slideOutRight")) {
     success.value = false;
   }

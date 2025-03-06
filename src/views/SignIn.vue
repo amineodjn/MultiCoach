@@ -91,9 +91,7 @@
 import { ref } from "vue";
 import {
   getAuth,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
+  signInWithEmailAndPassword
 } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { useStore } from "../store/store.js";
@@ -113,7 +111,7 @@ const register = () => {
       store.setRoute(auth.currentUser.uid);
       store.fetchUser("users", auth.currentUser.uid);
       store.fetchUser("coaches", auth.currentUser.uid);
-      localStorage.setItem("uid", auth.currentUser.uid); // Store uid in localStorage
+      localStorage.setItem("uid", auth.currentUser.uid);
       router.push("/");
     })
     .catch(error => {
@@ -135,19 +133,6 @@ const register = () => {
       }
     });
 };
-
-const SignInWithGoogle = () => {
-  const provider = new GoogleAuthProvider();
-  signInWithPopup(getAuth(), provider)
-    .then(() => {
-      router.push("/home");
-    })
-    .catch(error => {
-      console.log(error.message);
-      console.log(error.code);
-    });
-};
-
 const resetpassword = () => {
   router.push("/reset-password");
 };

@@ -115,7 +115,7 @@ const displayedOffers = computed(() => {
   let filteredOffers = offers.value;
 
   if (searchTerm.value) {
-    filteredOffers = filteredOffers.filter((offer) =>
+    filteredOffers = filteredOffers.filter(offer =>
       offer.offerName.toLowerCase().includes(searchTerm.value.toLowerCase()),
     );
   }
@@ -141,7 +141,7 @@ const fetchOffers = async () => {
   const querySnapshot = await getDocs(offersRef);
 
   if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map((doc) => doc.data());
+    const data = querySnapshot.docs.map(doc => doc.data());
     offers.value = data;
   } else {
     offers.value = [];
@@ -163,13 +163,12 @@ watch(
   },
 );
 
-const toggleModal = (uid) => {
+const toggleModal = uid => {
   bookedOffer.value = uid;
   open.value = !open.value;
 };
 
-const confirmBooking = (bookingDetails) => {
-  // Handle booking confirmation logic here
+const confirmBooking = bookingDetails => {
   console.log("Booking confirmed:", bookingDetails);
 };
 </script>

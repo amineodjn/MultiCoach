@@ -1,4 +1,3 @@
-// src/store/store.js
 import { defineStore } from "pinia";
 import {
   fetchDocument,
@@ -86,7 +85,7 @@ export const useStore = defineStore({
       return userData.bookedEvents || [];
     },
     async fetchOfferDetails(bookedEvents) {
-      const offerDetailsPromises = bookedEvents.map(async (event) => {
+      const offerDetailsPromises = bookedEvents.map(async event => {
         const { bookedOffer, bookedCoach } = event;
         const offerData = await fetchDocument(
           `coaches/${bookedCoach}/Offers`,
@@ -99,7 +98,7 @@ export const useStore = defineStore({
         }
       });
       const offerDetails = await Promise.all(offerDetailsPromises);
-      return offerDetails.filter((details) => details !== null);
+      return offerDetails.filter(details => details !== null);
     },
     async getUserBookedOfferDetails() {
       const bookedEvents = await this.fetchUserBookedEvents();

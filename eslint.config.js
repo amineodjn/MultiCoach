@@ -1,21 +1,17 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import pluginVue from "eslint-plugin-vue";
-import prettier from "eslint-config-prettier";
-import pluginPrettier from "eslint-plugin-prettier";
 
 export default [
   { files: ["**/*.{js,mjs,cjs,vue}"] },
-  { languageOptions: { globals: globals.browser } },
+  { languageOptions: { globals: { ...globals.browser, google: "readonly", module: "readonly" } } },
   pluginJs.configs.recommended,
   ...pluginVue.configs["flat/essential"],
-  prettier,
   {
-    plugins: {
-      prettier: pluginPrettier,
-    },
     rules: {
-      "prettier/prettier": "error",
+      "vue/multi-word-component-names": "off",
+      "arrow-parens": ["error", "as-needed"],
     },
+    ignores: ["node_modules/", "dist/"],
   },
 ];

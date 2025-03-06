@@ -56,11 +56,11 @@ const endTime = ref(props.endTime);
 
 const emit = defineEmits(["update:startTime", "update:endTime"]);
 
-watch(startTime, (newVal) => {
+watch(startTime, newVal => {
   emit("update:startTime", newVal);
 });
 
-watch(endTime, (newVal) => {
+watch(endTime, newVal => {
   emit("update:endTime", newVal);
 });
 </script>

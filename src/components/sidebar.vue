@@ -107,7 +107,7 @@
               </svg>
               <span class="flex-1 ml-3 whitespace-nowrap">Messages</span>
               <span
-                class="inline-flex justify-center items-center w-5 h-5 text-xs font-semibold rounded-full text-primary-800 bg-primary-100 dark:bg-primary-200 dark:text-primary-800"
+                class="inline-flex justify-center items-center w-5 h-5 text-xs font-semibold rounded-full text-indigo-800 bg-indigo-100 dark:bg-indigo-200 dark:text-indigo-800"
                 >6</span
               >
             </a>

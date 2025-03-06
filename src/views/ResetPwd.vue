@@ -80,7 +80,6 @@ const resetPassword = () => {
   const auth = getAuth();
   sendPasswordResetEmail(auth, email.value)
     .then(() => {
-      // Password reset email sent!
       initFlowbite();
       resetEmailSent.value = true;
       setTimeout(() => {

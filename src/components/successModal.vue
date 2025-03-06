@@ -58,7 +58,7 @@
           data-modal-toggle="successModal"
           type="button"
           @click="closeModal"
-          class="py-2 px-3 text-sm font-medium text-center text-white rounded-lg bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:focus:ring-primary-900"
+          class="py-2 px-3 text-sm font-medium text-center text-white rounded-lg bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-900"
         >
           Continue
         </button>
@@ -67,7 +67,7 @@
   </div>
 </template>
 <script setup>
-const props = defineProps({
+defineProps({
   open: {
     type: Boolean,
     default: false,

@@ -170,7 +170,8 @@
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const props = defineProps({
+
+defineProps({
   open: {
     type: Boolean,
     default: false,

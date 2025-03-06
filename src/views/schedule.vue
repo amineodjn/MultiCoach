@@ -63,7 +63,7 @@ const days = ref([]);
 const success = ref(false);
 const isLoading = ref(false);
 
-const capitalaizefirstLetter = (string) => {
+const capitalaizefirstLetter = string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
@@ -77,7 +77,7 @@ const submitSchedule = async () => {
   success.value = true;
 };
 
-const resetSuccess = (event) => {
+const resetSuccess = event => {
   if (event.animationName.includes("slideOutRight")) {
     success.value = false;
   }
@@ -90,7 +90,7 @@ onMounted(async () => {
 
   if (docSnap.exists() && docSnap.data().schedule) {
     const schedule = docSnap.data().schedule;
-    days.value = Object.keys(schedule).map((day) => ({
+    days.value = Object.keys(schedule).map(day => ({
       name: day,
       startTime: schedule[day].startTime,
       endTime: schedule[day].endTime,

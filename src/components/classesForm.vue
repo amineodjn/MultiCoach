@@ -150,7 +150,6 @@ const classDescription = ref("");
 const price = ref("");
 const location = ref("");
 const gym = ref("");
-const hasEmptyFields = ref(false);
 
 const errorMessages = reactive({
   className: "",
@@ -162,7 +161,6 @@ const errorMessages = reactive({
   date: "",
 });
 
-// Function to create computed properties for error messages
 function createErrorComputed(field, key) {
   return computed(() => {
     if (field.value === "" || showError[key]) {
@@ -171,7 +169,6 @@ function createErrorComputed(field, key) {
     return "";
   });
 }
-// Error messages
 const classNameError = createErrorComputed(className, "className");
 const classDescriptionError = createErrorComputed(
   classDescription,
@@ -196,7 +193,6 @@ const showError = reactive({
 function splitCamelCase(str) {
   return str.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
 }
-// Function to update user data in Firestore
 const emit = defineEmits(["formSubmitted"]);
 
 async function updateOffer() {
@@ -211,30 +207,24 @@ async function updateOffer() {
     counter: counter.value,
   };
 
-  // Reset showError
-  Object.keys(showError).forEach((key) => {
+  Object.keys(showError).forEach(key => {
     showError[key] = false;
   });
 
-  // Check for empty fields
   Object.entries(dataObj).forEach(([key, value]) => {
     if (value === undefined || value === "") {
       showError[key] = true;
     }
   });
 
-  // Check if there are any errors
-  const hasErrors = Object.values(showError).some((value) => value === true);
+  const hasErrors = Object.values(showError).some(value => value === true);
   if (!hasErrors) {
-    // Create a reference to the classes subcollection
     const classsRef = collection(docRef, "classes");
 
-    // Add the class to the classes subcollection
     const classDocRef = await addDoc(classsRef, dataObj);
     classId.value = classDocRef.id;
     await updateDoc(classDocRef, { uid: classId.value });
     uploadImage(imageEvent.value);
-    // Clear the form values
     className.value = "";
     classDescription.value = "";
     price.value = "";
@@ -252,7 +242,7 @@ async function updateOffer() {
     Object.entries(showError).forEach(([key, value]) => {
       if (value === true) {
         showError[key] = true;
-        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`; // Update the error message
+        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`;
       }
     });
   }
@@ -269,7 +259,7 @@ const selectedFile = ref(null);
 const imageUrl = ref("");
 const imageName = ref("");
 
-const uploadImage = async (event) => {
+const uploadImage = async event => {
   try {
     if (event && event.target && event.target.files) {
       selectedFile.value = event.target.files[0];
@@ -300,12 +290,12 @@ const uploadImage = async (event) => {
 
       uploadTask.on(
         "state_changed",
-        (snapshot) => {
+        snapshot => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
         },
-        (error) => {
+        error => {
           console.error("Upload failed", error);
         },
         async () => {

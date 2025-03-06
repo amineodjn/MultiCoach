@@ -137,7 +137,7 @@ const displayedClasses = computed(() => {
   let filteredClasses = store.classes;
 
   if (searchTerm.value) {
-    filteredClasses = filteredClasses.filter((Class) =>
+    filteredClasses = filteredClasses.filter(Class =>
       Class.className.toLowerCase().includes(searchTerm.value.toLowerCase()),
     );
   }
@@ -151,10 +151,6 @@ const displayedClasses = computed(() => {
   }
 });
 
-const viewAllClasses = () => {
-  showAllClasses.value = !showAllClasses.value;
-};
-
 onMounted(async () => {
   isLoading.value = true;
   await store.fetchClasses();
@@ -166,7 +162,7 @@ const displayedOffers = computed(() => {
   let filteredOffers = store.offers;
 
   if (offersSearchTerm.value) {
-    filteredOffers = filteredOffers.filter((offer) =>
+    filteredOffers = filteredOffers.filter(offer =>
       offer.offerName
         .toLowerCase()
         .includes(offersSearchTerm.value.toLowerCase()),

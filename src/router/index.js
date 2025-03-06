@@ -86,7 +86,7 @@ const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
     const removeListener = onAuthStateChanged(
       getAuth(),
-      (user) => {
+      user => {
         removeListener();
         resolve(user);
       },
@@ -96,7 +96,7 @@ const getCurrentUser = () => {
 };
 
 router.beforeEach(async (to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
     if (await getCurrentUser()) {
       next();
     } else {

@@ -146,8 +146,6 @@ import { ref } from "vue";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
 } from "firebase/auth";
 import { db } from "../firebase.js";
 import { setDoc, doc } from "firebase/firestore";
@@ -164,10 +162,8 @@ const router = useRouter();
 const store = useStore();
 
 const createUser = async uid => {
-  // Get a document reference with the user's uid
   const docRef = doc(db, "users", uid);
 
-  // Data to set
   const dataObj = {
     uid: uid,
     firstName: firstName.value,
@@ -176,9 +172,8 @@ const createUser = async uid => {
     password: password.value,
   };
 
-  // Set the data on the document
   await setDoc(docRef, dataObj);
-  store.setDocId(docRef.id); // Store the docRef.id in Pinia
+  store.setDocId(docRef.id);
   localStorage.setItem("uid", docRef.id);
 };
 
@@ -189,23 +184,11 @@ const register = () => {
   }
   const auth = getAuth();
   createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then(data => {
+    .then(() => {
       createUser(auth.currentUser.uid);
       router.push("/");
     })
     .catch(error => {
-      console.log(error.code);
-    });
-};
-
-const SignInWithGoogle = () => {
-  const provider = new GoogleAuthProvider();
-  signInWithPopup(getAuth(), provider)
-    .then(result => {
-      router.push("/");
-    })
-    .catch(error => {
-      console.log(error.message);
       console.log(error.code);
     });
 };

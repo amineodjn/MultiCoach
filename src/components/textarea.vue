@@ -23,11 +23,26 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  showError: Boolean,
-  Modelval: String,
-  title: String,
-  errorMessage: String,
-  placeholder: String,
+defineProps({
+  showError: {
+    type: Boolean,
+    default: false
+  },
+  Modelval: {
+    type: String,
+    default: ''
+  },
+  title: {
+    type: String,
+    default: ''
+  },
+  errorMessage: {
+    type: String,
+    default: ''
+  },
+  placeholder: {
+    type: String,
+    default: ''
+  }
 });
 </script>

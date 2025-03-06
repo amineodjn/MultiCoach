@@ -88,7 +88,6 @@ const usersData = ref([]);
 const filteredUsers = ref([]);
 const center = ref({ lat: 52.0, lng: 20.0 });
 const toggle = ref({});
-const toggled = ref(false);
 const experiences = ref([]);
 const selectedExperiences = ref([]);
 const selectedCity = ref("");
@@ -117,18 +116,14 @@ const getUsers = async () => {
   return userList;
 };
 
-const dropdownToggle = () => {
-  toggled.value = !toggled.value;
+const isFavorite = user => {
+  return store.favoriteCoaches?.some(c => c.uid === user.uid);
 };
 
-const isFavorite = (user) => {
-  return store.favoriteCoaches?.some((c) => c.uid === user.uid);
-};
-
-const toggleFavorite = async (coach) => {
+const toggleFavorite = async coach => {
   const isAlreadyFavorite = isFavorite(coach);
   store.favoriteCoaches = isAlreadyFavorite
-    ? store.favoriteCoaches.filter((c) => c.uid !== coach.uid)
+    ? store.favoriteCoaches.filter(c => c.uid !== coach.uid)
     : [...store.favoriteCoaches, coach];
 
   const userType = store.user.coach ? "coaches" : "users";
@@ -137,10 +132,10 @@ const toggleFavorite = async (coach) => {
   });
 };
 
-const filterCities = (city) => {
+const filterCities = city => {
   if (city.length > 0) {
     selectedCity.value = city;
-    filteredUsers.value = usersData.value.filter((user) => user.city === city);
+    filteredUsers.value = usersData.value.filter(user => user.city === city);
   }
 };
 
@@ -150,16 +145,16 @@ const clearFilter = () => {
     filteredUsers.value = usersData.value;
     return;
   } else {
-    filteredUsers.value = usersData.value.filter((user) => {
+    filteredUsers.value = usersData.value.filter(user => {
       return selectedExperiences.value.includes(user.profession);
     });
   }
 };
 
-const filterExperiences = (exp) => {
+const filterExperiences = exp => {
   toggle.value[exp] = toggle.value[exp] === "yes" ? "no" : "yes";
   selectedExperiences.value = Object.keys(toggle.value).filter(
-    (key) => toggle.value[key] === "yes",
+    key => toggle.value[key] === "yes",
   );
 
   if (selectedExperiences.value.length === 0 && selectedCity.value === "") {
@@ -167,7 +162,7 @@ const filterExperiences = (exp) => {
     return;
   }
 
-  filteredUsers.value = usersData.value.filter((user) => {
+  filteredUsers.value = usersData.value.filter(user => {
     const hasSelectedExperience = selectedExperiences.value.includes(
       user.profession,
     );
@@ -185,16 +180,16 @@ const filterExperiences = (exp) => {
   });
 };
 
-const toggleModal = (id) => {
+const toggleModal = id => {
   bookedCoach.value = id;
   open.value = !open.value;
 };
 
-const isValidDate = (d) => {
+const isValidDate = d => {
   return d instanceof Date && !isNaN(d.getTime());
 };
 
-const selectedDate = (date) => {
+const selectedDate = date => {
   if (date === null) {
     open.value = false;
   } else if (isValidDate(date) && store.docId) {
@@ -203,11 +198,11 @@ const selectedDate = (date) => {
   }
 };
 
-watch(selectedDateandTime, (newValue) => {
+watch(selectedDateandTime, newValue => {
   openPopUp.value = !!newValue;
 });
 
-const toLocaleStringTimeOrDate = (date) => {
+const toLocaleStringTimeOrDate = date => {
   const formattedDate = new Date(date);
   const options = {
     day: "2-digit",
@@ -226,10 +221,8 @@ const confirmBooking = async () => {
 
   const user = await onAuthStateChangedPromise();
   if (user) {
-    // User is signed in, proceed with booking
     const date = new Date(localStorage.getItem("selectedDateandTime"));
 
-    // Save the booking to Firestore
     const userType = store.user.coach ? "coaches" : "users";
 
     if (date && user.uid) {
@@ -262,7 +255,6 @@ const confirmBooking = async () => {
       openPopUp.value = false;
     }
   } else {
-    // No user is signed in, handle accordingly
     router.push("/sign-in");
   }
 };
@@ -281,8 +273,8 @@ onMounted(async () => {
   experiences.value = [
     ...new Set(
       usersData.value
-        .filter((user) => user.profession && user.profession !== "")
-        .map((user) => user.profession),
+        .filter(user => user.profession && user.profession !== "")
+        .map(user => user.profession),
     ),
   ];
 

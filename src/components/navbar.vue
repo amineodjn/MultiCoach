@@ -84,14 +84,20 @@
           <modal :open="open" @update="toggleModal" />
           <router-link
             to="/"
-            class="font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400"
+            :class="[
+              'font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400',
+              { 'text-indigo-600': route.path === '/' }
+            ]"
             aria-current="page"
             @click="collapse"
             >Home</router-link
           >
           <router-link
             to="/my-profile"
-            class="font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400"
+            :class="[
+              'font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400',
+              { 'text-indigo-600': route.path === '/my-profile' }
+            ]"
             @click="collapse"
             >Profile</router-link
           >
@@ -147,13 +153,15 @@
 </template>
 <script setup>
 import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import modal from "../components/modal.vue";
 import { useStore } from "../store/store.js";
 
+
 const store = useStore();
 const router = useRouter();
+const route = useRoute();
 const navbarCollapse = ref(false);
 const open = ref(false);
 const isLoggedIn = ref(false);
@@ -165,19 +173,16 @@ const HandleLogout = () => {
   signOut(auth)
     .then(() => {
       isLoggedIn.value = false;
-      // Assuming store is a global state management object, reset its properties
       store.docId = null;
       store.user = null;
       store.coach = null;
       store.route = "/";
-      // Navigate to the root route
       router.push("/");
 
       console.log("User signed out successfully");
     })
     .catch(error => {
       console.error("Error during sign out:", error);
-      // Handle logout error (e.g., show a notification to the user)
     });
 };
 

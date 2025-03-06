@@ -49,8 +49,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { getDoc, doc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { getDoc } from "firebase/firestore";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import favoritesCard from "../components/favoritesCard.vue";
@@ -58,7 +57,7 @@ import loadingSpinner from "../components/loadingSpinner.vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const handleClick = (uid) => {
+const handleClick = uid => {
   router.push(`/profile/${uid}`);
 };
 
@@ -106,19 +105,4 @@ const isEmptyArray = computed(
 onMounted(async () => {
   fetchFavoriteCoaches();
 });
-
-const toggleModal = () => {
-  console.log("toggle modal");
-};
-
-const deleteOffer = async (uid) => {
-  const offerRef = doc(db, "coaches", store.docId, "Offers", uid);
-
-  try {
-    await deleteDoc(offerRef);
-    fetchOffers();
-  } catch (error) {
-    console.error("Error deleting offer: ", error);
-  }
-};
 </script>

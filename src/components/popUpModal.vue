@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   open: {
     type: Boolean,
     required: true,

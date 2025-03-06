@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   success: {
     type: Boolean,
     default: false,

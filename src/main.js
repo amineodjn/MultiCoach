@@ -14,7 +14,7 @@ app.use(createPinia());
 const store = useStore();
 app.use(router);
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, user => {
   if (user) {
     store.setDocId(user.uid);
     store.setRoute(user.uid);
@@ -23,7 +23,6 @@ onAuthStateChanged(auth, (user) => {
     localStorage.setItem("uid", user.uid);
     console.log("Page reloaded, user is logged in");
   } else {
-    // Handle the case where the user is not logged in
     localStorage.removeItem("uid");
     router.push("/sign-in");
     console.log("User is not logged in");

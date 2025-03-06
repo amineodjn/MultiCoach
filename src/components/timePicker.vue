@@ -24,7 +24,7 @@
   </div>
 </template>
 <script setup>
-const props = defineProps({
+defineProps({
   modelValue: {
     type: String,
     default: "00:00",

@@ -166,14 +166,11 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "../store/store";
-import { db } from "../firebase.js";
-import { getDoc, doc } from "firebase/firestore";
-import { useRouter } from "vue-router";
+import { getDoc } from "firebase/firestore";
 
 const firstName = ref("");
 const lastName = ref("");
 const store = useStore();
-const router = useRouter();
 const docId = computed(() => {
   return store.docId;
 });
@@ -201,17 +198,11 @@ const fetchUser = async () => {
   if (docSnap.exists()) {
     firstName.value = docSnap.data().firstName;
     lastName.value = docSnap.data().lastName;
-    // Now you can use firstName and lastName
   } else {
     console.log("No such document!");
   }
 };
 
-onMounted(() => {
-  if (docId.value) {
-    fetchUser();
-  }
-});
 const props = defineProps({
   selectedTime: {
     type: Date,
@@ -220,4 +211,11 @@ const props = defineProps({
     type: String,
   },
 });
+
+onMounted(() => {
+  if (docId.value) {
+    fetchUser();
+  }
+});
+
 </script>

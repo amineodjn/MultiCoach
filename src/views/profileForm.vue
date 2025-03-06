@@ -244,7 +244,6 @@ const errorMessages = reactive({
   userName: "",
 });
 
-//Helper function
 function createErrorComputed(field, key) {
   return computed(() => {
     if (field.value === "" || showError[key]) {
@@ -253,7 +252,6 @@ function createErrorComputed(field, key) {
     return "";
   });
 }
-//Error messages
 const firstNameError = createErrorComputed(firstName, "firstName");
 const lastNameError = createErrorComputed(lastName, "lastName");
 const emailError = createErrorComputed(email, "email");
@@ -283,7 +281,6 @@ const showError = reactive({
 function splitCamelCase(str) {
   return str.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
 }
-// Function to update user data in Firestore
 async function updateUser() {
   const dataObj = {
     firstName: firstName.value,
@@ -299,20 +296,17 @@ async function updateUser() {
     userName: userName.value,
     profilePicture: profilePicture.value,
   };
-  // Reset showError
-  Object.keys(showError).forEach((key) => {
+  Object.keys(showError).forEach(key => {
     showError[key] = false;
   });
 
-  // Check for empty fields
   Object.entries(dataObj).forEach(([key, value]) => {
     if (value === undefined || value === "") {
       showError[key] = true;
     }
   });
 
-  // Check if there are any errors
-  const hasErrors = Object.values(showError).some((value) => value === true);
+  const hasErrors = Object.values(showError).some(value => value === true);
   if (!hasErrors) {
     await updateDoc(docRef, dataObj);
     await fetchUser();
@@ -325,10 +319,8 @@ async function updateUser() {
       }
     });
   }
-  // Update the fields based on your reactive properties
 }
 
-// Fetch user data from Firestore
 const fetchUser = async () => {
   isLoading.value = true;
   if (!userId.value) {
@@ -367,7 +359,7 @@ const selectedFile = ref(null);
 const imageUrl = ref("");
 const imageName = ref("");
 
-const uploadImage = async (event) => {
+const uploadImage = async event => {
   selectedFile.value = event.target.files[0];
   imageName.value = selectedFile.value.name;
 
@@ -380,31 +372,24 @@ const uploadImage = async (event) => {
   const user = auth.currentUser;
 
   if (user) {
-    // Create a storage reference with the user's uid
     const storageReference = storageRef(storage, `profilePictures/${user.uid}`);
 
-    // Upload the file
     const uploadTask = uploadBytesResumable(
       storageReference,
       selectedFile.value,
     );
 
-    // Listen for state changes, errors, and completion of the upload.
     uploadTask.on(
       "state_changed",
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
+      snapshot => {
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       },
-      (error) => {
+      error => {
         console.log(error);
       },
       () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
           imageUrl.value = downloadURL;
-          // Update user document with the download URL
           updateDoc(docRef, { profilePicture: downloadURL });
         });
       },
@@ -412,8 +397,7 @@ const uploadImage = async (event) => {
   }
 };
 
-//Toast
-const resetSuccess = (event) => {
+const resetSuccess = event => {
   if (event.animationName.includes("slideOutRight")) {
     success.value = false;
   }

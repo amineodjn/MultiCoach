@@ -1,6 +1,6 @@
 <template>
   <div id="exampleWrapper" class="relative">
-    <form @prevent.default class="mt-6 m-2 md:m-6">
+    <form @submit.prevent class="mt-6 m-2 md:m-6">
       <div class="flex">
         <label
           for="location-search"
@@ -11,7 +11,7 @@
           @click="dropdownToggle"
           id="dropdown-button-2"
           data-dropdown-toggle="dropdown-search-city"
-          class="flex-shrink-0 z-10 inline-flex items-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+          class="flex-shrink-0 z-10 inline-flex items-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-indigo-700 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
           type="button"
         >
           <svg
@@ -142,6 +142,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
+import { API_KEY } from "../basic/const";
 const emits = defineEmits(["citySelected", "cityRemoved"]);
 
 const toggled = ref(false);
@@ -149,7 +150,7 @@ const cities = ref(["Poznań", "Warsaw", "Wrocław", "Kraków", "Gdańsk"]);
 const selectedCity = ref("");
 const streetRef = ref(null);
 
-watch(selectedCity, (newVal) => {
+watch(selectedCity, newVal => {
   emits("citySelected", newVal);
 });
 
@@ -157,7 +158,7 @@ const dropdownToggle = () => {
   toggled.value = !toggled.value;
 };
 
-const selectCity = (city) => {
+const selectCity = city => {
   selectedCity.value = city;
   emits("citySelected", city);
 };
@@ -168,7 +169,7 @@ const removeCity = () => {
 };
 
 onMounted(async () => {
-  const src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0&libraries=places`;
+  const src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places`;
 
   await new Promise((resolve, reject) => {
     let script = document.querySelector(`script[src="${src}"]`);
@@ -187,8 +188,7 @@ onMounted(async () => {
     }
   });
 
-  // Wait for the window.google object to be defined
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     const interval = setInterval(() => {
       if (window.google) {
         clearInterval(interval);
@@ -203,7 +203,7 @@ onMounted(async () => {
     componentRestrictions: { country: "PL" },
   });
 
-  const listener = google.maps.event.addListener(
+  google.maps.event.addListener(
     autoComplete,
     "place_changed",
     () => {

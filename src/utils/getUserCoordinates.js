@@ -1,4 +1,4 @@
-export const getUserCoordinates = async (usersData) => {
+export const getUserCoordinates = async usersData => {
   const userMarkers = [];
   for (const user of usersData) {
     const response = await fetch(

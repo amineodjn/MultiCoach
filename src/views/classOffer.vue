@@ -109,7 +109,7 @@ const displayedClasses = computed(() => {
   let filteredClasses = classes.value;
 
   if (searchTerm.value) {
-    filteredClasses = filteredClasses.filter((Class) =>
+    filteredClasses = filteredClasses.filter(Class =>
       Class.className.toLowerCase().includes(searchTerm.value.toLowerCase()),
     );
   }
@@ -135,7 +135,7 @@ const fetchClasses = async () => {
   const querySnapshot = await getDocs(classesRef);
 
   if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map((doc) => doc.data());
+    const data = querySnapshot.docs.map(doc => doc.data());
     classes.value = data;
   } else {
     classes.value = [];
@@ -158,7 +158,7 @@ watch(
   },
 );
 
-const bookClass = async (trainingClass) => {
+const bookClass = async trainingClass => {
   const userRef = store.user.coach
     ? doc(db, "coaches", store.docId)
     : doc(db, "users", store.docId);
@@ -170,7 +170,7 @@ const bookClass = async (trainingClass) => {
   }
 };
 
-const deleteClass = async (uid) => {
+const deleteClass = async uid => {
   const classRef = doc(db, "coaches", uid.vlaue, "classes", uid);
 
   try {

@@ -43,12 +43,12 @@ export const fetchDocument = async (collectionName, docId) => {
  * @param {string} collectionPath - The path of the collection.
  * @returns {Promise<Array<Object>>} - An array of document data.
  */
-export const fetchCollection = async (collectionPath) => {
+export const fetchCollection = async collectionPath => {
   try {
     const collectionReference = collection(db, collectionPath);
     const querySnapshot = await getDocs(collectionReference);
     if (!querySnapshot.empty) {
-      return querySnapshot.docs.map((doc) => doc.data());
+      return querySnapshot.docs.map(doc => doc.data());
     } else {
       console.warn(`No documents found in collection '${collectionPath}'`);
       return [];
@@ -71,7 +71,7 @@ export const fetchUsers = async () => {
     const usersCollection = collection(db, "coaches");
     const userSnapshot = await getDocs(usersCollection);
     if (!userSnapshot.empty) {
-      return userSnapshot.docs.map((doc) => doc.data());
+      return userSnapshot.docs.map(doc => doc.data());
     } else {
       console.warn("No users found in the 'coaches' collection");
       return [];
@@ -87,7 +87,7 @@ export const fetchUsers = async () => {
  * @param {string} bookedCoach - The ID of the booked coach.
  * @returns {Promise<Array>} - A promise that resolves with the offers data.
  */
-export const fetchOffers = async (bookedCoach) => {
+export const fetchOffers = async bookedCoach => {
   if (!bookedCoach) {
     return [];
   }
@@ -97,7 +97,7 @@ export const fetchOffers = async (bookedCoach) => {
     const querySnapshot = await getDocs(offersRef);
 
     if (!querySnapshot.empty) {
-      return querySnapshot.docs.map((doc) => doc.data());
+      return querySnapshot.docs.map(doc => doc.data());
     } else {
       return [];
     }
@@ -153,7 +153,7 @@ export const onAuthStateChangedPromise = () => {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(
       auth,
-      (user) => {
+      user => {
         if (user) {
           resolve(user);
         } else {
@@ -184,17 +184,15 @@ export const uploadImage = async (event, userId) => {
   return new Promise((resolve, reject) => {
     uploadTask.on(
       "state_changed",
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
+      snapshot => {
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       },
-      (error) => {
+      error => {
         console.log(error);
         reject(error);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
           resolve(downloadURL);
         });
       },

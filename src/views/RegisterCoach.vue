@@ -175,11 +175,9 @@ const wrongPwd = ref(false);
 const router = useRouter();
 const store = useStore();
 
-const createUser = async (uid) => {
-  // Get a document reference with the user's uid
+const createUser = async uid => {
   const docRef = doc(db, "coaches", uid);
 
-  // Data to set
   const dataObj = {
     uid: uid,
     firstName: firstName.value,
@@ -189,10 +187,9 @@ const createUser = async (uid) => {
     coach: true,
   };
 
-  // Set the data on the document
   await setDoc(docRef, dataObj);
 
-  store.setDocId(docRef.id); // Store the docRef.id in Pinia
+  store.setDocId(docRef.id);
   localStorage.setItem("uid", docRef.id);
 };
 
@@ -203,11 +200,11 @@ const register = () => {
   }
   const auth = getAuth();
   createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then((data) => {
+    .then(() => {
       createUser(auth.currentUser.uid);
       router.push("/");
     })
-    .catch((error) => {
+    .catch(error => {
       console.log(error.code);
     });
 };
@@ -215,10 +212,10 @@ const register = () => {
 const SignInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(getAuth(), provider)
-    .then((result) => {
+    .then(() => {
       router.push("/");
     })
-    .catch((error) => {
+    .catch(error => {
       console.log(error.message);
       console.log(error.code);
     });

@@ -337,7 +337,7 @@ const props = defineProps({
   },
 });
 
-const loadOffers = async (coachId) => {
+const loadOffers = async coachId => {
   if (!coachId) {
     offers.value = [];
     return;
@@ -356,7 +356,7 @@ const loadOffers = async (coachId) => {
 
 watch(
   () => props.bookedCoach,
-  (newCoach) => {
+  newCoach => {
     loadOffers(newCoach);
   },
   { immediate: true },
@@ -397,7 +397,6 @@ const showTimeline = () => {
   let hour = parseInt(hourStr);
   const minute = parseInt(minuteStr);
 
-  // Convert to 24-hour format
   if (period === "PM" && hour !== 12) {
     hour += 12;
   } else if (period === "AM" && hour === 12) {
@@ -406,7 +405,6 @@ const showTimeline = () => {
   date.value.setHours(hour);
   date.value.setMinutes(minute);
 
-  // Store the selected date and time in localStorage
   localStorage.setItem("selectedDateandTime", date.value);
 };
 const showSecondModal = ref(false);

@@ -2,10 +2,10 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
+import { API_KEY } from "../src/basic/const"
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDrvWDpSZHy-4tD48QQfirBJTA3yL9cHZ0",
+  apiKey: API_KEY,
   authDomain: "multicoach-4a815.firebaseapp.com",
   projectId: "multicoach-4a815",
   storageBucket: "multicoach-4a815.appspot.com",
@@ -14,16 +14,12 @@ const firebaseConfig = {
   measurementId: "G-VS30S4EM4Z",
 };
 
-// Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
-// Initialize Firestore service
 const db = getFirestore(firebaseApp);
 
-// Initialize Firebase Storage
 const storage = getStorage(firebaseApp);
 
-// Initialize Firebase Authentication
 const auth = getAuth(firebaseApp);
 
 export { firebaseApp, db, storage, auth };

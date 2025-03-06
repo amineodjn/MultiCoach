@@ -71,7 +71,6 @@
         :trainingClass="Class"
         :customWidth="'w-1/2'"
         :coachAccess="true"
-        @book="toggleModal"
         @deleteClass="handleOpenPopup"
       />
       <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
@@ -168,7 +167,7 @@ const deletePopUpText = ref("Are you sure you want to delete this class?");
 const classUid = ref("");
 const success = ref(false);
 
-const handleOpenPopup = (uid) => {
+const handleOpenPopup = uid => {
   classUid.value = uid;
   togglePopup();
 };
@@ -184,7 +183,7 @@ const displayedClasses = computed(() => {
   let filteredClasses = store.classes;
 
   if (searchTerm.value) {
-    filteredClasses = filteredClasses.filter((Class) =>
+    filteredClasses = filteredClasses.filter(Class =>
       Class.className.toLowerCase().includes(searchTerm.value.toLowerCase()),
     );
   }
@@ -228,17 +227,12 @@ onMounted(async () => {
   fetchClasses();
 });
 
-const toggleModal = () => {
-  console.log("toggle modal");
-};
-
-const deleteClass = async (uid) => {
+const deleteClass = async uid => {
   closePopup();
   await store.deleteClass(uid);
 };
 
-//Toast
-const resetSuccess = (event) => {
+const resetSuccess = event => {
   if (event.animationName.includes("slideOutRight")) {
     success.value = false;
   }
