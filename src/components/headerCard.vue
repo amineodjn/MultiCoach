@@ -71,6 +71,7 @@
           >
             <nav class="flex space-x-6">
               <router-link
+                v-if="isCoach"
                 class="py-4 px-1 inline-flex items-center gap-2 text-sm whitespace-nowrap text-gray-500 hover:text-indigo-600 dark:text-neutral-500 dark:hover:text-indigo-500"
                 :class="{
                   'border-b-2 border-indigo-500 outline-none text-indigo-600':
@@ -241,7 +242,7 @@ defineProps({
   page: {
     type: String,
     required: true,
-    validator: (value) => {
+    validator: value => {
       return [
         "my-profile",
         "bookings",

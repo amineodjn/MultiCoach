@@ -93,10 +93,10 @@
             >Home</router-link
           >
           <router-link
-            to="/my-profile"
+            :to="isCoach ? '/my-profile' : '/bookings'"
             :class="[
               'font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400',
-              { 'text-indigo-600': route.path === '/my-profile' }
+              { 'text-indigo-600': (route.path === '/my-profile' || route.path === '/bookings') }
             ]"
             @click="collapse"
             >Profile</router-link
@@ -152,7 +152,7 @@
   </header>
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import modal from "../components/modal.vue";
@@ -165,6 +165,7 @@ const route = useRoute();
 const navbarCollapse = ref(false);
 const open = ref(false);
 const isLoggedIn = ref(false);
+const isCoach = computed(() => store.user?.isCoach);
 
 const auth = getAuth();
 
