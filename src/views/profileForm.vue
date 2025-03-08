@@ -195,18 +195,12 @@ import { ref, computed, onMounted, reactive } from "vue";
 import { db } from "../firebase.js";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { useStore } from "../store/store.js";
-import { storage } from "../firebase.js";
-import { getAuth } from "firebase/auth";
-import {
-  ref as storageRef,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
 import toast from "../components/toast.vue";
 import inputValidation from "../components/inputValidation.vue";
 import textArea from "../components/textarea.vue";
 import locationInput from "../components/locationInput.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
+import { useUploadImage } from "../utils/useUploadImage.js";
 
 const store = useStore();
 const userId = computed(() => store.docId);
@@ -360,41 +354,7 @@ const imageUrl = ref("");
 const imageName = ref("");
 
 const uploadImage = async event => {
-  selectedFile.value = event.target.files[0];
-  imageName.value = selectedFile.value.name;
-
-  if (!selectedFile.value) {
-    console.log("No image selected");
-    return;
-  }
-
-  const auth = getAuth();
-  const user = auth.currentUser;
-
-  if (user) {
-    const storageReference = storageRef(storage, `profilePictures/${user.uid}`);
-
-    const uploadTask = uploadBytesResumable(
-      storageReference,
-      selectedFile.value,
-    );
-
-    uploadTask.on(
-      "state_changed",
-      snapshot => {
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-          imageUrl.value = downloadURL;
-          updateDoc(docRef, { profilePicture: downloadURL });
-        });
-      },
-    );
-  }
+  useUploadImage({ event, docPath: store.user.coach ? "coaches" : "users", field: "profilePicture", imageUrl, imageName });
 };
 
 const resetSuccess = event => {

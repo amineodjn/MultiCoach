@@ -122,19 +122,13 @@ import { ref, computed, onMounted, reactive } from "vue";
 import { db } from "../firebase.js";
 import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { useStore } from "../store/store.js";
-import { storage } from "../firebase.js";
-import { getAuth } from "firebase/auth";
-import {
-  ref as storageRef,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
 import inputValidation from "../components/inputValidation.vue";
 import locationInput from "../components/locationInput.vue";
 import textArea from "../components/textarea.vue";
 import datePicker from "./datePicker.vue";
 import timePicker from "../components/timePicker.vue";
 import counterInput from "../components/counterInput.vue";
+import { useUploadImage } from "../utils/useUploadImage.js";
 
 const store = useStore();
 const userId = computed(() => store.docId);
@@ -224,7 +218,7 @@ async function updateOffer() {
     const classDocRef = await addDoc(classsRef, dataObj);
     classId.value = classDocRef.id;
     await updateDoc(classDocRef, { uid: classId.value });
-    uploadImage(imageEvent.value);
+    useUploadImage({ event: imageEvent.value, docPath: `coaches/${userId.value}/classes`, field: "classImage", imageUrl, imageName });
     className.value = "";
     classDescription.value = "";
     price.value = "";
@@ -248,8 +242,6 @@ async function updateOffer() {
   }
 }
 
-// Fetch user data from Firestore
-
 onMounted(() => {
   if (!userId.value) {
     console.log("docId is not set", userId.value);
@@ -259,63 +251,4 @@ const selectedFile = ref(null);
 const imageUrl = ref("");
 const imageName = ref("");
 
-const uploadImage = async event => {
-  try {
-    if (event && event.target && event.target.files) {
-      selectedFile.value = event.target.files[0];
-    } else {
-      selectedFile.value = event;
-    }
-
-    if (!selectedFile.value) {
-      console.log("No image selected");
-      return;
-    }
-
-    imageName.value = selectedFile.value.name;
-
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (user) {
-      const storageReference = storageRef(
-        storage,
-        `classImages/${user.uid}/${selectedFile.value.name}`,
-      );
-
-      const uploadTask = uploadBytesResumable(
-        storageReference,
-        selectedFile.value,
-      );
-
-      uploadTask.on(
-        "state_changed",
-        snapshot => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
-        },
-        error => {
-          console.error("Upload failed", error);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          imageUrl.value = downloadURL;
-          const classRef = doc(
-            db,
-            "coaches",
-            user.uid,
-            "classes",
-            classId.value,
-          );
-          await updateDoc(classRef, { classImage: downloadURL });
-        },
-      );
-    } else {
-      console.error("User not authenticated");
-    }
-  } catch (error) {
-    console.error("Error uploading image", error);
-  }
-};
 </script>
