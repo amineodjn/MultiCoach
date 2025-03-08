@@ -141,7 +141,7 @@
     <popUpModal
       :open="openPopUp"
       :text="deletePopUpText"
-      @confirm="deleteClass(classUid)"
+      @confirm="deleteClass"
       @cancel="closePopup"
     />
   </div>
@@ -156,6 +156,8 @@ import classesForm from "../components/classesForm.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
 import popUpModal from "../components/popUpModal.vue";
 import toast from "../components/toast.vue";
+import { deleteSubDocument } from "../utils/useFirebase";
+
 
 const store = useStore();
 const showForm = ref(false);
@@ -166,8 +168,11 @@ const openPopUp = ref(false);
 const deletePopUpText = ref("Are you sure you want to delete this class?");
 const classUid = ref("");
 const success = ref(false);
+const filteredClasses = computed(() => store.classes);
 
 const handleOpenPopup = uid => {
+  console.log(uid, 'uid');
+  
   classUid.value = uid;
   togglePopup();
 };
@@ -180,18 +185,18 @@ const closePopup = () => {
 };
 
 const displayedClasses = computed(() => {
-  let filteredClasses = store.classes;
+  
 
   if (searchTerm.value) {
-    filteredClasses = filteredClasses.filter(Class =>
+     filteredClasses.value.filter(Class =>
       Class.className.toLowerCase().includes(searchTerm.value.toLowerCase()),
     );
   }
 
   if (showAllClasses.value) {
-    return filteredClasses;
-  } else {
-    return filteredClasses.slice(0, 3);
+    return filteredClasses.value;
+  } else {    
+    return filteredClasses.value.slice(0, 3);
   }
 });
 
@@ -207,13 +212,20 @@ const handleFormSubmission = async () => {
   toggleForm();
   success.value = true;
   isLoading.value = true;
-  await store.fetchClasses();
+  await fetchClasses();
   isLoading.value = false;
   success.value = true;
 };
 
 const fetchClasses = async () => {
-  await store.fetchClasses();
+  try {
+    isLoading.value = true;
+    await store.fetchClasses();    
+  } catch (error) {
+    console.error("Failed to fetch offers:", error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const addClass = () => {
@@ -224,12 +236,13 @@ const addClass = () => {
 };
 
 onMounted(async () => {
-  fetchClasses();
+  await fetchClasses();
 });
 
-const deleteClass = async uid => {
+const deleteClass = async () => {
+  await deleteSubDocument(store.docId, "classes", classUid.value);
+  await fetchClasses();
   closePopup();
-  await store.deleteClass(uid);
 };
 
 const resetSuccess = event => {

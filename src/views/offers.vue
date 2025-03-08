@@ -198,7 +198,6 @@ const fetchOffers = async () => {
     await store.fetchOffers();
   } catch (error) {
     console.error("Failed to fetch offers:", error);
-    showForm.value = true;
   } finally {
     isLoading.value = false;
   }
@@ -212,7 +211,7 @@ const addOffer = () => {
 };
 
 onMounted(async () => {
-  fetchOffers();
+  await fetchOffers();
 });
 const deleteOffer = async uid => {
   closePopup();

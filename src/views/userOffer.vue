@@ -41,19 +41,9 @@
         :customWidth="'w-1/2'"
         :coachAccess="false"
         :readOnly="true"
-        @book="toggleModal"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
       <emptyState v-else-if="displayedOffers.length === 0" />
-      <bookingModal
-        :open="open"
-        @update="open = !open"
-        :startHour="startHour"
-        :endHour="endHour"
-        @confirmBooking="confirmBooking"
-        @selectedDate="selectedDate"
-        :bookedCoach="bookedOffer"
-      />
     </div>
     <div
       v-if="offers.length > 3"
@@ -85,23 +75,15 @@
 
 <script setup>
 import offersCard from "../components/offersCard.vue";
-import { onMounted, ref, computed, watch } from "vue";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { onMounted, ref, computed } from "vue";
 import emptyState from "../components/emptyState.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
-import bookingModal from "../components/BookingModal.vue";
+import { fetchOffers as fetchCoachOffers } from "../utils/useFirebase"
 
 const offers = ref([]);
 const showAllOffers = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);
-
-const open = ref(false);
-const startHour = ref(null);
-const endHour = ref(null);
-const bookedOffer = ref("");
-const selectedDate = ref(null);
 
 const props = defineProps({
   uid: {
@@ -109,7 +91,6 @@ const props = defineProps({
     required: true,
   },
 });
-const uid = ref(props.uid);
 
 const displayedOffers = computed(() => {
   let filteredOffers = offers.value;
@@ -132,43 +113,24 @@ const viewAllProjects = () => {
 };
 
 const fetchOffers = async () => {
-  isLoading.value = true;
-  if (!uid.value) {
+  if (!props.uid) {
     return;
   }
 
-  const offersRef = collection(db, "coaches", uid.value, "Offers");
-  const querySnapshot = await getDocs(offersRef);
+  isLoading.value = true;
 
-  if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map(doc => doc.data());
-    offers.value = data;
-  } else {
+  try {
+    const data = await fetchCoachOffers(props.uid);
+    offers.value = data.length ? data : [];
+  } catch (error) {
+    console.error("Error fetching offers:", error);
     offers.value = [];
+  } finally {
+    isLoading.value = false;
   }
-  isLoading.value = false;
 };
 
 onMounted(async () => {
-  fetchOffers();
+await fetchOffers(props.uid);
 });
-
-watch(
-  () => props.uid,
-  (newUid, oldUid) => {
-    if (newUid !== oldUid) {
-      uid.value = newUid;
-      fetchOffers();
-    }
-  },
-);
-
-const toggleModal = uid => {
-  bookedOffer.value = uid;
-  open.value = !open.value;
-};
-
-const confirmBooking = bookingDetails => {
-  console.log("Booking confirmed:", bookingDetails);
-};
 </script>

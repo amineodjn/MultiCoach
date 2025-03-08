@@ -311,14 +311,13 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
-import { useStore } from "../store/store";
 import userOffer from "./userOffer.vue";
 import classOffer from "./classOffer.vue";
 import { useRoute } from "vue-router";
+import { fetchDocument } from "../utils/useFirebase";
 
 const route = useRoute();
 const uid = ref(route.params.uid);
-const store = useStore();
 const user = ref({});
 const userConnection = computed(() => user.value.favoriteCoaches.slice(0, 5));
 
@@ -331,17 +330,19 @@ function capitalaizefirstLetter(string) {
 }
 
 async function fetchCoachData() {
-  user.value = await store.fetchUser("coaches", uid.value);
+  user.value = await fetchDocument("coaches", uid.value);
 }
 
-onMounted(fetchCoachData);
+onMounted(async () => {
+  await fetchCoachData();
+});
 
 watch(
   () => route.params.uid,
-  (newUid, oldUid) => {
+  async (newUid, oldUid) => {
     if (newUid !== oldUid) {
       uid.value = newUid;
-      fetchCoachData();
+      await fetchCoachData();
     }
   },
 );

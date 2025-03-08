@@ -20,7 +20,7 @@ export const useStore = defineStore({
   }),
   actions: {
     setDocId(id) {
-      this.docId = id;
+      this.docId = id;      
       localStorage.setItem("uid", id);
     },
     setBookedCoach(uid) {
@@ -28,11 +28,9 @@ export const useStore = defineStore({
     },
     async fetchUser(userType, uid) {
       if (!uid) {
-        console.log("docId is not set", uid);
         return;
       }
-      const userData = await fetchDocument(userType, uid);
-
+      const userData = await fetchDocument(userType, uid);       
       if (userData) {
         this.user = userData;
       }
@@ -40,37 +38,20 @@ export const useStore = defineStore({
     },
     async fetchClasses() {
       if (!this.docId) {
-        console.log("docId is not set", this.docId);
         return;
       }
-      const userType = this.user.coach ? "coaches" : "users";
-      const userData = await fetchDocument(userType, this.docId);
-      if (userData) {
-        const classesData = await fetchCollection(
-          `coaches/${this.docId}/classes`,
-        );
-        this.classes = classesData;
-      }
-    },
-    async deleteClass(uid) {
-      if (!this.docId) {
-        console.log("docId is not set", this.docId);
-        return;
-      }
-      await deleteDocument("coaches", this.docId, "classes", uid);
-      await this.fetchClasses();
+      this.classes = await fetchCollection(
+        `coaches/${this.docId}/classes`,
+      );  
     },
     async fetchOffers() {
       if (!this.docId) {
-        console.log("docId is not set", this.docId);
         return;
       }
-      const offersData = await fetchCollection(`coaches/${this.docId}/Offers`);
-      this.offers = offersData;
+      this.offers = await fetchCollection(`coaches/${this.docId}/Offers`);
     },
     async deleteOffer(uid) {
       if (!this.docId) {
-        console.log("docId is not set", this.docId);
         return;
       }
       await deleteDocument("coaches", this.docId, "Offers", uid);
@@ -78,7 +59,6 @@ export const useStore = defineStore({
     },
     async fetchUserBookedEvents() {
       if (!this.docId) {
-        console.log("docId is not set", this.docId);
         return [];
       }
       const userData = await fetchDocument("users", this.docId);

@@ -264,11 +264,12 @@
 import { ref, computed } from "vue";
 import { format, parseISO } from "date-fns";
 
-const image = computed(() => {
+const image = computed(() => {  
   return props.trainingClass.classImage
     ? props.trainingClass.classImage
     : "../../public/images/class.png";
 });
+
 const props = defineProps({
   trainingClass: {
     type: Object,

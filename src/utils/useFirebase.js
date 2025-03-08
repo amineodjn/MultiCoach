@@ -84,16 +84,16 @@ export const fetchUsers = async () => {
 
 /**
  * Fetches offers for a specific coach from Firestore.
- * @param {string} bookedCoach - The ID of the booked coach.
+ * @param {string} bookedCoachId - The ID of the booked coach.
  * @returns {Promise<Array>} - A promise that resolves with the offers data.
  */
-export const fetchOffers = async bookedCoach => {
-  if (!bookedCoach) {
+export const fetchOffers = async bookedCoachId => {
+  if (!bookedCoachId) {
     return [];
   }
 
   try {
-    const offersRef = collection(db, "coaches", bookedCoach, "Offers");
+    const offersRef = collection(db, "coaches", bookedCoachId, "Offers");
     const querySnapshot = await getDocs(offersRef);
 
     if (!querySnapshot.empty) {
@@ -102,7 +102,32 @@ export const fetchOffers = async bookedCoach => {
       return [];
     }
   } catch (error) {
-    console.error(`Error fetching offers for coach '${bookedCoach}':`, error);
+    console.error(`Error fetching offers for coach '${bookedCoachId}':`, error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches offers for a specific coach from Firestore.
+ * @param {string} bookedCoachId - The ID of the booked coach.
+ * @returns {Promise<Array>} - A promise that resolves with the offers data.
+ */
+export const fetchClasses = async bookedCoachId => {
+  if (!bookedCoachId) {
+    return [];
+  }
+
+  try {
+    const offersRef = collection(db, "coaches", bookedCoachId, "classes");
+    const querySnapshot = await getDocs(offersRef);
+
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs.map(doc => doc.data());
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error(`Error fetching classes for coach '${bookedCoachId}':`, error);
     throw error;
   }
 };
@@ -198,4 +223,21 @@ export const uploadImage = async (event, userId) => {
       },
     );
   });
+};
+
+/**
+ * Deletes a document from a specified sub-collection of a coach.
+ * @param {string} coachId - The ID of the coach.
+ * @param {string} subCollectionName - The name of the sub-collection.
+ * @param {string} docId - The ID of the document.
+ * @returns {Promise<void>}
+ */
+export const deleteSubDocument = async (coachId, subCollectionName, docId) => {
+  try {
+    const docRef = doc(db, "coaches", coachId, subCollectionName, docId);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error(`Error deleting document with ID '${docId}' from sub-collection '${subCollectionName}' for coach '${coachId}':`, error);
+    throw error;
+  }
 };

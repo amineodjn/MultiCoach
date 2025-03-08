@@ -41,8 +41,6 @@
         :customWidth="'w-1/2'"
         :coachAccess="false"
         :readOnly="true"
-        @book="bookClass"
-        @deleteClass="deleteClass"
       />
       <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
       <emptyState v-else-if="displayedClasses.length === 0" />
@@ -76,22 +74,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watch } from "vue";
-import {
-  collection,
-  getDocs,
-  doc,
-  deleteDoc,
-  arrayUnion,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "../firebase";
-import { useStore } from "../store/store";
+import { onMounted, ref, computed } from "vue";
 import emptyState from "../components/emptyState.vue";
 import classesCard from "../components/classesCard.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
+import { fetchClasses } from "../utils/useFirebase"
 
-const store = useStore();
+
 const classes = ref([]);
 const showAllClasses = ref(false);
 const searchTerm = ref("");
@@ -103,7 +92,6 @@ const props = defineProps({
     required: true,
   },
 });
-const uid = ref(props.uid);
 
 const displayedClasses = computed(() => {
   let filteredClasses = classes.value;
@@ -125,59 +113,25 @@ const viewAllProjects = () => {
   showAllClasses.value = !showAllClasses.value;
 };
 
-const fetchClasses = async () => {
-  isLoading.value = true;
+const fetchCoachClasses = async () => {
   if (!props.uid) {
     return;
   }
 
-  const classesRef = collection(db, "coaches", uid.value, "classes");
-  const querySnapshot = await getDocs(classesRef);
+  isLoading.value = true;
 
-  if (!querySnapshot.empty) {
-    const data = querySnapshot.docs.map(doc => doc.data());
-    classes.value = data;
-  } else {
+  try {
+    const data = await fetchClasses(props.uid);
+    classes.value = data.length ? data : [];
+  } catch (error) {
+    console.error("Error fetching classes:", error);
     classes.value = [];
+  } finally {
+    isLoading.value = false;
   }
-  isLoading.value = false;
 };
 
 onMounted(async () => {
-  fetchClasses();
+  await fetchCoachClasses();
 });
-
-watch(
-  () => props.uid,
-  (newUid, oldUid) => {
-    if (newUid !== oldUid) {
-      uid.value = newUid;
-      console.log(uid.value, "uid");
-      fetchClasses();
-    }
-  },
-);
-
-const bookClass = async trainingClass => {
-  const userRef = store.user.coach
-    ? doc(db, "coaches", store.docId)
-    : doc(db, "users", store.docId);
-  if (store.docId) {
-    const newClass = trainingClass;
-    await updateDoc(userRef, {
-      bookedClasses: arrayUnion(newClass),
-    });
-  }
-};
-
-const deleteClass = async uid => {
-  const classRef = doc(db, "coaches", uid.vlaue, "classes", uid);
-
-  try {
-    await deleteDoc(classRef);
-    fetchClasses();
-  } catch (error) {
-    console.error("Error deleting class: ", error);
-  }
-};
 </script>
