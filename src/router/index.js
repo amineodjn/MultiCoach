@@ -78,6 +78,9 @@ const router = createRouter({
       name: "bookings",
       props: true,
       component: () => import("../views/bookings.vue"),
+      meta: {
+        requiresAuth: true,
+      },
     },
   ],
 });
