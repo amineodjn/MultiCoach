@@ -165,7 +165,7 @@ const route = useRoute();
 const navbarCollapse = ref(false);
 const open = ref(false);
 const isLoggedIn = ref(false);
-const isCoach = computed(() => store.user?.isCoach);
+const isCoach = computed(() => store.user?.coach);
 
 const auth = getAuth();
 
