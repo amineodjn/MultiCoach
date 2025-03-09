@@ -158,7 +158,6 @@ import popUpModal from "../components/popUpModal.vue";
 import toast from "../components/toast.vue";
 import { deleteSubDocument } from "../utils/useFirebase";
 
-
 const store = useStore();
 const showForm = ref(false);
 const showAllClasses = ref(false);
@@ -171,8 +170,6 @@ const success = ref(false);
 const filteredClasses = computed(() => store.classes);
 
 const handleOpenPopup = uid => {
-  console.log(uid, 'uid');
-  
   classUid.value = uid;
   togglePopup();
 };
@@ -185,17 +182,15 @@ const closePopup = () => {
 };
 
 const displayedClasses = computed(() => {
-  
-
   if (searchTerm.value) {
-     filteredClasses.value.filter(Class =>
-      Class.className.toLowerCase().includes(searchTerm.value.toLowerCase()),
+    filteredClasses.value.filter(Class =>
+      Class.className.toLowerCase().includes(searchTerm.value.toLowerCase())
     );
   }
 
   if (showAllClasses.value) {
     return filteredClasses.value;
-  } else {    
+  } else {
     return filteredClasses.value.slice(0, 3);
   }
 });
@@ -220,7 +215,7 @@ const handleFormSubmission = async () => {
 const fetchClasses = async () => {
   try {
     isLoading.value = true;
-    await store.fetchClasses();    
+    await store.fetchClasses();
   } catch (error) {
     console.error("Failed to fetch offers:", error);
   } finally {

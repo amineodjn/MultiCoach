@@ -1,11 +1,17 @@
 <template>
+  <toast
+    v-if="success"
+    @animation-end="resetSuccess"
+    @close="success = false"
+    :success="success"
+  ></toast>
   <section class="bg-white dark:bg-gray-900">
-    <form @submit.prevent="updateOffer">
+    <form @submit.prevent="submitClass">
       <div class="grid gap-6 mb-4 md:grid-cols-2">
         <inputValidation
           :Modelval="className"
           title="Class name"
-          :error-message="classNameError"
+          :error-message="errorMessages.className"
           placeholder="yoga session"
           @input="className = $event.target.value"
           :showError="showError.className"
@@ -13,7 +19,7 @@
         <inputValidation
           :Modelval="price"
           title="Price"
-          :error-message="priceError"
+          :error-message="errorMessages.price"
           placeholder="100"
           @input="price = $event.target.value"
           :showError="showError.price"
@@ -21,26 +27,26 @@
         <locationInput
           :Modelval="location"
           title="Location"
-          :error-message="locationError"
+          :error-message="errorMessages.location"
           placeholder="Poznań"
           @input="location = $event"
         ></locationInput>
         <inputValidation
           :Modelval="gym"
           title="Gym"
-          :error-message="gymError"
+          :error-message="errorMessages.gym"
           placeholder="Gym world, can be?"
           @input="gym = $event.target.value"
           :showError="showError.gym"
         ></inputValidation>
         <datePicker
           :showError="showError.date"
-          :error-message="dateError"
+          :error-message="errorMessages.date"
           v-model="date"
         />
         <timePicker
           :showError="showError.time"
-          :error-message="timeError"
+          :error-message="errorMessages.time"
           v-model="time"
         />
         <counterInput
@@ -53,7 +59,7 @@
         <textArea
           :Modelval="classDescription"
           title="Description"
-          :error-message="classDescriptionError"
+          :error-message="errorMessages.classDescription"
           placeholder="Enter your classes description"
           @input="classDescription = $event.target.value"
           :showError="showError.classDescription"
@@ -118,9 +124,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from "vue";
-import { db } from "../firebase.js";
-import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
+import { ref, computed, reactive } from "vue";
 import { useStore } from "../store/store.js";
 import inputValidation from "../components/inputValidation.vue";
 import locationInput from "../components/locationInput.vue";
@@ -128,12 +132,17 @@ import textArea from "../components/textarea.vue";
 import datePicker from "./datePicker.vue";
 import timePicker from "../components/timePicker.vue";
 import counterInput from "../components/counterInput.vue";
+import toast from "../components/toast.vue";
 import { useUploadImage } from "../utils/useUploadImage.js";
+import { saveDocument } from "../utils/useFirebase.js";
+import {
+  splitCamelCase,
+  isValidDate,
+  isValidTime,
+} from "../utils/formUtils.js";
 
 const store = useStore();
 const userId = computed(() => store.docId);
-const docRef = doc(db, "coaches", userId.value);
-const classId = ref("");
 const imageEvent = ref(null);
 const date = ref("yyyy-MM-dd");
 const time = ref("00:00");
@@ -144,6 +153,10 @@ const classDescription = ref("");
 const price = ref("");
 const location = ref("");
 const gym = ref("");
+const success = ref(false);
+const selectedFile = ref(null);
+const imageUrl = ref("");
+const imageName = ref("");
 
 const errorMessages = reactive({
   className: "",
@@ -155,25 +168,6 @@ const errorMessages = reactive({
   date: "",
 });
 
-function createErrorComputed(field, key) {
-  return computed(() => {
-    if (field.value === "" || showError[key]) {
-      return errorMessages[key];
-    }
-    return "";
-  });
-}
-const classNameError = createErrorComputed(className, "className");
-const classDescriptionError = createErrorComputed(
-  classDescription,
-  "classDescription",
-);
-const priceError = createErrorComputed(price, "price");
-const locationError = createErrorComputed(location, "location");
-const gymError = createErrorComputed(gym, "gym");
-const timeError = createErrorComputed(time, "time");
-const dateError = createErrorComputed(date, "date");
-
 const showError = reactive({
   className: false,
   classDescription: false,
@@ -184,12 +178,12 @@ const showError = reactive({
   date: false,
 });
 
-function splitCamelCase(str) {
-  return str.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
-}
 const emit = defineEmits(["formSubmitted"]);
+const checkForErrors = computed(() => {
+  return Object.values(showError).some(value => value === true);
+});
 
-async function updateOffer() {
+async function submitClass() {
   const dataObj = {
     className: className.value,
     classDescription: classDescription.value,
@@ -201,54 +195,79 @@ async function updateOffer() {
     counter: counter.value,
   };
 
-  Object.keys(showError).forEach(key => {
-    showError[key] = false;
-  });
+  resetErrors();
+  validateData(dataObj);
 
-  Object.entries(dataObj).forEach(([key, value]) => {
-    if (value === undefined || value === "") {
-      showError[key] = true;
-    }
-  });
-
-  const hasErrors = Object.values(showError).some(value => value === true);
-  if (!hasErrors) {
-    const classsRef = collection(docRef, "classes");
-
-    const classDocRef = await addDoc(classsRef, dataObj);
-    classId.value = classDocRef.id;
-    await updateDoc(classDocRef, { uid: classId.value });
-    useUploadImage({ event: imageEvent.value, docPath: `coaches/${userId.value}/classes`, field: "classImage", imageUrl, imageName });
-    className.value = "";
-    classDescription.value = "";
-    price.value = "";
-    location.value = "";
-    gym.value = "";
-    imageEvent.value = null;
-    time.value = "";
-    date.value = "";
-    counter.value = 1;
-
-    emit("formSubmitted", { classId: classId.value });
-  }
-
-  if (hasErrors) {
-    Object.entries(showError).forEach(([key, value]) => {
-      if (value === true) {
-        showError[key] = true;
-        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`;
-      }
+  if (!checkForErrors.value) {
+    await saveDocument(`coaches/${userId.value}/classes`, dataObj);
+    await useUploadImage({
+      event: imageEvent.value,
+      docPath: `coaches/${userId.value}/classes`,
+      field: "classImage",
+      imageUrl,
+      imageName,
     });
+    resetForm();
+    success.value = true;
+    emit("formSubmitted");
   }
 }
 
-onMounted(() => {
-  if (!userId.value) {
-    console.log("docId is not set", userId.value);
-  }
-});
-const selectedFile = ref(null);
-const imageUrl = ref("");
-const imageName = ref("");
+function resetErrors() {
+  Object.keys(showError).forEach(key => {
+    showError[key] = false;
+    errorMessages[key] = "";
+  });
+}
 
+function validateData(dataObj) {
+  Object.entries(dataObj).forEach(([key, value]) => {
+    if (value === undefined || value === "") {
+      showError[key] = true;
+      errorMessages[key] = `Please enter your ${splitCamelCase(key)}`;
+    } else if (key === "price" && isNaN(value)) {
+      showError[key] = true;
+      errorMessages[key] = `Please enter a valid number for ${splitCamelCase(
+        key
+      )}`;
+    } else if (
+      key !== "price" &&
+      key !== "counter" &&
+      typeof value !== "string"
+    ) {
+      showError[key] = true;
+      errorMessages[key] = `Please enter a valid string for ${splitCamelCase(
+        key
+      )}`;
+    } else if (key === "date" && !isValidDate(value)) {
+      showError[key] = true;
+      errorMessages[key] = `Please enter a valid date for ${splitCamelCase(
+        key
+      )}`;
+    } else if (key === "time" && !isValidTime(value)) {
+      showError[key] = true;
+      errorMessages[key] = `Please enter a valid time for ${splitCamelCase(
+        key
+      )}`;
+    }
+  });
+}
+
+function resetForm() {
+  className.value = "";
+  classDescription.value = "";
+  price.value = "";
+  location.value = "";
+  gym.value = "";
+  imageEvent.value = null;
+  time.value = "";
+  date.value = "";
+  counter.value = 1;
+}
+
+function resetSuccess(event) {
+  if (event.animationName.includes("slideOutRight")) {
+    success.value = false;
+  }
+}
 </script>

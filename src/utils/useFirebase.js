@@ -5,6 +5,7 @@ import {
   collection,
   deleteDoc,
   updateDoc,
+  addDoc,
 } from "firebase/firestore";
 import { db, auth, storage } from "../firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
@@ -32,7 +33,7 @@ export const fetchDocument = async (collectionName, docId) => {
   } catch (error) {
     console.error(
       `Error fetching document from collection '${collectionName}' with ID '${docId}':`,
-      error,
+      error
     );
     throw error;
   }
@@ -56,7 +57,7 @@ export const fetchCollection = async collectionPath => {
   } catch (error) {
     console.error(
       `Error fetching documents from collection '${collectionPath}':`,
-      error,
+      error
     );
     throw error;
   }
@@ -127,7 +128,10 @@ export const fetchClasses = async bookedCoachId => {
       return [];
     }
   } catch (error) {
-    console.error(`Error fetching classes for coach '${bookedCoachId}':`, error);
+    console.error(
+      `Error fetching classes for coach '${bookedCoachId}':`,
+      error
+    );
     throw error;
   }
 };
@@ -136,7 +140,7 @@ export const deleteDocument = async (
   collectionName,
   docId,
   subCollectionName,
-  subDocId,
+  subDocId
 ) => {
   try {
     const docRef = doc(db, collectionName, docId, subCollectionName, subDocId);
@@ -144,7 +148,7 @@ export const deleteDocument = async (
   } catch (error) {
     console.error(
       `Error deleting document from collection '${collectionName}' with ID '${docId}' and sub-collection '${subCollectionName}' with sub-ID '${subDocId}':`,
-      error,
+      error
     );
     throw error;
   }
@@ -164,7 +168,27 @@ export const updateDocument = async (collectionName, docId, data) => {
   } catch (error) {
     console.error(
       `Error updating document in collection '${collectionName}' with ID '${docId}':`,
-      error,
+      error
+    );
+    throw error;
+  }
+};
+
+/**
+ * Saves a document to a specified sub-collection in Firestore.
+ * @param {string} collectionPath - The path of the collection.
+ * @param {Object} dataObj - The data to save.
+ * @returns {Promise<void>}
+ */
+export const saveDocument = async (collectionPath, dataObj) => {
+  try {
+    const collectionReference = collection(db, collectionPath);
+    const documentReference = await addDoc(collectionReference, dataObj);
+    await updateDoc(documentReference, { uid: documentReference.id });
+  } catch (error) {
+    console.error(
+      `Error saving document to collection '${collectionPath}':`,
+      error
     );
     throw error;
   }
@@ -185,7 +209,7 @@ export const onAuthStateChangedPromise = () => {
           resolve(null);
         }
       },
-      reject,
+      reject
     );
   });
 };
@@ -210,7 +234,7 @@ export const uploadImage = async (event, userId) => {
     uploadTask.on(
       "state_changed",
       snapshot => {
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       },
       error => {
         console.log(error);
@@ -220,7 +244,7 @@ export const uploadImage = async (event, userId) => {
         getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
           resolve(downloadURL);
         });
-      },
+      }
     );
   });
 };
@@ -237,7 +261,10 @@ export const deleteSubDocument = async (coachId, subCollectionName, docId) => {
     const docRef = doc(db, "coaches", coachId, subCollectionName, docId);
     await deleteDoc(docRef);
   } catch (error) {
-    console.error(`Error deleting document with ID '${docId}' from sub-collection '${subCollectionName}' for coach '${coachId}':`, error);
+    console.error(
+      `Error deleting document with ID '${docId}' from sub-collection '${subCollectionName}' for coach '${coachId}':`,
+      error
+    );
     throw error;
   }
 };

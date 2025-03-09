@@ -201,6 +201,7 @@ import textArea from "../components/textarea.vue";
 import locationInput from "../components/locationInput.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
 import { useUploadImage } from "../utils/useUploadImage.js";
+import { splitCamelCase } from "../utils/formUtils.js";
 
 const store = useStore();
 const userId = computed(() => store.docId);
@@ -272,9 +273,6 @@ const showError = reactive({
   userName: false,
 });
 
-function splitCamelCase(str) {
-  return str.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
-}
 async function updateUser() {
   const dataObj = {
     firstName: firstName.value,
@@ -354,7 +352,13 @@ const imageUrl = ref("");
 const imageName = ref("");
 
 const uploadImage = async event => {
-  useUploadImage({ event, docPath: store.user.coach ? "coaches" : "users", field: "profilePicture", imageUrl, imageName });
+  await useUploadImage({
+    event,
+    docPath: store.user.coach ? "coaches" : "users",
+    field: "profilePicture",
+    imageUrl,
+    imageName,
+  });
 };
 
 const resetSuccess = event => {

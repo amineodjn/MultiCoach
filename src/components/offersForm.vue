@@ -6,12 +6,12 @@
     :success="success"
   ></toast>
   <section class="bg-white dark:bg-gray-900">
-    <form @submit.prevent="updateOffer">
+    <form @submit.prevent="submitOffer">
       <div class="grid gap-6 mb-6 md:grid-cols-2">
         <inputValidation
           :Modelval="offerName"
           title="Offer name"
-          :error-message="offerNameError"
+          :error-message="errorMessages.offerName"
           placeholder="Online yoga session"
           @input="offerName = $event.target.value"
           :showError="showError.offerName"
@@ -19,7 +19,7 @@
         <inputValidation
           :Modelval="price"
           title="Price"
-          :error-message="priceError"
+          :error-message="errorMessages.price"
           placeholder="100"
           @input="price = $event.target.value"
           :showError="showError.price"
@@ -27,14 +27,14 @@
         <locationInput
           :Modelval="location"
           title="Location"
-          :error-message="locationError"
+          :error-message="errorMessages.location"
           placeholder="Poznań"
           @input="location = $event"
         ></locationInput>
         <inputValidation
           :Modelval="gym"
           title="Gym"
-          :error-message="gymError"
+          :error-message="errorMessages.gym"
           placeholder="Gym world, can be?"
           @input="gym = $event.target.value"
           :showError="showError.gym"
@@ -44,7 +44,7 @@
         <textArea
           :Modelval="offerDescription"
           title="Description"
-          :error-message="offerDescriptionError"
+          :error-message="errorMessages.offerDescription"
           placeholder="Enter your description"
           @input="offerDescription = $event.target.value"
           :showError="showError.offerDescription"
@@ -109,22 +109,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from "vue";
-import { db } from "../firebase.js";
-import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
+import { ref, computed, reactive } from "vue";
 import { useStore } from "../store/store.js";
 import toast from "../components/toast.vue";
 import inputValidation from "../components/inputValidation.vue";
 import locationInput from "../components/locationInput.vue";
 import textArea from "../components/textarea.vue";
 import { useUploadImage } from "../utils/useUploadImage.js";
+import { saveDocument } from "../utils/useFirebase.js";
+import { splitCamelCase } from "../utils/formUtils.js";
 
 const store = useStore();
 const userId = computed(() => store.docId);
-const docRef = doc(db, "coaches", userId.value);
-const offerId = ref("");
 const imageEvent = ref(null);
-
 const offerName = ref("");
 const offerDescription = ref("");
 const price = ref("");
@@ -140,23 +137,6 @@ const errorMessages = reactive({
   gym: "",
 });
 
-function createErrorComputed(field, key) {
-  return computed(() => {
-    if (field.value === "" || showError[key]) {
-      return errorMessages[key];
-    }
-    return "";
-  });
-}
-const offerNameError = createErrorComputed(offerName, "offerName");
-const offerDescriptionError = createErrorComputed(
-  offerDescription,
-  "offerDescription",
-);
-const priceError = createErrorComputed(price, "price");
-const locationError = createErrorComputed(location, "location");
-const gymError = createErrorComputed(gym, "gym");
-
 const showError = reactive({
   offerName: false,
   offerDescription: false,
@@ -165,13 +145,13 @@ const showError = reactive({
   gym: false,
 });
 
-function splitCamelCase(str) {
-  return str.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
-}
-
 const emit = defineEmits(["formSubmitted"]);
 
-async function updateOffer() {
+const checkForErrors = computed(() => {
+  return Object.values(showError).some(value => value === true);
+});
+
+async function submitOffer() {
   const dataObj = {
     offerName: offerName.value,
     offerDescription: offerDescription.value,
@@ -180,51 +160,58 @@ async function updateOffer() {
     gym: gym.value,
   };
 
-  Object.keys(showError).forEach(key => {
-    showError[key] = false;
-  });
+  resetErrors();
+  validateData(dataObj);
 
-  Object.entries(dataObj).forEach(([key, value]) => {
-    if (value === undefined || value === "") {
-      showError[key] = true;
-    }
-  });
-
-  const hasErrors = Object.values(showError).some(value => value === true);
-  if (!hasErrors) {
-    const offersRef = collection(docRef, "Offers");
-
-    const offerDocRef = await addDoc(offersRef, dataObj);
-    offerId.value = offerDocRef.id;
-    await updateDoc(offerDocRef, { uid: offerId.value });
-    useUploadImage({ event: imageEvent.value, docPath: `coaches/${userId.value}/Offers`, field: "offerImage", imageUrl, imageName });
-    success.value = true;
-
-    offerName.value = "";
-    offerDescription.value = "";
-    price.value = "";
-    location.value = "";
-    gym.value = "";
-    imageEvent.value = null;
-  }
-
-  emit("formSubmitted", { offerId: offerId.value });
-
-  if (hasErrors) {
-    Object.entries(showError).forEach(([key, value]) => {
-      if (value === true) {
-        showError[key] = true;
-        errorMessages[key] = `Please enter your ${splitCamelCase(key)}`; 
-      }
+  if (!checkForErrors.value) {
+    await saveDocument(`coaches/${userId.value}/Offers`, dataObj);
+    await useUploadImage({
+      event: imageEvent.value,
+      docPath: `coaches/${userId.value}/Offers`,
+      field: "offerImage",
+      imageUrl,
+      imageName,
     });
+    resetForm();
+    success.value = true;
+    emit("formSubmitted");
   }
 }
 
-onMounted(() => {
-  if (!userId.value) {
-    console.log("docId is not set", userId.value);
-  }
-});
+function resetErrors() {
+  Object.keys(showError).forEach(key => {
+    showError[key] = false;
+    errorMessages[key] = "";
+  });
+}
+
+function validateData(dataObj) {
+  Object.entries(dataObj).forEach(([key, value]) => {
+    if (value === undefined || value === "") {
+      showError[key] = true;
+      errorMessages[key] = `Please enter your ${splitCamelCase(key)}`;
+    } else if (key === "price" && isNaN(value)) {
+      errorMessages[key] = `Please enter a valid number for ${splitCamelCase(
+        key
+      )}`;
+      showError[key] = true;
+    } else if (key !== "price" && typeof value !== "string") {
+      showError[key] = true;
+      errorMessages[key] = `Please enter a valid string for ${splitCamelCase(
+        key
+      )}`;
+    }
+  });
+}
+
+function resetForm() {
+  offerName.value = "";
+  offerDescription.value = "";
+  price.value = "";
+  location.value = "";
+  gym.value = "";
+  imageEvent.value = null;
+}
 const selectedFile = ref(null);
 const imageUrl = ref("");
 const imageName = ref("");
