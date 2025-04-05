@@ -2,10 +2,9 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { API_KEY } from "../src/basic/const"
 
 const firebaseConfig = {
-  apiKey: API_KEY,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "multicoach-4a815.firebaseapp.com",
   projectId: "multicoach-4a815",
   storageBucket: "multicoach-4a815.appspot.com",
