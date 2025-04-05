@@ -1,10 +1,4 @@
 <template>
-  <toast
-    v-if="success"
-    @animation-end="resetSuccess"
-    @close="success = false"
-    :success="success"
-  ></toast>
   <section class="bg-white dark:bg-gray-900">
     <form @submit.prevent="submitOffer">
       <div class="grid gap-6 mb-6 md:grid-cols-2">
@@ -111,7 +105,6 @@
 <script setup>
 import { ref, computed, reactive } from "vue";
 import { useStore } from "../store/store.js";
-import toast from "../components/toast.vue";
 import inputValidation from "../components/inputValidation.vue";
 import locationInput from "../components/locationInput.vue";
 import textArea from "../components/textarea.vue";
@@ -127,7 +120,6 @@ const offerDescription = ref("");
 const price = ref("");
 const location = ref("");
 const gym = ref("");
-const success = ref(false);
 
 const errorMessages = reactive({
   offerName: "",
@@ -145,7 +137,7 @@ const showError = reactive({
   gym: false,
 });
 
-const emit = defineEmits(["formSubmitted"]);
+const emit = defineEmits(["formSubmitted", "closeForm", "success"]);
 
 const checkForErrors = computed(() => {
   return Object.values(showError).some(value => value === true);
@@ -173,8 +165,9 @@ async function submitOffer() {
       imageName,
     });
     resetForm();
-    success.value = true;
     emit("formSubmitted");
+    emit("closeForm");
+    emit("success");
   }
 }
 
@@ -215,10 +208,4 @@ function resetForm() {
 const selectedFile = ref(null);
 const imageUrl = ref("");
 const imageName = ref("");
-
-const resetSuccess = event => {
-  if (event.animationName.includes("slideOutRight")) {
-    success.value = false;
-  }
-};
 </script>

@@ -2,6 +2,12 @@
   <div
     class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4"
   >
+    <toast
+      v-if="success"
+      @animation-end="resetSuccess"
+      @close="success = false"
+      :success="success"
+    ></toast>
     <div
       class="lex justify-between flex-col md:flex-row items-start md:items-center py-4 px-5"
     >
@@ -128,7 +134,11 @@
         <div
           class="flex flex-col justify-center items-center mt-2 m-2 rounded-lg"
         >
-          <offersForm @formSubmitted="fetchOffers" />
+          <offersForm
+            @formSubmitted="fetchOffers"
+            @closeForm="showForm = false"
+            @success="handleSuccess"
+          />
         </div>
       </div>
     </div>
@@ -149,6 +159,7 @@ import offersForm from "../components/offersForm.vue";
 import emptyState from "../components/emptyState.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
 import popUpModal from "../components/popUpModal.vue";
+import toast from "../components/toast.vue";
 
 const store = useStore();
 const showForm = ref(false);
@@ -158,6 +169,7 @@ const isLoading = ref(false);
 const openPopUp = ref(false);
 const deletePopUpText = ref("Are you sure you want to delete this offer?");
 const offerUid = ref("");
+const success = ref(false);
 
 const handleOpenPopup = uid => {
   offerUid.value = uid;
@@ -177,7 +189,7 @@ const displayedOffers = computed(() => {
 
   if (searchTerm.value) {
     filteredOffers = filteredOffers.filter(offer =>
-      offer.offerName.toLowerCase().includes(searchTerm.value.toLowerCase()),
+      offer.offerName.toLowerCase().includes(searchTerm.value.toLowerCase())
     );
   }
 
@@ -213,8 +225,19 @@ const addOffer = () => {
 onMounted(async () => {
   await fetchOffers();
 });
+
 const deleteOffer = async uid => {
   closePopup();
   await store.deleteOffer(uid);
+};
+
+const handleSuccess = () => {
+  success.value = true;
+};
+
+const resetSuccess = event => {
+  if (event.animationName.includes("slideOutRight")) {
+    success.value = false;
+  }
 };
 </script>

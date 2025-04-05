@@ -1,10 +1,4 @@
 <template>
-  <toast
-    v-if="success"
-    @animation-end="resetSuccess"
-    @close="success = false"
-    :success="success"
-  ></toast>
   <section class="bg-white dark:bg-gray-900">
     <form @submit.prevent="submitClass">
       <div class="grid gap-6 mb-4 md:grid-cols-2">
@@ -132,7 +126,6 @@ import textArea from "../components/textarea.vue";
 import datePicker from "./datePicker.vue";
 import timePicker from "../components/timePicker.vue";
 import counterInput from "../components/counterInput.vue";
-import toast from "../components/toast.vue";
 import { useUploadImage } from "../utils/useUploadImage.js";
 import { saveDocument } from "../utils/useFirebase.js";
 import {
@@ -153,7 +146,6 @@ const classDescription = ref("");
 const price = ref("");
 const location = ref("");
 const gym = ref("");
-const success = ref(false);
 const selectedFile = ref(null);
 const imageUrl = ref("");
 const imageName = ref("");
@@ -178,7 +170,7 @@ const showError = reactive({
   date: false,
 });
 
-const emit = defineEmits(["formSubmitted"]);
+const emit = defineEmits(["formSubmitted", "closeForm", "success"]);
 const checkForErrors = computed(() => {
   return Object.values(showError).some(value => value === true);
 });
@@ -208,8 +200,9 @@ async function submitClass() {
       imageName,
     });
     resetForm();
-    success.value = true;
     emit("formSubmitted");
+    emit("closeForm");
+    emit("success");
   }
 }
 
@@ -263,11 +256,5 @@ function resetForm() {
   time.value = "";
   date.value = "";
   counter.value = 1;
-}
-
-function resetSuccess(event) {
-  if (event.animationName.includes("slideOutRight")) {
-    success.value = false;
-  }
 }
 </script>

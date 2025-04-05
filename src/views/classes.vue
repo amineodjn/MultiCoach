@@ -134,7 +134,11 @@
         <div
           class="flex flex-col justify-center items-center mt-2 m-2 rounded-lg"
         >
-          <classesForm @formSubmitted="handleFormSubmission" />
+          <classesForm
+            @formSubmitted="handleFormSubmission"
+            @closeForm="showForm = false"
+            @success="handleSuccess"
+          />
         </div>
       </div>
     </div>
@@ -204,11 +208,12 @@ const toggleForm = () => {
 };
 
 const handleFormSubmission = async () => {
-  toggleForm();
-  success.value = true;
   isLoading.value = true;
   await fetchClasses();
   isLoading.value = false;
+};
+
+const handleSuccess = () => {
   success.value = true;
 };
 
