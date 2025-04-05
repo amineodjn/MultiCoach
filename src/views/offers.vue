@@ -8,6 +8,13 @@
       @close="success = false"
       :success="success"
     ></toast>
+    <toast
+      v-if="error"
+      @animation-end="resetError"
+      @close="error = false"
+      :success="false"
+      :message="errorMessage"
+    ></toast>
     <div
       class="lex justify-between flex-col md:flex-row items-start md:items-center py-4 px-5"
     >
@@ -138,6 +145,7 @@
             @formSubmitted="fetchOffers"
             @closeForm="showForm = false"
             @success="handleSuccess"
+            @error="handleError"
           />
         </div>
       </div>
@@ -170,6 +178,8 @@ const openPopUp = ref(false);
 const deletePopUpText = ref("Are you sure you want to delete this offer?");
 const offerUid = ref("");
 const success = ref(false);
+const error = ref(false);
+const errorMessage = ref("");
 
 const handleOpenPopup = uid => {
   offerUid.value = uid;
@@ -231,13 +241,25 @@ const deleteOffer = async uid => {
   await store.deleteOffer(uid);
 };
 
-const handleSuccess = () => {
-  success.value = true;
+const handleError = message => {
+  error.value = true;
+  errorMessage.value = message;
+};
+
+const resetError = event => {
+  if (event.animationName.includes("slideOutRight")) {
+    error.value = false;
+    errorMessage.value = "";
+  }
 };
 
 const resetSuccess = event => {
   if (event.animationName.includes("slideOutRight")) {
     success.value = false;
   }
+};
+
+const handleSuccess = () => {
+  success.value = true;
 };
 </script>

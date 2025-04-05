@@ -137,7 +137,7 @@ const showError = reactive({
   gym: false,
 });
 
-const emit = defineEmits(["formSubmitted", "closeForm", "success"]);
+const emit = defineEmits(["formSubmitted", "closeForm", "success", "error"]);
 
 const checkForErrors = computed(() => {
   return Object.values(showError).some(value => value === true);
@@ -156,18 +156,32 @@ async function submitOffer() {
   validateData(dataObj);
 
   if (!checkForErrors.value) {
-    await saveDocument(`coaches/${userId.value}/Offers`, dataObj);
-    await useUploadImage({
-      event: imageEvent.value,
-      docPath: `coaches/${userId.value}/Offers`,
-      field: "offerImage",
-      imageUrl,
-      imageName,
-    });
-    resetForm();
-    emit("formSubmitted");
-    emit("closeForm");
-    emit("success");
+    try {
+      await saveDocument(`coaches/${userId.value}/Offers`, dataObj);
+
+      if (imageEvent.value) {
+        try {
+          await useUploadImage({
+            event: imageEvent.value,
+            docPath: `coaches/${userId.value}/Offers`,
+            field: "offerImage",
+            imageUrl,
+            imageName,
+          });
+        } catch (imageError) {
+          console.error("Error uploading image:", imageError);
+          emit("error", "Image upload failed, but offer was saved");
+        }
+      }
+
+      resetForm();
+      emit("formSubmitted");
+      emit("closeForm");
+      emit("success");
+    } catch (error) {
+      console.error("Error saving offer:", error);
+      emit("error", "Failed to save offer");
+    }
   }
 }
 

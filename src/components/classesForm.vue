@@ -170,7 +170,7 @@ const showError = reactive({
   date: false,
 });
 
-const emit = defineEmits(["formSubmitted", "closeForm", "success"]);
+const emit = defineEmits(["formSubmitted", "closeForm", "success", "error"]);
 const checkForErrors = computed(() => {
   return Object.values(showError).some(value => value === true);
 });
@@ -191,18 +191,32 @@ async function submitClass() {
   validateData(dataObj);
 
   if (!checkForErrors.value) {
-    await saveDocument(`coaches/${userId.value}/classes`, dataObj);
-    await useUploadImage({
-      event: imageEvent.value,
-      docPath: `coaches/${userId.value}/classes`,
-      field: "classImage",
-      imageUrl,
-      imageName,
-    });
-    resetForm();
-    emit("formSubmitted");
-    emit("closeForm");
-    emit("success");
+    try {
+      await saveDocument(`coaches/${userId.value}/classes`, dataObj);
+
+      if (imageEvent.value) {
+        try {
+          await useUploadImage({
+            event: imageEvent.value,
+            docPath: `coaches/${userId.value}/classes`,
+            field: "classImage",
+            imageUrl,
+            imageName,
+          });
+        } catch (imageError) {
+          console.error("Error uploading image:", imageError);
+          emit("error", "Image upload failed, but class was saved");
+        }
+      }
+
+      resetForm();
+      emit("formSubmitted");
+      emit("closeForm");
+      emit("success");
+    } catch (error) {
+      console.error("Error saving class:", error);
+      emit("error", "Failed to save class");
+    }
   }
 }
 
