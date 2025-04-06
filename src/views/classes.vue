@@ -5,6 +5,13 @@
     @close="success = false"
     :success="success"
   ></toast>
+  <toast
+    v-if="error"
+    @animation-end="resetError"
+    @close="error = false"
+    :success="false"
+    :message="errorMessage"
+  ></toast>
   <div
     class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4"
   >
@@ -134,7 +141,12 @@
         <div
           class="flex flex-col justify-center items-center mt-2 m-2 rounded-lg"
         >
-          <classesForm @formSubmitted="handleFormSubmission" />
+          <classesForm
+            @formSubmitted="handleFormSubmission"
+            @closeForm="showForm = false"
+            @success="handleSuccess"
+            @error="handleError"
+          />
         </div>
       </div>
     </div>
@@ -167,6 +179,8 @@ const openPopUp = ref(false);
 const deletePopUpText = ref("Are you sure you want to delete this class?");
 const classUid = ref("");
 const success = ref(false);
+const error = ref(false);
+const errorMessage = ref("");
 const filteredClasses = computed(() => store.classes);
 
 const handleOpenPopup = uid => {
@@ -204,12 +218,31 @@ const toggleForm = () => {
 };
 
 const handleFormSubmission = async () => {
-  toggleForm();
-  success.value = true;
   isLoading.value = true;
   await fetchClasses();
   isLoading.value = false;
+};
+
+const handleSuccess = () => {
   success.value = true;
+};
+
+const handleError = message => {
+  error.value = true;
+  errorMessage.value = message;
+};
+
+const resetError = event => {
+  if (event.animationName.includes("slideOutRight")) {
+    error.value = false;
+    errorMessage.value = "";
+  }
+};
+
+const resetSuccess = event => {
+  if (event.animationName.includes("slideOutRight")) {
+    success.value = false;
+  }
 };
 
 const fetchClasses = async () => {
@@ -238,11 +271,5 @@ const deleteClass = async () => {
   await deleteSubDocument(store.docId, "classes", classUid.value);
   await fetchClasses();
   closePopup();
-};
-
-const resetSuccess = event => {
-  if (event.animationName.includes("slideOutRight")) {
-    success.value = false;
-  }
 };
 </script>
