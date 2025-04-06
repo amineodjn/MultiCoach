@@ -60,7 +60,15 @@ export const useStore = defineStore({
         return [];
       }
       const userData = await fetchDocument("users", this.docId);
+      this.user.bookedOffers = userData.bookedOffers || [];
       return userData.bookedOffers || [];
+    },
+    async fetchUserBookedClasses() {
+      if (!this.docId) {
+        return [];
+      }
+      const userData = await fetchDocument("users", this.docId);
+      this.user.bookedClasses = userData.bookedClasses || [];
     },
     async fetchOfferDetails(bookedOffers) {
       const offerDetailsPromises = bookedOffers.map(async event => {

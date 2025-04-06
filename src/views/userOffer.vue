@@ -143,7 +143,7 @@ const closeBookingModal = () => {
   selectedOffer.value = null;
 };
 
-const handleBookingConfirm = async bookingData => {
+const handleBookingConfirm = async () => {
   const showErrorToast = message => {
     toastType.value = "error";
     toastMessage.value = message;
@@ -172,10 +172,9 @@ const handleBookingConfirm = async bookingData => {
   };
 
   const createBookingEvent = () => ({
-    offerId: selectedOffer.value.uid,
-    coachId: props.uid,
-    offerName: selectedOffer.value.offerName,
-    offerPrice: selectedOffer.value.price,
+    ...selectedOffer.value,
+    bookedOffer: selectedOffer.value.uid,
+    bookedCoach: props.uid,
     bookedAt: new Date().toISOString(),
   });
 
@@ -188,12 +187,7 @@ const handleBookingConfirm = async bookingData => {
     await updateDocument("users", store.docId, {
       bookedOffers: arrayUnion(newEvent),
     });
-
-    // Update the store's user data with the new booking
-    if (!store.user.bookedOffers) {
-      store.user.bookedOffers = [];
-    }
-    store.user.bookedOffers.push(newEvent);
+    await store.fetchUserBookedOffers();
 
     showSuccessToast();
   } catch (error) {
@@ -227,8 +221,8 @@ const fetchOffers = async () => {
 };
 
 const isOfferAlreadyBooked = offerId => {
-  const existingBookings = store.user?.bookedOffers || [];
-  return existingBookings.some(booking => booking.offerId === offerId);
+  const userBookings = store.user?.bookedOffers || [];
+  return userBookings.some(booking => booking.bookedOffer === offerId);
 };
 
 onMounted(async () => {

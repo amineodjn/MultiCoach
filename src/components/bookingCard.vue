@@ -134,7 +134,7 @@ const showAllOffers = ref(false);
 
 // Classes
 const displayedClasses = computed(() => {
-  let filteredClasses = store.classes;
+  let filteredClasses = store?.user?.bookedClasses || [];
 
   if (searchTerm.value) {
     filteredClasses = filteredClasses.filter(Class =>
@@ -153,13 +153,13 @@ const displayedClasses = computed(() => {
 
 onMounted(async () => {
   isLoading.value = true;
-  await store.fetchClasses();
+  await store.fetchUserBookedClasses();
   isLoading.value = false;
 });
 
 // Offers
 const displayedOffers = computed(() => {
-  let filteredOffers = store.offers;
+  let filteredOffers = store?.user?.bookedOffers || [];
 
   if (offersSearchTerm.value) {
     filteredOffers = filteredOffers.filter(offer =>
@@ -182,9 +182,7 @@ const viewAllOffers = () => {
 
 onMounted(async () => {
   offersLoading.value = true;
-  await store.fetchOffers();
-  const offerDetails = await store.getUserBookedOfferDetails();
-  store.offers = offerDetails;
+  await store.fetchUserBookedOffers();
   offersLoading.value = false;
 });
 </script>
