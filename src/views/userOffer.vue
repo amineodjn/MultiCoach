@@ -2,6 +2,12 @@
   <div
     class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white border shadow-sm p-4"
   >
+    <Toast
+      :show="toastShow"
+      :type="toastType"
+      :message="toastMessage"
+      @close="toastShow = false"
+    />
     <div class="flex justify-between items-center p-5 pb-2">
       <h2 class="text-gray-800 text-lg font-semibold inline-block">Offers</h2>
       <div class="flex items-center md:justify-end space-x-2">
@@ -40,17 +46,16 @@
         :offer="offer"
         :customWidth="'w-1/2'"
         :coachAccess="false"
-        :readOnly="true"
+        :readOnly="false"
+        :isAlreadyBooked="isOfferAlreadyBooked(offer.uid)"
+        @booking="handleBooking"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
       <emptyState v-else-if="displayedOffers.length === 0" />
     </div>
-    <div
-      v-if="offers.length > 3"
-      class="text-center dark:border-neutral-70 hover:bg-gray-50"
-    >
+    <div v-if="offers.length > 3" class="text-center dark:border-neutral-70">
       <a
-        class="flex items-center text-blue-600 font-medium text-sm leading-5 pt-4 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700 cursor-pointer"
+        class="flex items-center text-indigo-600 font-medium text-sm leading-5 pt-4 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700 cursor-pointer"
         @click="viewAllProjects"
       >
         {{ showAllOffers ? "Show less" : "Show all" }}
@@ -70,6 +75,13 @@
         </svg>
       </a>
     </div>
+    <BookingModal
+      v-if="showBookingModal"
+      :show="showBookingModal"
+      :offer="selectedOffer"
+      @close="closeBookingModal"
+      @confirm="handleBookingConfirm"
+    />
   </div>
 </template>
 
@@ -78,12 +90,25 @@ import offersCard from "../components/offersCard.vue";
 import { onMounted, ref, computed } from "vue";
 import emptyState from "../components/emptyState.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
-import { fetchOffers as fetchCoachOffers } from "../utils/useFirebase"
+import {
+  fetchOffers as fetchCoachOffers,
+  updateDocument,
+} from "../utils/useFirebase";
+import BookingModal from "../components/BookingModal.vue";
+import { useStore } from "../store/store";
+import { arrayUnion } from "firebase/firestore";
+import Toast from "../components/toast.vue";
 
+const store = useStore();
 const offers = ref([]);
 const showAllOffers = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);
+const showBookingModal = ref(false);
+const selectedOffer = ref(null);
+const toastShow = ref(false);
+const toastType = ref("success");
+const toastMessage = ref("");
 
 const props = defineProps({
   uid: {
@@ -97,7 +122,7 @@ const displayedOffers = computed(() => {
 
   if (searchTerm.value) {
     filteredOffers = filteredOffers.filter(offer =>
-      offer.offerName.toLowerCase().includes(searchTerm.value.toLowerCase()),
+      offer.offerName.toLowerCase().includes(searchTerm.value.toLowerCase())
     );
   }
 
@@ -107,6 +132,77 @@ const displayedOffers = computed(() => {
     return filteredOffers.slice(0, 3);
   }
 });
+
+const handleBooking = offer => {
+  selectedOffer.value = offer;
+  showBookingModal.value = true;
+};
+
+const closeBookingModal = () => {
+  showBookingModal.value = false;
+  selectedOffer.value = null;
+};
+
+const handleBookingConfirm = async bookingData => {
+  const showErrorToast = message => {
+    toastType.value = "error";
+    toastMessage.value = message;
+    toastShow.value = true;
+  };
+
+  const showSuccessToast = () => {
+    toastType.value = "success";
+    toastMessage.value = "Booking successful!";
+    toastShow.value = true;
+    setTimeout(() => {
+      closeBookingModal();
+    }, 1000);
+  };
+
+  const validateBooking = () => {
+    if (!store.user) {
+      showErrorToast("User must be logged in to make a booking");
+      return false;
+    }
+    if (store.user.coach) {
+      showErrorToast("You must be logged in as a user to make a booking");
+      return false;
+    }
+    return true;
+  };
+
+  const createBookingEvent = () => ({
+    offerId: selectedOffer.value.uid,
+    coachId: props.uid,
+    offerName: selectedOffer.value.offerName,
+    offerPrice: selectedOffer.value.price,
+    bookedAt: new Date().toISOString(),
+  });
+
+  if (!validateBooking()) {
+    return;
+  }
+
+  try {
+    const newEvent = createBookingEvent();
+    await updateDocument("users", store.docId, {
+      bookedOffers: arrayUnion(newEvent),
+    });
+
+    // Update the store's user data with the new booking
+    if (!store.user.bookedOffers) {
+      store.user.bookedOffers = [];
+    }
+    store.user.bookedOffers.push(newEvent);
+
+    showSuccessToast();
+  } catch (error) {
+    console.error("Error booking offer:", error);
+    if (!toastShow.value) {
+      showErrorToast("Failed to book the offer. Please try again.");
+    }
+  }
+};
 
 const viewAllProjects = () => {
   showAllOffers.value = !showAllOffers.value;
@@ -130,7 +226,12 @@ const fetchOffers = async () => {
   }
 };
 
+const isOfferAlreadyBooked = offerId => {
+  const existingBookings = store.user?.bookedOffers || [];
+  return existingBookings.some(booking => booking.offerId === offerId);
+};
+
 onMounted(async () => {
-await fetchOffers(props.uid);
+  await fetchOffers(props.uid);
 });
 </script>

@@ -1,9 +1,9 @@
 <template>
   <toast
-    v-if="success"
-    @animation-end="resetSuccess"
-    @close="success = false"
-    :success="success"
+    :show="success"
+    type="success"
+    @animation-end="handleAnimationEnd"
+    @close="handleClose"
   ></toast>
   <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
@@ -361,10 +361,14 @@ const uploadImage = async event => {
   });
 };
 
-const resetSuccess = event => {
+const handleAnimationEnd = event => {
   if (event.animationName.includes("slideOutRight")) {
     success.value = false;
   }
+};
+
+const handleClose = () => {
+  success.value = false;
 };
 </script>
 <style scoped>

@@ -20,7 +20,7 @@ export const useStore = defineStore({
   }),
   actions: {
     setDocId(id) {
-      this.docId = id;      
+      this.docId = id;
       localStorage.setItem("uid", id);
     },
     setBookedCoach(uid) {
@@ -30,7 +30,7 @@ export const useStore = defineStore({
       if (!uid) {
         return;
       }
-      const userData = await fetchDocument(userType, uid);       
+      const userData = await fetchDocument(userType, uid);
       if (userData) {
         this.user = userData;
       }
@@ -40,9 +40,7 @@ export const useStore = defineStore({
       if (!this.docId) {
         return;
       }
-      this.classes = await fetchCollection(
-        `coaches/${this.docId}/classes`,
-      );  
+      this.classes = await fetchCollection(`coaches/${this.docId}/classes`);
     },
     async fetchOffers() {
       if (!this.docId) {
@@ -57,19 +55,19 @@ export const useStore = defineStore({
       await deleteDocument("coaches", this.docId, "Offers", uid);
       await this.fetchOffers();
     },
-    async fetchUserBookedEvents() {
+    async fetchUserBookedOffers() {
       if (!this.docId) {
         return [];
       }
       const userData = await fetchDocument("users", this.docId);
-      return userData.bookedEvents || [];
+      return userData.bookedOffers || [];
     },
-    async fetchOfferDetails(bookedEvents) {
-      const offerDetailsPromises = bookedEvents.map(async event => {
+    async fetchOfferDetails(bookedOffers) {
+      const offerDetailsPromises = bookedOffers.map(async event => {
         const { bookedOffer, bookedCoach } = event;
         const offerData = await fetchDocument(
           `coaches/${bookedCoach}/Offers`,
-          bookedOffer,
+          bookedOffer
         );
         if (offerData) {
           return { ...offerData, bookedEvent: event };
@@ -81,8 +79,8 @@ export const useStore = defineStore({
       return offerDetails.filter(details => details !== null);
     },
     async getUserBookedOfferDetails() {
-      const bookedEvents = await this.fetchUserBookedEvents();
-      const offerDetails = await this.fetchOfferDetails(bookedEvents);
+      const bookedOffers = await this.fetchUserBookedOffers();
+      const offerDetails = await this.fetchOfferDetails(bookedOffers);
       return offerDetails;
     },
 

@@ -3,17 +3,11 @@
     class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm p-4"
   >
     <toast
-      v-if="success"
-      @animation-end="resetSuccess"
-      @close="success = false"
-      :success="success"
-    ></toast>
-    <toast
-      v-if="error"
-      @animation-end="resetError"
-      @close="error = false"
-      :success="false"
+      :show="success || error"
+      :type="error ? 'error' : 'success'"
       :message="errorMessage"
+      @animation-end="handleAnimationEnd"
+      @close="handleClose"
     ></toast>
     <div
       class="lex justify-between flex-col md:flex-row items-start md:items-center py-4 px-5"
@@ -85,10 +79,10 @@
     </div>
     <div
       v-if="store.offers.length > 3"
-      class="text-center dark:border-neutral-70 hover:bg-gray-50"
+      class="text-center dark:border-neutral-70"
     >
       <a
-        class="flex items-center text-blue-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700 cursor-pointer"
+        class="flex items-center text-indigo-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700 cursor-pointer"
         @click="viewAllProjects"
       >
         {{ showAllOffers ? "Show less" : "Show all" }}
@@ -246,15 +240,21 @@ const handleError = message => {
   errorMessage.value = message;
 };
 
-const resetError = event => {
+const handleAnimationEnd = event => {
   if (event.animationName.includes("slideOutRight")) {
-    error.value = false;
-    errorMessage.value = "";
+    if (error.value) {
+      error.value = false;
+      errorMessage.value = "";
+    } else {
+      success.value = false;
+    }
   }
 };
 
-const resetSuccess = event => {
-  if (event.animationName.includes("slideOutRight")) {
+const handleClose = () => {
+  if (error.value) {
+    error.value = false;
+  } else {
     success.value = false;
   }
 };

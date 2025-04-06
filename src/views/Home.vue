@@ -106,7 +106,9 @@ const selectedDateandTime = computed(() => {
   return localStorage.getItem("selectedDateandTime");
 });
 const text = computed(() => {
-  return `Are you sure you want to book ${offerName.value} at ${toLocaleStringTimeOrDate(selectedDateandTime.value)}?`;
+  return `Are you sure you want to book ${
+    offerName.value
+  } at ${toLocaleStringTimeOrDate(selectedDateandTime.value)}?`;
 });
 
 const getUsers = async () => {
@@ -154,7 +156,7 @@ const clearFilter = () => {
 const filterExperiences = exp => {
   toggle.value[exp] = toggle.value[exp] === "yes" ? "no" : "yes";
   selectedExperiences.value = Object.keys(toggle.value).filter(
-    key => toggle.value[key] === "yes",
+    key => toggle.value[key] === "yes"
   );
 
   if (selectedExperiences.value.length === 0 && selectedCity.value === "") {
@@ -164,7 +166,7 @@ const filterExperiences = exp => {
 
   filteredUsers.value = usersData.value.filter(user => {
     const hasSelectedExperience = selectedExperiences.value.includes(
-      user.profession,
+      user.profession
     );
     const isInSelectedCity = user.city === selectedCity.value;
 
@@ -239,7 +241,7 @@ const confirmBooking = async () => {
         user: user.uid,
       };
       await updateDocument(userType, user.uid, {
-        bookedEvents: arrayUnion(newEvent),
+        bookedOffers: arrayUnion(newEvent),
       });
 
       await updateDocument("coaches", bookedCoach, {
@@ -274,7 +276,7 @@ onMounted(async () => {
     ...new Set(
       usersData.value
         .filter(user => user.profession && user.profession !== "")
-        .map(user => user.profession),
+        .map(user => user.profession)
     ),
   ];
 
