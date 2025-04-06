@@ -1,9 +1,9 @@
 <template>
   <toast
-    v-if="success"
-    @animation-end="resetSuccess"
-    @close="success = false"
-    :success="success"
+    :show="success"
+    type="success"
+    @animation-end="handleAnimationEnd"
+    @close="handleClose"
   ></toast>
   <headerCard page="schedule">
     <template #content>
@@ -77,10 +77,14 @@ const submitSchedule = async () => {
   success.value = true;
 };
 
-const resetSuccess = event => {
+const handleAnimationEnd = event => {
   if (event.animationName.includes("slideOutRight")) {
     success.value = false;
   }
+};
+
+const handleClose = () => {
+  success.value = false;
 };
 
 onMounted(async () => {

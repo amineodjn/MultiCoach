@@ -74,7 +74,7 @@
                   navbarCollapse,
               },
               {
-                'py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-blue-600 text-blue-600 hover:border-blue-500 hover:text-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-blue-500 dark:text-blue-500 dark:hover:text-blue-400 dark:hover:border-blue-400':
+                'py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-blue-600 text-indigo-600 hover:border-blue-500 hover:text-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-blue-500 dark:text-blue-500 dark:hover:text-blue-400 dark:hover:border-blue-400':
                   !navbarCollapse,
               },
             ]"
@@ -86,7 +86,7 @@
             to="/"
             :class="[
               'font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400',
-              { 'text-indigo-600': route.path === '/' }
+              { 'text-indigo-600': route.path === '/' },
             ]"
             aria-current="page"
             @click="collapse"
@@ -96,7 +96,10 @@
             :to="isCoach ? '/my-profile' : '/bookings'"
             :class="[
               'font-medium text-gray-500 hover:text-indigo-600 md:py-6 dark:text-gray-400 dark:hover:text-indigo-400',
-              { 'text-indigo-600': (route.path === '/my-profile' || route.path === '/bookings') }
+              {
+                'text-indigo-600':
+                  route.path === '/my-profile' || route.path === '/bookings',
+              },
             ]"
             @click="collapse"
             >Profile</router-link
@@ -158,15 +161,15 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import modal from "../components/modal.vue";
 import { useStore } from "../store/store.js";
 
-
 const store = useStore();
 const router = useRouter();
 const route = useRoute();
 const navbarCollapse = ref(false);
 const open = ref(false);
 const isLoggedIn = ref(false);
-const isCoach = computed(() => { 
-  return store.user?.coach});
+const isCoach = computed(() => {
+  return store.user?.coach;
+});
 
 const auth = getAuth();
 
