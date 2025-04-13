@@ -41,6 +41,8 @@
         :customWidth="'w-1/2'"
         :coachAccess="false"
         :readOnly="true"
+        @book="handleBooking"
+        @cancelBooking="cancelBooking"
       />
       <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
       <emptyState v-else-if="displayedClasses.length === 0" />
@@ -67,6 +69,18 @@
         </svg>
       </a>
     </div>
+    <ClassBookingModal
+      :show="showBookingModal"
+      :classDetails="selectedClass"
+      @close="showBookingModal = false"
+      @confirm="confirmBooking"
+    />
+    <Toast
+      :show="showToast"
+      :type="toastType"
+      :message="toastMessage"
+      @close="showToast = false"
+    />
   </div>
 </template>
 
@@ -75,12 +89,24 @@ import { onMounted, ref, computed } from "vue";
 import emptyState from "../components/emptyState.vue";
 import classesCard from "../components/classesCard.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
-import { fetchClasses } from "../utils/useFirebase";
+import ClassBookingModal from "../components/ClassBookingModal.vue";
+import Toast from "../components/toast.vue";
+import {
+  fetchClasses,
+  addClassBooking,
+  handleCancelBooking,
+  onAuthStateChangedPromise,
+} from "../utils/useFirebase";
 
 const classes = ref([]);
 const showAllClasses = ref(false);
 const searchTerm = ref("");
 const isLoading = ref(false);
+const showBookingModal = ref(false);
+const selectedClass = ref(null);
+const toastMessage = ref("");
+const toastType = ref("success");
+const showToast = ref(false);
 
 const props = defineProps({
   uid: {
@@ -107,6 +133,53 @@ const displayedClasses = computed(() => {
 
 const viewAllProjects = () => {
   showAllClasses.value = !showAllClasses.value;
+};
+
+const handleBooking = trainingClass => {
+  selectedClass.value = trainingClass;
+  showBookingModal.value = true;
+};
+
+const cancelBooking = async trainingClass => {
+  try {
+    const user = await onAuthStateChangedPromise();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    await handleCancelBooking(user.uid, trainingClass.uid);
+
+    toastMessage.value = "Booking cancelled successfully!";
+    toastType.value = "success";
+    showToast.value = true;
+  } catch (error) {
+    console.error("Error cancelling booking:", error);
+    toastMessage.value =
+      error.message || "Failed to cancel the booking. Please try again.";
+    toastType.value = "error";
+    showToast.value = true;
+  }
+};
+
+const confirmBooking = async () => {
+  try {
+    const user = await onAuthStateChangedPromise();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    await addClassBooking(user.uid, selectedClass.value);
+    showBookingModal.value = false;
+    toastMessage.value = "Class booked successfully!";
+    toastType.value = "success";
+    showToast.value = true;
+  } catch (error) {
+    console.error("Error confirming booking:", error);
+    toastMessage.value =
+      error.message || "Failed to book the class. Please try again.";
+    toastType.value = "error";
+    showToast.value = true;
+  }
 };
 
 const fetchCoachClasses = async () => {

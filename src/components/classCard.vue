@@ -160,12 +160,11 @@
       </div>
       <div class="text-right">
         <button
-          :booked
           type="button"
-          @click="book"
-          class="mt-2 py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-gray-200 text-gray-500 hover:border-indigo-600 hover:text-indigo-600 disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:text-neutral-400 dark:hover:text-indigo-500 dark:hover:border-indigo-600"
+          @click="deleteBooking"
+          class="mt-2 py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-red-200 text-red-500 hover:border-red-600 hover:text-red-600 disabled:opacity-50 disabled:pointer-events-none dark:border-red-700 dark:text-red-400 dark:hover:text-red-500 dark:hover:border-red-600"
         >
-          Booked
+          Cancel
         </button>
       </div>
     </div>
@@ -173,11 +172,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import { format, parseISO } from "date-fns";
-const booked = ref(true);
 
-const emits = defineEmits(["book"]);
+const emits = defineEmits(["delete"]);
 
 const props = defineProps({
   trainingClass: {
@@ -186,8 +183,8 @@ const props = defineProps({
   },
 });
 
-const book = () => {
-  emits("book", props.trainingClass);
+const deleteBooking = () => {
+  emits("delete", props.trainingClass);
 };
 
 const date = props.trainingClass.date;

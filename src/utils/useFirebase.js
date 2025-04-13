@@ -268,3 +268,69 @@ export const deleteSubDocument = async (coachId, subCollectionName, docId) => {
     throw error;
   }
 };
+
+/**
+ * Adds a class booking to a user's bookedClasses array in Firestore.
+ * @param {string} userId - The ID of the user.
+ * @param {Object} classData - The class data to be booked.
+ * @returns {Promise<void>}
+ */
+export const addClassBooking = async (userId, classData) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      throw new Error("User not found");
+    }
+
+    const userData = userDoc.data();
+    const bookedClasses = userData.bookedClasses || [];
+
+    // Check if class is already booked
+    if (bookedClasses.some(booking => booking.uid === classData.uid)) {
+      throw new Error("Class already booked");
+    }
+
+    // Add the new booking
+    await updateDoc(userRef, {
+      bookedClasses: [...bookedClasses, classData],
+    });
+  } catch (error) {
+    console.error("Error adding class booking:", error);
+    throw error;
+  }
+};
+
+/**
+ * Removes a class booking from a user's bookedClasses array in Firestore.
+ * @param {string} userId - The ID of the user.
+ * @param {string} classId - The ID of the class to be removed.
+ * @returns {Promise<void>}
+ */
+export const handleCancelBooking = async (userId, classId) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      throw new Error("User not found");
+    }
+
+    const userData = userDoc.data();
+    const bookedClasses = userData.bookedClasses || [];
+
+    // Filter out the class to be removed
+    const updatedBookedClasses = bookedClasses.filter(
+      booking => booking.uid !== classId
+    );
+
+    // Update the user's bookedClasses array
+    await updateDoc(userRef, {
+      bookedClasses: updatedBookedClasses,
+    });
+  } catch (error) {
+    console.error("Error cancelling class booking:", error);
+    throw error;
+  }
+};

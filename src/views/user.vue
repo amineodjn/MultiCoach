@@ -244,7 +244,7 @@
                           {{
                             getInitials(
                               connection.firstName,
-                              connection.lastName,
+                              connection.lastName
                             )
                           }}
                         </span>
@@ -299,8 +299,8 @@
             </div>
             <!--End sidebar-->
             <div class="xl:pl-5 flex-1 space-y-2">
-              <userOffer :uid="uid" />
               <classOffer :uid="uid" />
+              <userOffer :uid="uid" />
             </div>
           </div>
         </div>
@@ -344,6 +344,6 @@ watch(
       uid.value = newUid;
       await fetchCoachData();
     }
-  },
+  }
 );
 </script>

@@ -164,28 +164,42 @@
         </div>
       </div>
     </div>
-    <div
-      v-if="!readOnly"
-      class="flex justify-end items-center lg:justify-center"
-    >
-      <button
-        @click="$emit('book', trainingClass)"
-        type="button"
-        class="relative inline-flex items-center justify-center p-0.5 m-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br border border-indigo-600  dark:text-white focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800"
-      >
-        <span
-          class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
-        >
-          {{ trainingClass.price + " PLN" }}
+    <div class="flex justify-end items-center lg:justify-center">
+      <div class="flex flex-col items-end">
+        <span class="text-2xl font-bold text-black dark:text-white mb-2">
+          {{ trainingClass.price }} PLN
         </span>
-      </button>
+        <button
+          v-if="!coachAccess"
+          @click="handleBooking"
+          type="button"
+          :disabled="isAlreadyBooked"
+          class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group w-full"
+          :class="[
+            isAlreadyBooked
+              ? 'bg-gray-200 cursor-not-allowed'
+              : 'bg-gradient-to-br from-indigo-600 to-blue-500 dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800',
+          ]"
+        >
+          <span
+            class="relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md w-full text-center"
+            :class="[
+              isAlreadyBooked
+                ? 'bg-gray-100 text-gray-600'
+                : 'bg-white dark:bg-gray-900 group-hover:bg-opacity-0 text-indigo-600 group-hover:text-white',
+            ]"
+          >
+            {{ isAlreadyBooked ? "Already Booked" : "Book Now" }}
+          </span>
+        </button>
+      </div>
       <button
-        class="ml-3 hover:bg-gray-100 rounded-md"
+        class="ml-3 hover:bg-gray-100 rounded-md p-2 transition-colors duration-200"
         v-if="coachAccess"
         @click="$emit('deleteClass', trainingClass.uid)"
       >
         <svg
-          class="w-6 h-6 text-gray-800 m-1 dark:text-white"
+          class="w-6 h-6 text-gray-800 dark:text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -202,69 +216,15 @@
           />
         </svg>
       </button>
-      <div v-else @click="isSelected = !isSelected">
-        <svg
-          v-if="!isSelected"
-          @click="$emit('favorite', trainingClass.uid, trainingClass.className)"
-          class="w-6 h-6 text-indigo-800 ml-3 dark:text-white"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
-        <svg
-          v-else-if="disabled"
-          class="w-6 h-6 ml-3 text-gray-500 dark:text-white"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <svg
-          v-else
-          @click="$emit('favorite', '', '')"
-          class="w-6 h-6 ml-3 text-green-500 dark:text-white"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { format, parseISO } from "date-fns";
 
-const image = computed(() => {  
+const image = computed(() => {
   return props.trainingClass.classImage
     ? props.trainingClass.classImage
     : "../../public/images/class.png";
@@ -291,10 +251,18 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isAlreadyBooked: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+const emit = defineEmits(["book", "deleteClass"]);
 
 const date = props.trainingClass.date;
 const dateFormatted = format(parseISO(date), "dd.MM EEEE");
 
-const isSelected = ref(false);
+const handleBooking = () => {
+  emit("book", props.trainingClass);
+};
 </script>
