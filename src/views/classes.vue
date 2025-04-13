@@ -72,6 +72,7 @@
         :trainingClass="Class"
         :customWidth="'w-1/2'"
         :coachAccess="true"
+        :isAlreadyBooked="isClassBooked(Class.uid)"
         @deleteClass="handleOpenPopup"
       />
       <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
@@ -190,16 +191,18 @@ const closePopup = () => {
 };
 
 const displayedClasses = computed(() => {
+  let filtered = filteredClasses.value;
+
   if (searchTerm.value) {
-    filteredClasses.value.filter(Class =>
+    filtered = filtered.filter(Class =>
       Class.className.toLowerCase().includes(searchTerm.value.toLowerCase())
     );
   }
 
   if (showAllClasses.value) {
-    return filteredClasses.value;
+    return filtered;
   } else {
-    return filteredClasses.value.slice(0, 3);
+    return filtered.slice(0, 3);
   }
 });
 
@@ -265,11 +268,17 @@ const addClass = () => {
 
 onMounted(async () => {
   await fetchClasses();
+  await store.fetchUserBookedClasses();
 });
 
 const deleteClass = async () => {
   await deleteSubDocument(store.docId, "classes", classUid.value);
   await fetchClasses();
   closePopup();
+};
+
+const isClassBooked = classId => {
+  if (!store.user?.bookedClasses) return false;
+  return store.user.bookedClasses.some(booking => booking.uid === classId);
 };
 </script>

@@ -36,10 +36,35 @@
         v-for="(Class, index) in displayedClasses"
         :key="index"
         :trainingClass="Class"
-        @book="console.log('Booked class:', $event)"
+        @delete="deleteClass"
       />
       <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
       <emptyState v-else-if="displayedClasses.length === 0" />
+    </div>
+    <div
+      v-if="displayedClasses.length > 2"
+      class="text-center dark:border-neutral-70"
+    >
+      <a
+        class="flex items-center text-indigo-600 font-medium border-b text-sm leading-5 p-3 rounded-b-md space-x-1 justify-center dark:text-indigo-500 dark:hover:text-indigo-600 dark:focus:bg-neutral-700 cursor-pointer"
+        @click="viewAllClasses"
+      >
+        {{ showAllClasses ? "Show less" : "Show all" }}
+        <svg
+          class="flex-shrink-0 w-4 h-4"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m9 18 6-6-6-6"></path>
+        </svg>
+      </a>
     </div>
   </div>
   <div
@@ -114,6 +139,12 @@
       </a>
     </div>
   </div>
+  <Toast
+    :show="showToast"
+    :type="toastType"
+    :message="toastMessage"
+    @close="showToast = false"
+  />
 </template>
 
 <script setup>
@@ -123,6 +154,8 @@ import emptyState from "../components/emptyState.vue";
 import offersCard from "../components/offersCard.vue";
 import classCard from "../components/classCard.vue";
 import loadingSpinner from "./loadingSpinner.vue";
+import { handleCancelBooking } from "../utils/useFirebase";
+import Toast from "../components/toast.vue";
 
 const store = useStore();
 const searchTerm = ref("");
@@ -131,6 +164,9 @@ const isLoading = ref(false);
 const offersLoading = ref(false);
 const showAllClasses = ref(false);
 const showAllOffers = ref(false);
+const toastMessage = ref("");
+const toastType = ref("success");
+const showToast = ref(false);
 
 // Classes
 const displayedClasses = computed(() => {
@@ -176,8 +212,29 @@ const displayedOffers = computed(() => {
   }
 });
 
+const viewAllClasses = () => {
+  showAllClasses.value = !showAllClasses.value;
+};
+
 const viewAllOffers = () => {
   showAllOffers.value = !showAllOffers.value;
+};
+
+const deleteClass = async trainingClass => {
+  try {
+    await handleCancelBooking(store.docId, trainingClass.uid);
+    store.user.bookedClasses = store.user.bookedClasses.filter(
+      booking => booking.uid !== trainingClass.uid
+    );
+    toastMessage.value = "Booking cancelled successfully!";
+    toastType.value = "success";
+    showToast.value = true;
+  } catch (error) {
+    console.error("Error deleting class:", error);
+    toastMessage.value = "Failed to cancel the booking. Please try again.";
+    toastType.value = "error";
+    showToast.value = true;
+  }
 };
 
 onMounted(async () => {
