@@ -32,7 +32,7 @@
         />
       </div>
       <div class="flex lg:w-1/2 h-screen">
-        <loadingSpinner v-if="isLoading || userMarkers.length === 0" />
+        <loadingSpinner v-if="mapLoading || userMarkers.length === 0" />
         <GoogleMap
           v-else
           :zoom="7"
@@ -79,14 +79,13 @@ import successModal from "../components/successModal.vue";
 import { useRouter } from "vue-router";
 import loadingSpinner from "../components/loadingSpinner.vue";
 import GoogleMap from "../components/GoogleMap.vue";
-import { getUserCoordinates } from "../utils/getUserCoordinates.js";
 import filterDropdown from "../components/filterDropdown.vue";
+import { useMapCache } from "../composables/useMapCache";
 
 const router = useRouter();
 const store = useStore();
 const usersData = ref([]);
 const filteredUsers = ref([]);
-const center = ref({ lat: 52.0, lng: 20.0 });
 const toggle = ref({});
 const experiences = ref([]);
 const selectedExperiences = ref([]);
@@ -98,9 +97,14 @@ const offerName = ref(localStorage.getItem("bookedOfferName"));
 const isLoading = ref(false);
 const startHour = 6;
 const endHour = 21;
-const userMarkers = ref([]);
-const mapRef = ref(null);
 const openPopUp = ref(false);
+
+const {
+  userMarkers,
+  center,
+  isLoading: mapLoading,
+  initializeMap,
+} = useMapCache();
 
 const selectedDateandTime = computed(() => {
   return localStorage.getItem("selectedDateandTime");
@@ -284,7 +288,7 @@ onMounted(async () => {
     await store.fetchFavoriteCoaches();
   }
 
-  userMarkers.value = await getUserCoordinates(usersData.value);
+  await initializeMap(usersData.value);
 });
 </script>
 <style scoped>
