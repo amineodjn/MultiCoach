@@ -100,7 +100,7 @@
       </div>
     </RouterLink>
     <div class="flex flex-col items-end justify-between">
-      <div @click="$emit('favorite', user)">
+      <div v-if="!disabled" @click="$emit('favorite', user)">
         <svg
           v-if="favorite"
           class="w-6 h-6 text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-300"
@@ -179,6 +179,10 @@ defineProps({
     required: true,
   },
   favorite: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
     type: Boolean,
     default: false,
   },
