@@ -63,7 +63,7 @@ export const useUploadImage = async ({
         }
       );
     } else {
-      console.error("User not authenticated");
+      console.error("You are not logged in yet!");
     }
   } catch (error) {
     console.error("Error uploading image", error);
