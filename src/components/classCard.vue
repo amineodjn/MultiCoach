@@ -4,7 +4,7 @@
   >
     <img
       class="w-full h-auto rounded-t-xl min-h-40"
-      :src="trainingClass.classImage"
+      :src="image"
       alt="Image Description"
     />
     <div class="p-4 md:p-3">
@@ -173,6 +173,7 @@
 
 <script setup>
 import { format, parseISO } from "date-fns";
+import { computed } from "vue";
 
 const emits = defineEmits(["delete"]);
 
@@ -181,6 +182,12 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+});
+
+const image = computed(() => {
+  return props.trainingClass.classImage
+    ? props.trainingClass.classImage
+    : "../../public/images/class.png";
 });
 
 const deleteBooking = () => {

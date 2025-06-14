@@ -144,7 +144,7 @@ const cancelBooking = async trainingClass => {
   try {
     const user = await onAuthStateChangedPromise();
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error("You are not logged in yet!");
     }
 
     await handleCancelBooking(user.uid, trainingClass.uid);
@@ -165,7 +165,7 @@ const confirmBooking = async () => {
   try {
     const user = await onAuthStateChangedPromise();
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error("You are not logged in yet!");
     }
 
     await addClassBooking(user.uid, selectedClass.value);
