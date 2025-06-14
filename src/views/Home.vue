@@ -21,6 +21,7 @@
             :user="user"
             class="mt-2"
             :favorite="isFavorite(user)"
+            :disabled="!store.user"
             @book="toggleModal"
             @favorite="toggleFavorite(user)"
           />
