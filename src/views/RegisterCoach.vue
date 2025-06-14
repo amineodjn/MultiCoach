@@ -1,11 +1,6 @@
 <template>
   <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <img
-        class="mx-auto h-10 w-auto"
-        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-        alt="Your Company"
-      />
       <h2
         class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
       >
@@ -125,42 +120,14 @@
             Sign up
           </button>
         </div>
-        <div class="flex items-center justify-center">
-          <button
-            @click="SignInWithGoogle"
-            class="border border-slate-200 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:text-slate-300 dark:text-slate-200 duration-150 flex gap-2 hover:border-slate-400 hover:shadow hover:text-slate-900 px-4 py-2 rounded-lg text-slate-700 transition"
-          >
-            <img
-              class="w-6 h-6"
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              loading="lazy"
-              alt="google logo"
-            />
-            <span class="text-gray-500">Register with Google</span>
-          </button>
-        </div>
       </form>
-
-      <p class="mt-10 text-center text-sm text-gray-500">
-        Not a member?
-        <a
-          href="#"
-          class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-          >Start a 14 day free trial</a
-        >
-      </p>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from "../firebase.js";
 import { setDoc, doc } from "firebase/firestore";
 import { useStore } from "../store/store.js";
@@ -205,18 +172,6 @@ const register = () => {
       router.push("/");
     })
     .catch(error => {
-      console.log(error.code);
-    });
-};
-
-const SignInWithGoogle = () => {
-  const provider = new GoogleAuthProvider();
-  signInWithPopup(getAuth(), provider)
-    .then(() => {
-      router.push("/");
-    })
-    .catch(error => {
-      console.log(error.message);
       console.log(error.code);
     });
 };
