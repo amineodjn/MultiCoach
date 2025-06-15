@@ -11,12 +11,13 @@ export const useStore = defineStore({
   id: "main",
   state: () => ({
     docId: "",
-    user: {},
+    user: null,
     favoriteCoaches: [],
     route: null,
     bookedCoach: null,
     offers: [],
     classes: [],
+    isLoading: false,
   }),
   actions: {
     setDocId(id) {
@@ -30,11 +31,21 @@ export const useStore = defineStore({
       if (!uid) {
         return;
       }
-      const userData = await fetchDocument(userType, uid);
-      if (userData) {
-        this.user = userData;
+      this.isLoading = true;
+      try {
+        const userData = await fetchDocument(userType, uid);
+        if (userData) {
+          this.user = this.user
+            ? { ...this.user, ...userData }
+            : { ...userData, uid };
+        }
+        return userData;
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        return null;
+      } finally {
+        this.isLoading = false;
       }
-      return userData;
     },
     async fetchClasses() {
       if (!this.docId) {
@@ -64,6 +75,11 @@ export const useStore = defineStore({
       return userData.bookedOffers || [];
     },
     async fetchUserBookedClasses() {
+      if (this.isLoading) {
+        console.log("User data is still loading, waiting...");
+        return;
+      }
+
       if (!this.user || !this.user.uid) {
         console.warn(
           "User not authenticated or user UID is missing. Cannot fetch booked classes."
@@ -83,7 +99,7 @@ export const useStore = defineStore({
           const bookingDate =
             booking.bookingTime instanceof Date
               ? booking.bookingTime
-              : booking.bookingTime.toDate(); // Convert Timestamp to Date
+              : booking.bookingTime.toDate();
           return bookingDate >= now;
         });
 

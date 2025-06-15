@@ -99,16 +99,12 @@
         </div>
       </div>
     </div>
-    <div
-      class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white shadow-sm"
-    >
-      <offersCard
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <offerCard
         v-for="offer in displayedOffers"
         :key="offer.uid"
         :offer="offer"
-        :customWidth="'w-1/2'"
-        :coachAccess="false"
-        :read-only="true"
+        @delete="deleteOffer"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
       <emptyState v-else-if="displayedOffers.length === 0" />
@@ -151,10 +147,13 @@
 import { onMounted, ref, computed } from "vue";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
-import offersCard from "../components/offersCard.vue";
+import offerCard from "../components/offerCard.vue";
 import classCard from "../components/classCard.vue";
 import loadingSpinner from "./loadingSpinner.vue";
-import { handleCancelBooking } from "../utils/useFirebase";
+import {
+  handleCancelBooking,
+  handleCancelOfferBooking,
+} from "../utils/useFirebase";
 import Toast from "../components/toast.vue";
 import { isAfter, parseISO } from "date-fns";
 
@@ -237,6 +236,24 @@ const deleteClass = async trainingClass => {
   } catch (error) {
     console.error("Error deleting class:", error);
     toastMessage.value = "Failed to cancel the booking. Please try again.";
+    toastType.value = "error";
+    showToast.value = true;
+  }
+};
+
+const deleteOffer = async offer => {
+  try {
+    await handleCancelOfferBooking(store.docId, offer.bookedOffer);
+    store.user.bookedOffers = store.user.bookedOffers.filter(
+      booking => booking.bookedOffer !== offer.bookedOffer
+    );
+    toastMessage.value = "Offer booking cancelled successfully!";
+    toastType.value = "success";
+    showToast.value = true;
+  } catch (error) {
+    console.error("Error deleting offer:", error);
+    toastMessage.value =
+      "Failed to cancel the offer booking. Please try again.";
     toastType.value = "error";
     showToast.value = true;
   }

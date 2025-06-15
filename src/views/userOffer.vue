@@ -2,12 +2,6 @@
   <div
     class="flex flex-col border-gray-300 mt-5 rounded-lg bg-white border shadow-sm p-4"
   >
-    <Toast
-      :show="toastShow"
-      :type="toastType"
-      :message="toastMessage"
-      @close="toastShow = false"
-    />
     <div class="flex justify-between items-center p-5 pb-2">
       <h2 class="text-gray-800 text-lg font-semibold inline-block">Offers</h2>
       <div class="flex items-center md:justify-end space-x-2">
@@ -48,6 +42,7 @@
         :coachAccess="false"
         :readOnly="false"
         :isAlreadyBooked="isOfferAlreadyBooked(offer.uid)"
+        :isBookingDisabled="store.user?.coach"
         @booking="handleBooking"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
@@ -82,6 +77,12 @@
       @close="closeBookingModal"
       @confirm="handleBookingConfirm"
     />
+    <Toast
+      :show="showToast"
+      :type="toastType"
+      :message="toastMessage"
+      @close="showToast = false"
+    />
   </div>
 </template>
 
@@ -95,9 +96,9 @@ import {
   updateDocument,
 } from "../utils/useFirebase";
 import BookingModal from "../components/BookingModal.vue";
+import Toast from "../components/toast.vue";
 import { useStore } from "../store/store";
 import { arrayUnion } from "firebase/firestore";
-import Toast from "../components/toast.vue";
 
 const store = useStore();
 const offers = ref([]);
@@ -106,7 +107,7 @@ const searchTerm = ref("");
 const isLoading = ref(false);
 const showBookingModal = ref(false);
 const selectedOffer = ref(null);
-const toastShow = ref(false);
+const showToast = ref(false);
 const toastType = ref("success");
 const toastMessage = ref("");
 
@@ -144,57 +145,28 @@ const closeBookingModal = () => {
 };
 
 const handleBookingConfirm = async () => {
-  const showErrorToast = message => {
-    toastType.value = "error";
-    toastMessage.value = message;
-    toastShow.value = true;
-  };
-
-  const showSuccessToast = () => {
-    toastType.value = "success";
-    toastMessage.value = "Booking successful!";
-    toastShow.value = true;
-    setTimeout(() => {
-      closeBookingModal();
-    }, 1000);
-  };
-
-  const validateBooking = () => {
-    if (!store.user) {
-      showErrorToast("User must be logged in to make a booking");
-      return false;
-    }
-    if (store.user.coach) {
-      showErrorToast("You must be logged in as a user to make a booking");
-      return false;
-    }
-    return true;
-  };
-
-  const createBookingEvent = () => ({
-    ...selectedOffer.value,
-    bookedOffer: selectedOffer.value.uid,
-    bookedCoach: props.uid,
-    bookedAt: new Date().toISOString(),
-  });
-
-  if (!validateBooking()) {
-    return;
-  }
-
   try {
-    const newEvent = createBookingEvent();
+    const newEvent = {
+      ...selectedOffer.value,
+      bookedOffer: selectedOffer.value.uid,
+      bookedCoach: props.uid,
+      bookedAt: new Date().toISOString(),
+    };
+
     await updateDocument("users", store.docId, {
       bookedOffers: arrayUnion(newEvent),
     });
     await store.fetchUserBookedOffers();
+    closeBookingModal();
 
-    showSuccessToast();
+    toastMessage.value = "Offer booked successfully!";
+    toastType.value = "success";
+    showToast.value = true;
   } catch (error) {
     console.error("Error booking offer:", error);
-    if (!toastShow.value) {
-      showErrorToast("Failed to book the offer. Please try again.");
-    }
+    toastMessage.value = "Failed to book the offer. Please try again.";
+    toastType.value = "error";
+    showToast.value = true;
   }
 };
 
