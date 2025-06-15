@@ -156,6 +156,7 @@ import classCard from "../components/classCard.vue";
 import loadingSpinner from "./loadingSpinner.vue";
 import { handleCancelBooking } from "../utils/useFirebase";
 import Toast from "../components/toast.vue";
+import { isAfter, parseISO } from "date-fns";
 
 const store = useStore();
 const searchTerm = ref("");
@@ -170,7 +171,11 @@ const showToast = ref(false);
 
 // Classes
 const displayedClasses = computed(() => {
-  let filteredClasses = store?.user?.bookedClasses || [];
+  const now = new Date();
+  let filteredClasses = (store?.user?.bookedClasses || []).filter(Class => {
+    const classDate = parseISO(Class.date);
+    return isAfter(classDate, now);
+  });
 
   if (searchTerm.value) {
     filteredClasses = filteredClasses.filter(Class =>

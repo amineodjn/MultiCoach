@@ -6,6 +6,9 @@ import {
   deleteDoc,
   updateDoc,
   addDoc,
+  writeBatch,
+  query,
+  where,
 } from "firebase/firestore";
 import { db, auth, storage } from "../firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
@@ -14,6 +17,8 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+
+export { db, collection, getDocs, writeBatch, doc };
 
 /**
  * Fetches a document from a specified collection in Firestore.
@@ -119,8 +124,12 @@ export const fetchClasses = async bookedCoachId => {
   }
 
   try {
-    const offersRef = collection(db, "coaches", bookedCoachId, "classes");
-    const querySnapshot = await getDocs(offersRef);
+    const today = new Date();
+    const todayFormatted = today.toISOString().slice(0, 10); // YYYY-MM-DD
+
+    const classesRef = collection(db, "coaches", bookedCoachId, "classes");
+    const q = query(classesRef, where("date", ">=", todayFormatted));
+    const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
       return querySnapshot.docs.map(doc => doc.data());

@@ -48,6 +48,11 @@
           label="Choose number of guests"
           title="Guests"
         />
+        <recurrenceSelector
+          v-model="recurrence"
+          :showError="showError.recurrence"
+          :error-message="errorMessages.recurrence"
+        />
       </div>
       <div>
         <textArea
@@ -126,13 +131,18 @@ import textArea from "../components/textarea.vue";
 import datePicker from "./datePicker.vue";
 import timePicker from "../components/timePicker.vue";
 import counterInput from "../components/counterInput.vue";
+import recurrenceSelector from "./recurrenceSelector.vue";
 import { useUploadImage } from "../utils/useUploadImage.js";
-import { saveDocument } from "../utils/useFirebase.js";
 import {
   splitCamelCase,
   isValidDate,
   isValidTime,
 } from "../utils/formUtils.js";
+import {
+  createRecurringClasses,
+  saveRecurringClasses,
+  cleanupPastClasses,
+} from "../utils/useRecurringClasses.js";
 
 const store = useStore();
 const userId = computed(() => store.docId);
@@ -150,6 +160,14 @@ const selectedFile = ref(null);
 const imageUrl = ref("");
 const imageName = ref("");
 
+const recurrence = ref({
+  type: "none",
+  interval: 1,
+  frequency: "days",
+  weekDays: [],
+  occurrences: 1,
+});
+
 const errorMessages = reactive({
   className: "",
   classDescription: "",
@@ -158,6 +176,7 @@ const errorMessages = reactive({
   gym: "",
   time: "",
   date: "",
+  recurrence: "",
 });
 
 const showError = reactive({
@@ -168,6 +187,7 @@ const showError = reactive({
   gym: false,
   time: false,
   date: false,
+  recurrence: false,
 });
 
 const emit = defineEmits(["formSubmitted", "closeForm", "success", "error"]);
@@ -185,6 +205,7 @@ async function submitClass() {
     time: time.value,
     date: date.value,
     counter: counter.value,
+    recurrence: recurrence.value,
   };
 
   resetErrors();
@@ -192,7 +213,12 @@ async function submitClass() {
 
   if (!checkForErrors.value) {
     try {
-      await saveDocument(`coaches/${userId.value}/classes`, dataObj);
+      const classesToCreate = await createRecurringClasses(
+        dataObj,
+        userId.value
+      );
+
+      await saveRecurringClasses(classesToCreate, userId.value);
 
       if (imageEvent.value) {
         try {
@@ -209,13 +235,19 @@ async function submitClass() {
         }
       }
 
+      await cleanupPastClasses(userId.value);
+
       resetForm();
       emit("formSubmitted");
       emit("closeForm");
       emit("success");
     } catch (error) {
       console.error("Error saving class:", error);
-      emit("error", "Failed to save class");
+      if (error.message.includes("Maximum number of occurrences")) {
+        emit("error", error.message);
+      } else {
+        emit("error", "Failed to save class");
+      }
     }
   }
 }
@@ -240,6 +272,7 @@ function validateData(dataObj) {
     } else if (
       key !== "price" &&
       key !== "counter" &&
+      key !== "recurrence" &&
       typeof value !== "string"
     ) {
       showError[key] = true;
@@ -256,6 +289,14 @@ function validateData(dataObj) {
       errorMessages[key] = `Please enter a valid time for ${splitCamelCase(
         key
       )}`;
+    } else if (key === "recurrence" && value.type === "custom") {
+      if (value.frequency === "weeks" && value.weekDays.length === 0) {
+        showError[key] = true;
+        errorMessages[key] = "Please select at least one day of the week";
+      } else if (value.occurrences < 1) {
+        showError[key] = true;
+        errorMessages[key] = "Please enter a valid number of occurrences";
+      }
     }
   });
 }
@@ -270,5 +311,12 @@ function resetForm() {
   time.value = "";
   date.value = "";
   counter.value = 1;
+  recurrence.value = {
+    type: "none",
+    interval: 1,
+    frequency: "days",
+    weekDays: [],
+    occurrences: 1,
+  };
 }
 </script>

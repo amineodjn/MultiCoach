@@ -64,11 +64,34 @@ export const useStore = defineStore({
       return userData.bookedOffers || [];
     },
     async fetchUserBookedClasses() {
-      if (!this.docId) {
-        return [];
+      if (!this.user || !this.user.uid) {
+        console.warn(
+          "User not authenticated or user UID is missing. Cannot fetch booked classes."
+        );
+        this.bookedClasses = [];
+        return;
       }
-      const userData = await fetchDocument("users", this.docId);
-      this.user.bookedClasses = userData.bookedClasses || [];
+      try {
+        const userDoc = await fetchDocument(
+          this.user.coach ? "coaches" : "users",
+          this.user.uid
+        );
+        let fetchedBookedClasses = userDoc?.bookedClasses || [];
+
+        const now = new Date();
+        const filteredBookedClasses = fetchedBookedClasses.filter(booking => {
+          const bookingDate =
+            booking.bookingTime instanceof Date
+              ? booking.bookingTime
+              : booking.bookingTime.toDate(); // Convert Timestamp to Date
+          return bookingDate >= now;
+        });
+
+        this.bookedClasses = filteredBookedClasses;
+      } catch (error) {
+        console.error("Error fetching user booked classes:", error);
+        this.bookedClasses = [];
+      }
     },
     async fetchOfferDetails(bookedOffers) {
       const offerDetailsPromises = bookedOffers.map(async event => {

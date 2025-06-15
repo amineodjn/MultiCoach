@@ -164,6 +164,7 @@ import loadingSpinner from "../components/loadingSpinner.vue";
 import popUpModal from "../components/popUpModal.vue";
 import toast from "../components/toast.vue";
 import { deleteSubDocument } from "../utils/useFirebase";
+import { cleanupPastClasses } from "../utils/useRecurringClasses";
 
 const store = useStore();
 const showForm = ref(false);
@@ -252,6 +253,12 @@ const fetchClasses = async () => {
   try {
     isLoading.value = true;
     await store.fetchClasses();
+    try {
+      await cleanupPastClasses(store.docId);
+      await store.fetchClasses();
+    } catch (cleanupError) {
+      console.error("Failed to cleanup past classes:", cleanupError);
+    }
   } catch (error) {
     console.error("Failed to fetch offers:", error);
   } finally {
