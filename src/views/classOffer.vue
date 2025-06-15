@@ -41,6 +41,8 @@
         :customWidth="'w-1/2'"
         :coachAccess="false"
         :readOnly="true"
+        :isAlreadyBooked="isClassBooked(Class.uid)"
+        :isBookingDisabled="store.user?.coach"
         @book="handleBooking"
         @cancelBooking="cancelBooking"
       />
@@ -97,6 +99,9 @@ import {
   handleCancelBooking,
   onAuthStateChangedPromise,
 } from "../utils/useFirebase";
+import { useStore } from "../store/store";
+
+const store = useStore();
 
 const classes = ref([]);
 const showAllClasses = ref(false);
@@ -169,6 +174,7 @@ const confirmBooking = async () => {
     }
 
     await addClassBooking(user.uid, selectedClass.value);
+    await store.fetchUserBookedClasses();
     showBookingModal.value = false;
     toastMessage.value = "Class booked successfully!";
     toastType.value = "success";
@@ -200,7 +206,13 @@ const fetchCoachClasses = async () => {
   }
 };
 
+const isClassBooked = classId => {
+  if (!store.user?.bookedClasses) return false;
+  return store.user.bookedClasses.some(booking => booking.uid === classId);
+};
+
 onMounted(async () => {
   await fetchCoachClasses();
+  await store.fetchUserBookedClasses();
 });
 </script>

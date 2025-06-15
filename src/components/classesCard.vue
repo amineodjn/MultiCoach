@@ -173,10 +173,10 @@
           v-if="!coachAccess"
           @click="handleBooking"
           type="button"
-          :disabled="isAlreadyBooked"
+          :disabled="isAlreadyBooked || isBookingDisabled"
           class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group w-full"
           :class="[
-            isAlreadyBooked
+            isAlreadyBooked || isBookingDisabled
               ? 'bg-gray-200 cursor-not-allowed'
               : 'bg-gradient-to-br from-indigo-600 to-blue-500 dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800',
           ]"
@@ -184,12 +184,12 @@
           <span
             class="relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md w-full text-center"
             :class="[
-              isAlreadyBooked
+              isAlreadyBooked || isBookingDisabled
                 ? 'bg-gray-100 text-gray-600'
                 : 'bg-white dark:bg-gray-900 group-hover:bg-opacity-0 text-indigo-600 group-hover:text-white',
             ]"
           >
-            {{ isAlreadyBooked ? "Already Booked" : "Book Now" }}
+            {{ getButtonText }}
           </span>
         </button>
       </div>
@@ -243,15 +243,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
   readOnly: {
     type: Boolean,
     default: false,
   },
   isAlreadyBooked: {
+    type: Boolean,
+    default: false,
+  },
+  isBookingDisabled: {
     type: Boolean,
     default: false,
   },
@@ -263,6 +263,13 @@ const date = props.trainingClass.date;
 const dateFormatted = format(parseISO(date), "dd.MM EEEE");
 
 const handleBooking = () => {
+  if (props.isBookingDisabled) return;
   emit("book", props.trainingClass);
 };
+
+const getButtonText = computed(() => {
+  if (props.isAlreadyBooked) return "Booked";
+  if (props.isBookingDisabled) return "Not Available";
+  return "Book Now";
+});
 </script>

@@ -343,3 +343,34 @@ export const handleCancelBooking = async (userId, classId) => {
     throw error;
   }
 };
+
+/**
+ * Removes an offer booking from a user's bookedOffers array in Firestore.
+ * @param {string} userId - The ID of the user.
+ * @param {string} offerId - The ID of the offer to be removed.
+ * @returns {Promise<void>}
+ */
+export const handleCancelOfferBooking = async (userId, offerId) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      throw new Error("User not found");
+    }
+
+    const userData = userDoc.data();
+    const bookedOffers = userData.bookedOffers || [];
+
+    const updatedBookedOffers = bookedOffers.filter(
+      booking => booking.bookedOffer !== offerId
+    );
+
+    await updateDoc(userRef, {
+      bookedOffers: updatedBookedOffers,
+    });
+  } catch (error) {
+    console.error("Error cancelling offer booking:", error);
+    throw error;
+  }
+};

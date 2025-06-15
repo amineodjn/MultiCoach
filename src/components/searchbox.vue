@@ -197,19 +197,18 @@ onMounted(async () => {
     }, 100);
   });
 
-  const autoComplete = new google.maps.places.Autocomplete(streetRef.value, {
-    types: ["geocode"],
-    fields: ["address_components"],
-    componentRestrictions: { country: "PL" },
-  });
-
-  google.maps.event.addListener(
-    autoComplete,
-    "place_changed",
-    () => {
-      selectedCity.value =
-        autoComplete.getPlace().address_components[0].long_name;
-    },
+  const autoComplete = new google.maps.places.PlaceAutocompleteElement(
+    streetRef.value,
+    {
+      types: ["geocode"],
+      fields: ["address_components"],
+      componentRestrictions: { country: "PL" },
+    }
   );
+
+  google.maps.event.addListener(autoComplete, "place_changed", () => {
+    selectedCity.value =
+      autoComplete.getPlace().address_components[0].long_name;
+  });
 });
 </script>

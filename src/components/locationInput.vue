@@ -30,24 +30,24 @@ watch(selectedLocation, newVal => {
 defineProps({
   Modelval: {
     type: String,
-    default: ''
+    default: "",
   },
   title: {
     type: String,
-    default: ''
+    default: "",
   },
   placeholder: {
     type: String,
-    default: ''
+    default: "",
   },
   showError: {
     type: Boolean,
-    default: false
+    default: false,
   },
   errorMessage: {
     type: String,
-    default: ''
-  }
+    default: "",
+  },
 });
 
 const locationRef = ref(null);
@@ -60,22 +60,39 @@ const loadGoogleMapsScript = async src => {
       script = document.createElement("script");
       script.src = src;
       script.async = true;
+      script.defer = true;
       script.setAttribute("data-status", "loading");
       document.head.appendChild(script);
-      script.onload = () => resolve();
-      script.onerror = () =>
+
+      script.onerror = () => {
         reject(new Error("Failed to load Google Maps script"));
-    } else {
+      };
+
+      script.onload = () => {
+        script.setAttribute("data-status", "loaded");
+        resolve();
+      };
+    } else if (script.getAttribute("data-status") === "loaded") {
       resolve();
+    } else {
+      script.addEventListener("load", () => {
+        script.setAttribute("data-status", "loaded");
+        resolve();
+      });
     }
   });
 };
 
 const waitForGoogleMaps = async () => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error("Timeout waiting for Google Maps to load"));
+    }, 10000);
+
     const interval = setInterval(() => {
-      if (window.google) {
+      if (window.google && window.google.maps && window.google.maps.places) {
         clearInterval(interval);
+        clearTimeout(timeout);
         resolve();
       }
     }, 100);
@@ -86,10 +103,15 @@ const initializeAutocomplete = () => {
   const autoComplete = new google.maps.places.Autocomplete(locationRef.value, {
     types: ["geocode"],
     componentRestrictions: { country: "PL" },
+    fields: ["formatted_address", "geometry", "name"],
+    strictBounds: false,
   });
 
-  google.maps.event.addListener(autoComplete, "place_changed", () => {
-    selectedLocation.value = autoComplete.getPlace().formatted_address;
+  autoComplete.addListener("place_changed", () => {
+    const place = autoComplete.getPlace();
+    if (place.formatted_address) {
+      selectedLocation.value = place.formatted_address;
+    }
   });
 };
 

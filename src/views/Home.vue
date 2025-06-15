@@ -22,7 +22,6 @@
             class="mt-2"
             :favorite="isFavorite(user)"
             :disabled="!store.user"
-            @book="toggleModal"
             @favorite="toggleFavorite(user)"
           />
         </div>
@@ -43,47 +42,21 @@
           :markers="userMarkers"
         />
       </div>
-      <bookingModal
-        :open="open"
-        @update="open = !open"
-        :startHour="startHour"
-        :endHour="endHour"
-        @confirmBooking="confirmBooking"
-        @selectedDate="selectedDate"
-        :bookedCoach="bookedCoach"
-      />
-      <successModal :open="openModal" @update="openModal = !openModal" />
-      <popUpModal
-        :open="openPopUp"
-        :text="text"
-        @confirm="confirmBooking"
-        @cancel="cancel"
-      />
     </div>
   </body>
 </template>
 <script setup>
 import searchBox from "../components/searchbox.vue";
-import { ref, onMounted, computed, watch } from "vue";
-import { arrayUnion } from "firebase/firestore";
-import {
-  onAuthStateChangedPromise,
-  fetchUsers,
-  updateDocument,
-} from "../utils/useFirebase.js";
+import { ref, onMounted } from "vue";
+import { fetchUsers, updateDocument } from "../utils/useFirebase.js";
 import { useStore } from "../store/store";
 import card from "../components/card.vue";
 import emptyState from "../components/emptyState.vue";
-import popUpModal from "../components/popUpModal.vue";
-import bookingModal from "../components/BookingModal.vue";
-import successModal from "../components/successModal.vue";
-import { useRouter } from "vue-router";
 import loadingSpinner from "../components/loadingSpinner.vue";
 import GoogleMap from "../components/GoogleMap.vue";
 import filterDropdown from "../components/filterDropdown.vue";
 import { useMapCache } from "../composables/useMapCache";
 
-const router = useRouter();
 const store = useStore();
 const usersData = ref([]);
 const filteredUsers = ref([]);
@@ -91,14 +64,7 @@ const toggle = ref({});
 const experiences = ref([]);
 const selectedExperiences = ref([]);
 const selectedCity = ref("");
-const open = ref(false);
-const openModal = ref(false);
-const bookedCoach = ref("");
-const offerName = ref(localStorage.getItem("bookedOfferName"));
 const isLoading = ref(false);
-const startHour = 6;
-const endHour = 21;
-const openPopUp = ref(false);
 
 const {
   userMarkers,
@@ -106,15 +72,6 @@ const {
   isLoading: mapLoading,
   initializeMap,
 } = useMapCache();
-
-const selectedDateandTime = computed(() => {
-  return localStorage.getItem("selectedDateandTime");
-});
-const text = computed(() => {
-  return `Are you sure you want to book ${
-    offerName.value
-  } at ${toLocaleStringTimeOrDate(selectedDateandTime.value)}?`;
-});
 
 const getUsers = async () => {
   isLoading.value = true;
@@ -185,93 +142,6 @@ const filterExperiences = exp => {
 
     return false;
   });
-};
-
-const toggleModal = id => {
-  bookedCoach.value = id;
-  open.value = !open.value;
-};
-
-const isValidDate = d => {
-  return d instanceof Date && !isNaN(d.getTime());
-};
-
-const selectedDate = date => {
-  if (date === null) {
-    open.value = false;
-  } else if (isValidDate(date) && store.docId) {
-    open.value = false;
-    openModal.value = !openModal.value;
-  }
-};
-
-watch(selectedDateandTime, newValue => {
-  openPopUp.value = !!newValue;
-});
-
-const toLocaleStringTimeOrDate = date => {
-  const formattedDate = new Date(date);
-  const options = {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  };
-  return formattedDate.toLocaleDateString(undefined, options);
-};
-
-const confirmBooking = async () => {
-  const bookedOffer = localStorage.getItem("bookedOffer");
-  const bookedOfferName = localStorage.getItem("bookedOfferName");
-  const bookedCoach = localStorage.getItem("bookedCoach");
-
-  const user = await onAuthStateChangedPromise();
-  if (user) {
-    const date = new Date(localStorage.getItem("selectedDateandTime"));
-
-    const userType = store.user.coach ? "coaches" : "users";
-
-    if (date && user.uid) {
-      const newEvent = {
-        bookedOffer: bookedOffer,
-        offerName: bookedOfferName,
-        bookingTime: date,
-        bookedCoach: bookedCoach,
-      };
-      const newBooking = {
-        bookedOffer: bookedOffer,
-        offerName: bookedOfferName,
-        bookingTime: date,
-        user: user.uid,
-      };
-      await updateDocument(userType, user.uid, {
-        bookedOffers: arrayUnion(newEvent),
-      });
-
-      await updateDocument("coaches", bookedCoach, {
-        bookings: arrayUnion(newBooking),
-      });
-
-      localStorage.removeItem("selectedDateandTime");
-      localStorage.removeItem("bookedOffer");
-      localStorage.removeItem("bookedOfferName");
-      localStorage.removeItem("bookedCoach");
-      openModal.value = true;
-      open.value = false;
-      openPopUp.value = false;
-    }
-  } else {
-    router.push("/sign-in");
-  }
-};
-
-const cancel = () => {
-  openPopUp.value = false;
-  localStorage.removeItem("selectedDateandTime");
-  localStorage.removeItem("bookedOffer");
-  localStorage.removeItem("bookedOfferName");
-  localStorage.removeItem("bookedCoach");
 };
 
 onMounted(async () => {

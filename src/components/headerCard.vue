@@ -228,14 +228,12 @@ import { RouterLink } from "vue-router";
 const store = useStore();
 
 const profileLink = computed(() => `/edit/${store.docId}`);
-const firstName = computed(() => store.user.firstName);
-const lastName = computed(() => store.user.lastName);
-const userName = computed(() => store.user.userName);
-const isCoach = computed(() => store.user.coach);
-const profilePicture = computed(() =>
-  store.user.profilePicture
-    ? store.user.profilePicture
-    : "../../public/images/avatar.jpg",
+const firstName = computed(() => store.user?.firstName || "");
+const lastName = computed(() => store.user?.lastName || "");
+const userName = computed(() => store.user?.userName || "");
+const isCoach = computed(() => store.user?.coach || false);
+const profilePicture = computed(
+  () => store.user?.profilePicture || "../../public/images/avatar.jpg"
 );
 
 defineProps({
