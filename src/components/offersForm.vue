@@ -96,20 +96,20 @@
         type="submit"
         class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
       >
-        Add
+        Confirm
       </button>
     </form>
   </section>
 </template>
 
 <script setup>
-import { ref, computed, reactive } from "vue";
+import { ref, computed, reactive, watch } from "vue";
 import { useStore } from "../store/store.js";
 import inputValidation from "../components/inputValidation.vue";
 import locationInput from "../components/locationInput.vue";
 import textArea from "../components/textarea.vue";
 import { useUploadImage } from "../utils/useUploadImage.js";
-import { saveDocument } from "../utils/useFirebase.js";
+import { saveDocument, updateDocument } from "../utils/useFirebase.js";
 import { splitCamelCase } from "../utils/formUtils.js";
 
 const store = useStore();
@@ -120,6 +120,10 @@ const offerDescription = ref("");
 const price = ref("");
 const location = ref("");
 const gym = ref("");
+
+const selectedFile = ref(null);
+const imageUrl = ref("");
+const imageName = ref("");
 
 const errorMessages = reactive({
   offerName: "",
@@ -143,6 +147,39 @@ const checkForErrors = computed(() => {
   return Object.values(showError).some(value => value === true);
 });
 
+const props = defineProps({
+  offerToEdit: {
+    type: Object,
+    default: null,
+  },
+});
+
+watch(
+  () => props.offerToEdit,
+  newVal => {
+    if (newVal) {
+      offerName.value = newVal.offerName || "";
+      offerDescription.value = newVal.offerDescription || "";
+      price.value = newVal.price || "";
+      location.value = newVal.location || "";
+      gym.value = newVal.gym || "";
+      selectedFile.value = newVal.offerImage ? true : null;
+      imageUrl.value = newVal.offerImageUrl || "";
+      imageName.value = newVal.offerImageName || "";
+    } else {
+      offerName.value = "";
+      offerDescription.value = "";
+      price.value = "";
+      location.value = "";
+      gym.value = "";
+      selectedFile.value = null;
+      imageUrl.value = "";
+      imageName.value = "";
+    }
+  },
+  { immediate: true }
+);
+
 async function submitOffer() {
   const dataObj = {
     offerName: offerName.value,
@@ -157,8 +194,15 @@ async function submitOffer() {
 
   if (!checkForErrors.value) {
     try {
-      await saveDocument(`coaches/${userId.value}/Offers`, dataObj);
-
+      if (props.offerToEdit && props.offerToEdit.uid) {
+        await updateDocument(
+          `coaches/${userId.value}/Offers`,
+          props.offerToEdit.uid,
+          dataObj
+        );
+      } else {
+        await saveDocument(`coaches/${userId.value}/Offers`, dataObj);
+      }
       if (imageEvent.value) {
         try {
           await useUploadImage({
@@ -173,7 +217,6 @@ async function submitOffer() {
           emit("error", "Image upload failed, but offer was saved");
         }
       }
-
       resetForm();
       emit("formSubmitted");
       emit("closeForm");
@@ -219,7 +262,4 @@ function resetForm() {
   gym.value = "";
   imageEvent.value = null;
 }
-const selectedFile = ref(null);
-const imageUrl = ref("");
-const imageName = ref("");
 </script>

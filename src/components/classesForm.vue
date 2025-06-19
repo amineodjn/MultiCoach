@@ -116,14 +116,14 @@
         type="submit"
         class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
       >
-        Add
+        Confirm
       </button>
     </form>
   </section>
 </template>
 
 <script setup>
-import { ref, computed, reactive } from "vue";
+import { ref, computed, reactive, watch } from "vue";
 import { useStore } from "../store/store.js";
 import inputValidation from "../components/inputValidation.vue";
 import locationInput from "../components/locationInput.vue";
@@ -143,6 +143,7 @@ import {
   saveRecurringClasses,
   cleanupPastClasses,
 } from "../utils/useRecurringClasses.js";
+import { updateDocument } from "../utils/useFirebase.js";
 
 const store = useStore();
 const userId = computed(() => store.docId);
@@ -195,6 +196,59 @@ const checkForErrors = computed(() => {
   return Object.values(showError).some(value => value === true);
 });
 
+const props = defineProps({
+  classToEdit: {
+    type: Object,
+    default: null,
+  },
+});
+
+watch(
+  () => props.classToEdit,
+  newVal => {
+    if (newVal) {
+      className.value = newVal.className || "";
+      classDescription.value = newVal.classDescription || "";
+      price.value = newVal.price || "";
+      location.value = newVal.location || "";
+      gym.value = newVal.gym || "";
+      time.value = newVal.time || "";
+      date.value = newVal.date || "";
+      counter.value = newVal.counter || 1;
+      recurrence.value = newVal.recurrence || {
+        type: "none",
+        interval: 1,
+        frequency: "days",
+        weekDays: [],
+        occurrences: 1,
+      };
+      selectedFile.value = newVal.classImage ? true : null;
+      imageUrl.value = newVal.classImageUrl || "";
+      imageName.value = newVal.classImageName || "";
+    } else {
+      className.value = "";
+      classDescription.value = "";
+      price.value = "";
+      location.value = "";
+      gym.value = "";
+      time.value = "";
+      date.value = "";
+      counter.value = 1;
+      recurrence.value = {
+        type: "none",
+        interval: 1,
+        frequency: "days",
+        weekDays: [],
+        occurrences: 1,
+      };
+      selectedFile.value = null;
+      imageUrl.value = "";
+      imageName.value = "";
+    }
+  },
+  { immediate: true }
+);
+
 async function submitClass() {
   const dataObj = {
     className: className.value,
@@ -213,13 +267,19 @@ async function submitClass() {
 
   if (!checkForErrors.value) {
     try {
-      const classesToCreate = await createRecurringClasses(
-        dataObj,
-        userId.value
-      );
-
-      await saveRecurringClasses(classesToCreate, userId.value);
-
+      if (props.classToEdit && props.classToEdit.uid) {
+        await updateDocument(
+          `coaches/${userId.value}/classes`,
+          props.classToEdit.uid,
+          dataObj
+        );
+      } else {
+        const classesToCreate = await createRecurringClasses(
+          dataObj,
+          userId.value
+        );
+        await saveRecurringClasses(classesToCreate, userId.value);
+      }
       if (imageEvent.value) {
         try {
           await useUploadImage({
@@ -234,9 +294,7 @@ async function submitClass() {
           emit("error", "Image upload failed, but class was saved");
         }
       }
-
       await cleanupPastClasses(userId.value);
-
       resetForm();
       emit("formSubmitted");
       emit("closeForm");

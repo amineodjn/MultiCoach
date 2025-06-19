@@ -73,6 +73,7 @@
         :customWidth="'w-1/2'"
         :coachAccess="true"
         @deleteOffer="handleOpenPopup"
+        @editOffer="handleEditOffer"
       />
       <loadingSpinner v-if="isLoading && displayedOffers.length === 0" />
       <emptyState v-else-if="displayedOffers.length === 0" />
@@ -140,6 +141,7 @@
             @closeForm="showForm = false"
             @success="handleSuccess"
             @error="handleError"
+            :offerToEdit="offerToEdit"
           />
         </div>
       </div>
@@ -174,6 +176,7 @@ const offerUid = ref("");
 const success = ref(false);
 const error = ref(false);
 const errorMessage = ref("");
+const offerToEdit = ref(null);
 
 const handleOpenPopup = uid => {
   offerUid.value = uid;
@@ -212,6 +215,7 @@ const fetchOffers = async () => {
   try {
     isLoading.value = true;
     await store.fetchOffers();
+    offerToEdit.value = null;
   } catch (error) {
     console.error("Failed to fetch offers:", error);
   } finally {
@@ -220,6 +224,7 @@ const fetchOffers = async () => {
 };
 
 const addOffer = () => {
+  offerToEdit.value = null;
   showForm.value = !showForm.value;
   if (showForm.value) {
     window.location.hash = "#offersFormDiv";
@@ -261,5 +266,11 @@ const handleClose = () => {
 
 const handleSuccess = () => {
   success.value = true;
+};
+
+const handleEditOffer = offerObj => {
+  offerToEdit.value = offerObj;
+  showForm.value = true;
+  window.location.hash = "#offersFormDiv";
 };
 </script>
