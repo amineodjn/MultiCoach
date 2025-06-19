@@ -12,6 +12,7 @@ export const useStore = defineStore({
   state: () => ({
     docId: "",
     user: null,
+    userReady: false,
     favoriteCoaches: [],
     route: null,
     bookedCoach: null,
@@ -75,11 +76,6 @@ export const useStore = defineStore({
       return userData.bookedOffers || [];
     },
     async fetchUserBookedClasses() {
-      if (this.isLoading) {
-        console.log("User data is still loading, waiting...");
-        return;
-      }
-
       if (!this.user || !this.user.uid) {
         console.warn(
           "User not authenticated or user UID is missing. Cannot fetch booked classes."
@@ -96,13 +92,17 @@ export const useStore = defineStore({
 
         const now = new Date();
         const filteredBookedClasses = fetchedBookedClasses.filter(booking => {
-          const bookingDate =
-            booking.bookingTime instanceof Date
-              ? booking.bookingTime
-              : booking.bookingTime.toDate();
+          let bookingDate;
+          if (booking.date && booking.time) {
+            bookingDate = new Date(`${booking.date}T${booking.time}`);
+          } else if (booking.date) {
+            bookingDate = new Date(booking.date);
+          } else {
+            // Skip if no date info
+            return false;
+          }
           return bookingDate >= now;
         });
-
         this.bookedClasses = filteredBookedClasses;
       } catch (error) {
         console.error("Error fetching user booked classes:", error);

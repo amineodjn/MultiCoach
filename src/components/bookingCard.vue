@@ -144,7 +144,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import offerCard from "../components/offerCard.vue";
@@ -155,7 +155,6 @@ import {
   handleCancelOfferBooking,
 } from "../utils/useFirebase";
 import Toast from "../components/toast.vue";
-import { isAfter, parseISO } from "date-fns";
 
 const store = useStore();
 const searchTerm = ref("");
@@ -168,13 +167,11 @@ const toastMessage = ref("");
 const toastType = ref("success");
 const showToast = ref(false);
 
+const bookedClasses = computed(() => store.bookedClasses || []);
+
 // Classes
 const displayedClasses = computed(() => {
-  const now = new Date();
-  let filteredClasses = (store?.user?.bookedClasses || []).filter(Class => {
-    const classDate = parseISO(Class.date);
-    return isAfter(classDate, now);
-  });
+  let filteredClasses = bookedClasses.value;
 
   if (searchTerm.value) {
     filteredClasses = filteredClasses.filter(Class =>
@@ -191,10 +188,20 @@ const displayedClasses = computed(() => {
   }
 });
 
-onMounted(async () => {
-  isLoading.value = true;
-  await store.fetchUserBookedClasses();
-  isLoading.value = false;
+onMounted(() => {
+  if (store.userReady) {
+    store.fetchUserBookedClasses();
+  } else {
+    const stop = watch(
+      () => store.userReady,
+      ready => {
+        if (ready) {
+          store.fetchUserBookedClasses();
+          stop();
+        }
+      }
+    );
+  }
 });
 
 // Offers
@@ -227,9 +234,7 @@ const viewAllOffers = () => {
 const deleteClass = async trainingClass => {
   try {
     await handleCancelBooking(store.docId, trainingClass.uid);
-    store.user.bookedClasses = store.user.bookedClasses.filter(
-      booking => booking.uid !== trainingClass.uid
-    );
+    await store.fetchUserBookedClasses();
     toastMessage.value = "Booking cancelled successfully!";
     toastType.value = "success";
     showToast.value = true;

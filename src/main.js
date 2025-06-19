@@ -23,10 +23,12 @@ onAuthStateChanged(auth, async user => {
       ]);
       await store.setRoute();
       localStorage.setItem("uid", user.uid);
+      store.userReady = true;
       console.log("Page reloaded, user is logged in");
     } else {
       localStorage.removeItem("uid");
       store.user = null; // Clear user data
+      store.userReady = true;
       router.push("/sign-in");
       console.log("User is not logged in");
     }
@@ -34,6 +36,7 @@ onAuthStateChanged(auth, async user => {
     console.error("Error during auth state change:", error);
     localStorage.removeItem("uid");
     store.user = null;
+    store.userReady = true;
     router.push("/sign-in");
   }
 });

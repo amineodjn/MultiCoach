@@ -157,7 +157,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useStore } from "../store/store";
 import emptyState from "../components/emptyState.vue";
 import classesCard from "../components/classesCard.vue";
@@ -278,9 +278,21 @@ const addClass = () => {
   }
 };
 
-onMounted(async () => {
-  await fetchClasses();
-  await store.fetchUserBookedClasses();
+onMounted(() => {
+  fetchClasses();
+  if (store.userReady) {
+    store.fetchUserBookedClasses();
+  } else {
+    const stop = watch(
+      () => store.userReady,
+      ready => {
+        if (ready) {
+          store.fetchUserBookedClasses();
+          stop();
+        }
+      }
+    );
+  }
 });
 
 const deleteClass = async () => {

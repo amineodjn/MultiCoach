@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watch, onActivated } from "vue";
 import emptyState from "../components/emptyState.vue";
 import classesCard from "../components/classesCard.vue";
 import loadingSpinner from "../components/loadingSpinner.vue";
@@ -119,6 +119,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const bookedClasses = computed(() => store.bookedClasses || []);
 
 const displayedClasses = computed(() => {
   let filteredClasses = classes.value;
@@ -175,6 +177,7 @@ const confirmBooking = async () => {
 
     await addClassBooking(user.uid, selectedClass.value);
     await store.fetchUserBookedClasses();
+
     showBookingModal.value = false;
     toastMessage.value = "Class booked successfully!";
     toastType.value = "success";
@@ -207,12 +210,29 @@ const fetchCoachClasses = async () => {
 };
 
 const isClassBooked = classId => {
-  if (!store.user?.bookedClasses) return false;
-  return store.user.bookedClasses.some(booking => booking.uid === classId);
+  return bookedClasses.value.some(c => c.uid === classId);
 };
 
-onMounted(async () => {
-  await fetchCoachClasses();
-  await store.fetchUserBookedClasses();
+onMounted(() => {
+  fetchCoachClasses();
+  if (store.userReady) {
+    store.fetchUserBookedClasses();
+  } else {
+    const stop = watch(
+      () => store.userReady,
+      ready => {
+        if (ready) {
+          store.fetchUserBookedClasses();
+          stop();
+        }
+      }
+    );
+  }
+});
+
+// Refetch booked classes when the view is activated (for <keep-alive> support)
+onActivated(() => {
+  fetchCoachClasses();
+  store.fetchUserBookedClasses();
 });
 </script>
