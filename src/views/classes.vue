@@ -74,6 +74,7 @@
         :coachAccess="true"
         :isAlreadyBooked="isClassBooked(Class.uid)"
         @deleteClass="handleOpenPopup"
+        @editClass="handleEditClass"
       />
       <loadingSpinner v-if="isLoading && displayedClasses.length === 0" />
       <emptyState v-else-if="displayedClasses.length === 0" />
@@ -141,6 +142,7 @@
             @closeForm="showForm = false"
             @success="handleSuccess"
             @error="handleError"
+            :classToEdit="classToEdit"
           />
         </div>
       </div>
@@ -178,6 +180,7 @@ const success = ref(false);
 const error = ref(false);
 const errorMessage = ref("");
 const filteredClasses = computed(() => store.classes);
+const classToEdit = ref(null);
 
 const handleOpenPopup = uid => {
   classUid.value = uid;
@@ -219,6 +222,7 @@ const handleFormSubmission = async () => {
   isLoading.value = true;
   await fetchClasses();
   isLoading.value = false;
+  classToEdit.value = null;
 };
 
 const handleSuccess = () => {
@@ -267,6 +271,7 @@ const fetchClasses = async () => {
 };
 
 const addClass = () => {
+  classToEdit.value = null;
   toggleForm();
   if (showForm.value) {
     window.location.hash = "#classesFormDiv";
@@ -287,5 +292,11 @@ const deleteClass = async () => {
 const isClassBooked = classId => {
   if (!store.user?.bookedClasses) return false;
   return store.user.bookedClasses.some(booking => booking.uid === classId);
+};
+
+const handleEditClass = classObj => {
+  classToEdit.value = classObj;
+  showForm.value = true;
+  window.location.hash = "#classesFormDiv";
 };
 </script>
