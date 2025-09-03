@@ -80,7 +80,7 @@
             id="location-search"
             class="block p-2.5 md:w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-indigo-500"
             :placeholder="
-              selectedCity.value ? '' : 'Search for city or address'
+              selectedCity ? '' : 'Search for city or address'
             "
             required=""
           />
@@ -142,7 +142,8 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { API_KEY } from "../basic/const";
+import { loadGoogleMapsScript, waitForGoogleMaps } from "../utils/googleMapsLoader.js";
+
 const emits = defineEmits(["citySelected", "cityRemoved"]);
 
 const toggled = ref(false);
@@ -169,46 +170,24 @@ const removeCity = () => {
 };
 
 onMounted(async () => {
-  const src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places`;
+  try {
+    await loadGoogleMapsScript();
+    await waitForGoogleMaps();
 
-  await new Promise((resolve, reject) => {
-    let script = document.querySelector(`script[src="${src}"]`);
-
-    if (!script) {
-      script = document.createElement("script");
-      script.src = src;
-      script.async = true;
-      script.setAttribute("data-status", "loading");
-      document.head.appendChild(script);
-      script.onload = () => resolve();
-      script.onerror = () =>
-        reject(new Error("Failed to load Google Maps script"));
-    } else {
-      resolve();
-    }
-  });
-
-  await new Promise(resolve => {
-    const interval = setInterval(() => {
-      if (window.google) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-
-  const autoComplete = new google.maps.places.PlaceAutocompleteElement(
-    streetRef.value,
-    {
+    const autocomplete = new google.maps.places.Autocomplete(streetRef.value, {
       types: ["geocode"],
       fields: ["address_components"],
       componentRestrictions: { country: "PL" },
-    }
-  );
+    });
 
-  google.maps.event.addListener(autoComplete, "place_changed", () => {
-    selectedCity.value =
-      autoComplete.getPlace().address_components[0].long_name;
-  });
+    google.maps.event.addListener(autocomplete, "place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (place.address_components && place.address_components.length > 0) {
+        selectedCity.value = place.address_components[0].long_name;
+      }
+    });
+  } catch (error) {
+    console.error("Failed to initialize Google Maps autocomplete:", error);
+  }
 });
 </script>

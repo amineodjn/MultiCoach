@@ -18,7 +18,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { GOOGLE_API_SRC } from "../basic/const.js";
+import { loadGoogleMapsScript, waitForGoogleMaps } from "../utils/googleMapsLoader.js";
 
 const selectedLocation = ref("");
 
@@ -52,63 +52,16 @@ defineProps({
 
 const locationRef = ref(null);
 
-const loadGoogleMapsScript = async src => {
-  return new Promise((resolve, reject) => {
-    let script = document.querySelector(`script[src="${src}"]`);
-
-    if (!script) {
-      script = document.createElement("script");
-      script.src = src;
-      script.async = true;
-      script.defer = true;
-      script.setAttribute("data-status", "loading");
-      document.head.appendChild(script);
-
-      script.onerror = () => {
-        reject(new Error("Failed to load Google Maps script"));
-      };
-
-      script.onload = () => {
-        script.setAttribute("data-status", "loaded");
-        resolve();
-      };
-    } else if (script.getAttribute("data-status") === "loaded") {
-      resolve();
-    } else {
-      script.addEventListener("load", () => {
-        script.setAttribute("data-status", "loaded");
-        resolve();
-      });
-    }
-  });
-};
-
-const waitForGoogleMaps = async () => {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error("Timeout waiting for Google Maps to load"));
-    }, 10000);
-
-    const interval = setInterval(() => {
-      if (window.google && window.google.maps && window.google.maps.places) {
-        clearInterval(interval);
-        clearTimeout(timeout);
-        resolve();
-      }
-    }, 100);
-  });
-};
-
 const initializeAutocomplete = () => {
-  const autoComplete = new google.maps.places.Autocomplete(locationRef.value, {
+  const autocomplete = new google.maps.places.Autocomplete(locationRef.value, {
     types: ["geocode"],
     componentRestrictions: { country: "PL" },
     fields: ["formatted_address", "geometry", "name"],
     strictBounds: false,
   });
 
-  autoComplete.addListener("place_changed", () => {
-    const place = autoComplete.getPlace();
+  autocomplete.addListener("place_changed", () => {
+    const place = autocomplete.getPlace();
     if (place.formatted_address) {
       selectedLocation.value = place.formatted_address;
     }
@@ -117,11 +70,11 @@ const initializeAutocomplete = () => {
 
 onMounted(async () => {
   try {
-    await loadGoogleMapsScript(GOOGLE_API_SRC);
+    await loadGoogleMapsScript();
     await waitForGoogleMaps();
     initializeAutocomplete();
   } catch (error) {
-    console.error(error);
+    console.error("Failed to initialize location input:", error);
   }
 });
 </script>
